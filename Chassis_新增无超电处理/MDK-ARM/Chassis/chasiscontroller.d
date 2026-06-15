@@ -1,0 +1,15 @@
+chassis\chasiscontroller.o: ..\application\src\ChasisController.c
+chassis\chasiscontroller.o: ..\application\inc\ChasisController.h
+chassis\chasiscontroller.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\chasiscontroller.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+chassis\chasiscontroller.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\chasiscontroller.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\chasiscontroller.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\chasiscontroller.o: ..\Algorithm\inc\arm_math.h
+chassis\chasiscontroller.o: ../Drivers/CMSIS/Include/core_cm4.h
+chassis\chasiscontroller.o: ../Drivers/CMSIS/Include/cmsis_version.h
+chassis\chasiscontroller.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+chassis\chasiscontroller.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+chassis\chasiscontroller.o: ..\Algorithm\inc\arm_atan2_f32.h
+chassis\chasiscontroller.o: ..\Algorithm\inc\user_lib.h
+chassis\chasiscontroller.o: ..\Algorithm\inc\pid.h

@@ -1,0 +1,10 @@
+chassis\m3508.o: ..\Components\motor\src\M3508.c
+chassis\m3508.o: ../Components/motor/inc/M3508.h
+chassis\m3508.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\m3508.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+chassis\m3508.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\m3508.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\m3508.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\m3508.o: ../Components/tools/inc/ZeroCheck.h
+chassis\m3508.o: ../Components/tools/inc/tools.h
+chassis\m3508.o: ../Algorithm/inc/my_filter.h

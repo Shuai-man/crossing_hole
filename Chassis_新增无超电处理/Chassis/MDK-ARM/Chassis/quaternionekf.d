@@ -1,0 +1,13 @@
+chassis\quaternionekf.o: ..\Algorithm\src\QuaternionEKF.c
+chassis\quaternionekf.o: ../Algorithm/inc/QuaternionEKF.h
+chassis\quaternionekf.o: ../Algorithm/inc/kalman_filter.h
+chassis\quaternionekf.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\quaternionekf.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+chassis\quaternionekf.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\quaternionekf.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\quaternionekf.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\quaternionekf.o: ../Algorithm/inc/arm_math.h
+chassis\quaternionekf.o: ../Drivers/CMSIS/Include/core_cm4.h
+chassis\quaternionekf.o: ../Drivers/CMSIS/Include/cmsis_version.h
+chassis\quaternionekf.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+chassis\quaternionekf.o: ../Drivers/CMSIS/Include/cmsis_armcc.h

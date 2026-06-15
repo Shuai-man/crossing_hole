@@ -1,0 +1,12 @@
+gimbal\rls_identification.o: ..\Algorithm\src\RLS_Identification.c
+gimbal\rls_identification.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\rls_identification.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+gimbal\rls_identification.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+gimbal\rls_identification.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+gimbal\rls_identification.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+gimbal\rls_identification.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+gimbal\rls_identification.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h
+gimbal\rls_identification.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+gimbal\rls_identification.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+gimbal\rls_identification.o: D:\keil\ARM\ARMCC\Bin\..\include\float.h
+gimbal\rls_identification.o: D:\keil\ARM\ARMCC\Bin\..\include\limits.h

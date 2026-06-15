@@ -1,0 +1,12 @@
+gimbal\crc32.o: ..\Algorithm\src\crc32.c
+gimbal\crc32.o: ../Algorithm/inc/crc32.h
+gimbal\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+gimbal\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+gimbal\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+gimbal\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+gimbal\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+gimbal\crc32.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h
+gimbal\crc32.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+gimbal\crc32.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+gimbal\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\float.h
+gimbal\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\limits.h

@@ -1,0 +1,10 @@
+chassis\gm6020.o: ..\Components\motor\src\GM6020.c
+chassis\gm6020.o: ../Components/motor/inc/GM6020.h
+chassis\gm6020.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\gm6020.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+chassis\gm6020.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\gm6020.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\gm6020.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\gm6020.o: ../Components/tools/inc/ZeroCheck.h
+chassis\gm6020.o: ../Components/tools/inc/tools.h
+chassis\gm6020.o: ../Algorithm/inc/my_filter.h

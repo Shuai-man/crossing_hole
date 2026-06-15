@@ -1,0 +1,13 @@
+gimbal\signalgenerator.o: ..\Algorithm\src\SignalGenerator.c
+gimbal\signalgenerator.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\signalgenerator.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+gimbal\signalgenerator.o: ../Components/tools/inc/tools.h
+gimbal\signalgenerator.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+gimbal\signalgenerator.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+gimbal\signalgenerator.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+gimbal\signalgenerator.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+gimbal\signalgenerator.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h
+gimbal\signalgenerator.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+gimbal\signalgenerator.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+gimbal\signalgenerator.o: D:\keil\ARM\ARMCC\Bin\..\include\float.h
+gimbal\signalgenerator.o: D:\keil\ARM\ARMCC\Bin\..\include\limits.h

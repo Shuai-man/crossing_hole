@@ -1,0 +1,12 @@
+gimbal\observer.o: ..\Algorithm\src\Observer.c
+gimbal\observer.o: ../Algorithm/inc/Observer.h
+gimbal\observer.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+gimbal\observer.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+gimbal\observer.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+gimbal\observer.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+gimbal\observer.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+gimbal\observer.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h
+gimbal\observer.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+gimbal\observer.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+gimbal\observer.o: D:\keil\ARM\ARMCC\Bin\..\include\float.h
+gimbal\observer.o: D:\keil\ARM\ARMCC\Bin\..\include\limits.h

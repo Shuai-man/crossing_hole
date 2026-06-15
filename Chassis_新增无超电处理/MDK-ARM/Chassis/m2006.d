@@ -1,0 +1,10 @@
+chassis\m2006.o: ..\Components\motor\src\M2006.c
+chassis\m2006.o: ../Components/motor/inc/M2006.h
+chassis\m2006.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\m2006.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+chassis\m2006.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\m2006.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\m2006.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\m2006.o: ../Components/tools/inc/ZeroCheck.h
+chassis\m2006.o: ../Components/tools/inc/tools.h
+chassis\m2006.o: ../Algorithm/inc/my_filter.h

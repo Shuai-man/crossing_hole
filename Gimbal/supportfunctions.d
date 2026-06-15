@@ -1,0 +1,17 @@
+gimbal\supportfunctions.o: D:/keil/ARM/PACK/ARM/CMSIS-DSP/1.16.2/Source/SupportFunctions/SupportFunctions.c
+gimbal\supportfunctions.o: D:/keil/ARM/PACK/ARM/CMSIS-DSP/1.16.2/Source/SupportFunctions/arm_barycenter_f32.c
+gimbal\supportfunctions.o: D:\keil\ARM\PACK\ARM\CMSIS-DSP\1.16.2\Include\dsp/support_functions.h
+gimbal\supportfunctions.o: D:\keil\ARM\PACK\ARM\CMSIS-DSP\1.16.2\Include\arm_math_types.h
+gimbal\supportfunctions.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+gimbal\supportfunctions.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+gimbal\supportfunctions.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+gimbal\supportfunctions.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+gimbal\supportfunctions.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+gimbal\supportfunctions.o: D:\keil\ARM\ARMCC\Bin\..\include\float.h
+gimbal\supportfunctions.o: D:\keil\ARM\ARMCC\Bin\..\include\limits.h
+gimbal\supportfunctions.o: D:\keil\ARM\PACK\ARM\CMSIS-DSP\1.16.2\Include\arm_math_memory.h
+gimbal\supportfunctions.o: D:\keil\ARM\PACK\ARM\CMSIS-DSP\1.16.2\Include\dsp/none.h
+gimbal\supportfunctions.o: D:\keil\ARM\PACK\ARM\CMSIS-DSP\1.16.2\Include\dsp/utils.h
+gimbal\supportfunctions.o: D:/keil/ARM/PACK/ARM/CMSIS-DSP/1.16.2/Source/SupportFunctions/arm_bitonic_sort_f32.c
+gimbal\supportfunctions.o: D:\keil\ARM\PACK\ARM\CMSIS-DSP\1.16.2\PrivateInclude\arm_sorting.h
+gimbal\supportfunctions.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h

@@ -1,0 +1,12 @@
+chassis\crc32.o: ..\Algorithm\src\crc32.c
+chassis\crc32.o: ../Algorithm/inc/crc32.h
+chassis\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+chassis\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\crc32.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\crc32.o: ../Algorithm/inc/arm_math.h
+chassis\crc32.o: ../Drivers/CMSIS/Include/core_cm4.h
+chassis\crc32.o: ../Drivers/CMSIS/Include/cmsis_version.h
+chassis\crc32.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+chassis\crc32.o: ../Drivers/CMSIS/Include/cmsis_armcc.h

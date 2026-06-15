@@ -1,0 +1,20 @@
+#ifndef _MOTOR_TYPEDEF
+#define _MOTOR_TYPEDEF
+#include "can.h"
+
+#define DM4310_MOTOR 0
+#define GIMBAL_MOTOR_TYPE DM4310_MOTOR
+
+typedef enum MOTOR_APP_TYPE // 电机应用类型
+{
+    YAW_MOTOR,		
+    PITCH_MOTOR,
+    LEFT_FRICTION_WHEEL_MOTOR,
+    RIGHT_FRICTION_WHEEL_MOTOR,
+    TOGGLE_MOTOR,
+    MOTOR_APP_NUMS
+} MOTOR_APP_TYPE;
+
+
+#endif
+

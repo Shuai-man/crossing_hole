@@ -1,0 +1,13 @@
+gimbal\sdcardtask.o: ..\Task\src\SDCardTask.c
+gimbal\sdcardtask.o: ..\Task\inc\SDCardTask.h
+gimbal\sdcardtask.o: ../Core/Inc/FreeRTOSConfig.h
+gimbal\sdcardtask.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+gimbal\sdcardtask.o: D:\keil\ARM\ARMCC\Bin\..\include\stddef.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+gimbal\sdcardtask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
