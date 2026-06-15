@@ -128,11 +128,13 @@ void DT7_Update(float delta_t)
                 setGimbalAction(GIMBAL_ACT_MODE);
                 setSuperPower(POWER_TO_BATTERY);
                 setGimbalPosition(DOWN);
+                Gimbal_Return();
             }
 
-            if (lifting_controller.finished == 0)
+            //应该改为转向完成之前不跟随，要不然下降完成之前一直动不了
+            if (fabsf(gimbal_controller.min_angle_err) > 0.5f)
             {
-                Gimbal_Return();
+                
                 setChassisModeAction(NOT_CONTROL_MODE);
             }
             else

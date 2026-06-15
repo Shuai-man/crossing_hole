@@ -916,11 +916,6 @@
               <FilePath>..\Application\src\ChassisSend.c</FilePath>
             </File>
             <File>
-              <FileName>ChassisSolver.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Application\src\ChassisSolver.c</FilePath>
-            </File>
-            <File>
               <FileName>Gimbal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application\src\Gimbal.c</FilePath>
@@ -979,6 +974,11 @@
               <FileName>tof.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application\src\tof.c</FilePath>
+            </File>
+            <File>
+              <FileName>KeyMouse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\src\KeyMouse.c</FilePath>
             </File>
           </Files>
         </Group>

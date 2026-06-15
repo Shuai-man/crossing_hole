@@ -180,20 +180,17 @@ void Gimbal_Get_Dir(float target_angle, float zero_angle)
 void Gimbal_Return(void)
 {
     float angle = (gimbal_controller.DM_Yaw_Motor.P_angle - GIMBAL_ANGLE_ZERO);
-    if (fabs(angle) > 0.5f )
+    gimbal_controller.angle_err = limit_angle(angle);
+    gimbal_controller.angle_err_360 = limit_angle(angle + 360.0f);
+    if (fabsf(gimbal_controller.angle_err) < fabsf(gimbal_controller.angle_err_360))
     {
-        float AngErr_front, AngErr_back = 0;
-        AngErr_front = limit_angle(angle);
-        AngErr_back = limit_angle(angle + 360.0f);
-        if (fabsf(AngErr_front) < fabsf(AngErr_back))
-        {
-            gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + AngErr_front;
-        }
-        else
-        {
-            gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + AngErr_back;
-        }
+        gimbal_controller.min_angle_err=gimbal_controller.angle_err;
     }
+    else
+    {
+        gimbal_controller.min_angle_err=gimbal_controller.angle_err_360;
+    }
+    gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + gimbal_controller.min_angle_err;
 }
 
 /**

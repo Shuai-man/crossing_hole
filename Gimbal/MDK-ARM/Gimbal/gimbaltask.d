@@ -96,9 +96,9 @@ gimbal\gimbaltask.o: ../Config/can_config.h
 gimbal\gimbaltask.o: ../Components/boards/inc/bsp_can.h
 gimbal\gimbaltask.o: ../Config/Motor_Typdef.h
 gimbal\gimbaltask.o: ../Application/inc/ToggleBullet.h
-gimbal\gimbaltask.o: ../Application/inc/ChassisSolver.h
+gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h
 gimbal\gimbaltask.o: ../Application/inc/DT7_Controller.h
-gimbal\gimbaltask.o: ../Application/inc/ChassisSolver.h
+gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h
 gimbal\gimbaltask.o: ../Application/inc/VTM_Controller.h
 gimbal\gimbaltask.o: ../Application/inc/pc_serial.h
 gimbal\gimbaltask.o: ../Algorithm/inc/algorithmOfCRC.h

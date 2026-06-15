@@ -7,7 +7,7 @@
  ******************************************************************************
  */
 
-#include "ChassisSolver.h"
+#include "KeyMouse.h"
 
 RobotInfo robotInfo;
 ChassisSolver chassis_solver;
@@ -32,14 +32,9 @@ void State_Clear(void)
 
 TickType_t delta_ts = 0;
 
-uint8_t fly_flag = 0;
-uint8_t up_flag = 0;
-
-uint16_t up_stair_cnt = 0;
 uint8_t sbuff_flag = 0;
-uint8_t is_upstairs = 0;
 
-void DJIKeyMouseUpdate(ChassisSolver *infantry)
+void KeyMouseUpdate(ChassisSolver *infantry)
 {
 
     //    static uint8_t sbuff_flag = 0;
@@ -137,11 +132,6 @@ void DJIKeyMouseUpdate(ChassisSolver *infantry)
     remote_controller.dji_remote.last_keyValue = keyValue;
 
     /* 按键操作 */
-    //    if (gimbal_controller.turn_back_start_flag == FALSE && gimbal_controller.turn_back_finish_flag == TRUE)
-    //    {
-    //        gimbal_controller.turn_back_finish_flag = FALSE;
-    //        setChassisModeAction(FOLLOW_GIMBAL);
-    //    }
 
     float speed_x = 0.0f, speed_y = 0.0f;
     // 长按生效
@@ -177,16 +167,16 @@ void DJIKeyMouseUpdate(ChassisSolver *infantry)
         case KEY_C:
             break;
         case KEY_D:
-            speed_y = 0.5;
+            speed_y = 0.3;
             break;
         case KEY_A:
-            speed_y = -0.5;
+            speed_y = -0.3;
             break;
         case KEY_S:
-            speed_x = -0.5; // 后退太灵敏，衰减一下
+            speed_x = -0.3; // 后退太灵敏，衰减一下
             break;
         case KEY_W:
-            speed_x = 0.5;
+            speed_x = 0.3;
             break;
         default:
             break;
@@ -197,20 +187,7 @@ void DJIKeyMouseUpdate(ChassisSolver *infantry)
         switch (key_and) // 按键上升沿
         {
         case KEY_B:
-            //					if(remote_controller.game_mode == GAME_MODE)
-            //					{
-            //            setGimbalAction(GIMBAL_ACT_MODE);
-            //            setChassisModeAction(BALANCE);
-            //            if (gimbal_controller.turn_back_start_flag == FALSE)
-            //            {
-            //                if (gimbal_controller.chassis_direction == CHASSIS_BACK)
-            //                {
-            //                    gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + 180.0f;
-            //                }
-            //            }
-            //            gimbal_controller.turn_back_start_flag = TRUE;
-            //
-            //					}
+
             break;
         case KEY_V:
             break;
@@ -229,10 +206,12 @@ void DJIKeyMouseUpdate(ChassisSolver *infantry)
             if (remote_controller.game_mode == GAME_MODE)
             {
                 setGimbalPosition(DOWN);
+                Gimbal_Return();
+                //这里不好设置底盘不跟随，因为不是实时执行的
             }
             break;
         case KEY_R:
-
+            setGimbalAction(GIMBAL_ACT_MODE);
             break;
         case KEY_F:
             friction_wheels.friction_speed += 0.5f;
@@ -244,18 +223,7 @@ void DJIKeyMouseUpdate(ChassisSolver *infantry)
 
             break;
         case KEY_X:
-            if (sbuff_flag == 0)
-            {
-
-                setGimbalAction(GIMBAL_SMALL_BUFF_MODE);
-                sbuff_flag = 1;
-            }
-            else if (sbuff_flag == 1)
-            {
-
-                setGimbalAction(GIMBAL_ACT_MODE);
-                sbuff_flag = 0;
-            }
+            setGimbalAction(GIMBAL_SMALL_BUFF_MODE);
             break;
         case KEY_C:
             if (remote_controller.game_mode == GAME_MODE && remote_controller.gimbal_position == UP)
@@ -328,16 +296,9 @@ void DJIKeyMouseUpdate(ChassisSolver *infantry)
     chassis_solver.chassis_speed_y = speed_y;
 
     // 鼠标操作
-    if (remote_controller.gimbal_action == GIMBAL_ACT_MODE ||
-        remote_controller.gimbal_action == GIMBAL_AUTO_AIM_MODE || remote_controller.gimbal_action == GIMBAL_SMALL_BUFF_MODE)
-    {
-        //        if (gimbal_controller.turn_back_start_flag == FALSE)
-        //        {
-        gimbal_controller.target_yaw_angle -= remote_controller.dji_remote.mouse.x * 0.005f;
-        gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.y * 0.004;
-        gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.z * 0.001;
-        //        }
-    }
+    gimbal_controller.target_yaw_angle -= remote_controller.dji_remote.mouse.x * 0.005f;
+    gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.y * 0.004;
+    gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.z * 0.001;
 
     // 鼠标左键检测
     volatile unsigned char press_l = remote_controller.dji_remote.mouse.press_l;
@@ -453,7 +414,7 @@ void get_control_info(ChassisSolver *infantry)
         DJIRemoteUpdate(infantry);
         break;
     case KEY_MOUSE:
-        DJIKeyMouseUpdate(infantry);
+        KeyMouseUpdate(infantry);
         break;
     default:
         break;

@@ -46,7 +46,7 @@ gimbal\dt7_controller.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\dt7_controller.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 gimbal\dt7_controller.o: ../Components/tools/inc/tools.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_dwt.h
-gimbal\dt7_controller.o: ../Application/inc/ChassisSolver.h
+gimbal\dt7_controller.o: ../Application/inc/KeyMouse.h
 gimbal\dt7_controller.o: ../Application/inc/remote_control.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_VTM.h
 gimbal\dt7_controller.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
@@ -93,7 +93,7 @@ gimbal\dt7_controller.o: ../Algorithm/inc/TD.h
 gimbal\dt7_controller.o: ../Config/Robot_config.h
 gimbal\dt7_controller.o: ../Application/inc/DT7_Controller.h
 gimbal\dt7_controller.o: ../Application/inc/VTM_Controller.h
-gimbal\dt7_controller.o: ../Application/inc/ChassisSolver.h
+gimbal\dt7_controller.o: ../Application/inc/KeyMouse.h
 gimbal\dt7_controller.o: ../Application/inc/pc_serial.h
 gimbal\dt7_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\dt7_controller.o: ../Application/inc/ToggleBullet.h

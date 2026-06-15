@@ -91,9 +91,9 @@ gimbal\vtm_controller.o: ../Algorithm/inc/TD.h
 gimbal\vtm_controller.o: ../Config/Robot_config.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_led.h
-gimbal\vtm_controller.o: ../Application/inc/ChassisSolver.h
+gimbal\vtm_controller.o: ../Application/inc/KeyMouse.h
 gimbal\vtm_controller.o: ../Application/inc/DT7_Controller.h
-gimbal\vtm_controller.o: ../Application/inc/ChassisSolver.h
+gimbal\vtm_controller.o: ../Application/inc/KeyMouse.h
 gimbal\vtm_controller.o: ../Application/inc/VTM_Controller.h
 gimbal\vtm_controller.o: ../Application/inc/pc_serial.h
 gimbal\vtm_controller.o: ../Algorithm/inc/algorithmOfCRC.h

@@ -11,7 +11,7 @@ gimbal\chassistask.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/A
 gimbal\chassistask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
 gimbal\chassistask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 gimbal\chassistask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-gimbal\chassistask.o: ../Application/inc/ChassisSolver.h
+gimbal\chassistask.o: ../Application/inc/KeyMouse.h
 gimbal\chassistask.o: ../Core/Inc/main.h
 gimbal\chassistask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 gimbal\chassistask.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -92,7 +92,7 @@ gimbal\chassistask.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\chassistask.o: ../Algorithm/inc/TD.h
 gimbal\chassistask.o: ../Config/Robot_config.h
 gimbal\chassistask.o: ../Application/inc/DT7_Controller.h
-gimbal\chassistask.o: ../Application/inc/ChassisSolver.h
+gimbal\chassistask.o: ../Application/inc/KeyMouse.h
 gimbal\chassistask.o: ../Application/inc/VTM_Controller.h
 gimbal\chassistask.o: ../Application/inc/pc_serial.h
 gimbal\chassistask.o: ../Algorithm/inc/algorithmOfCRC.h

@@ -11,7 +11,7 @@ gimbal\actiontask.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/AR
 gimbal\actiontask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
 gimbal\actiontask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 gimbal\actiontask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-gimbal\actiontask.o: ../Application/inc/ChassisSolver.h
+gimbal\actiontask.o: ../Application/inc/KeyMouse.h
 gimbal\actiontask.o: ../Core/Inc/main.h
 gimbal\actiontask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 gimbal\actiontask.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -92,7 +92,7 @@ gimbal\actiontask.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\actiontask.o: ../Algorithm/inc/TD.h
 gimbal\actiontask.o: ../Config/Robot_config.h
 gimbal\actiontask.o: ../Application/inc/DT7_Controller.h
-gimbal\actiontask.o: ../Application/inc/ChassisSolver.h
+gimbal\actiontask.o: ../Application/inc/KeyMouse.h
 gimbal\actiontask.o: ../Application/inc/VTM_Controller.h
 gimbal\actiontask.o: ../Application/inc/pc_serial.h
 gimbal\actiontask.o: ../Algorithm/inc/algorithmOfCRC.h

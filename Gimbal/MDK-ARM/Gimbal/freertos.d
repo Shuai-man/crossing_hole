@@ -99,9 +99,9 @@ gimbal\freertos.o: ../Config/can_config.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_can.h
 gimbal\freertos.o: ../Config/Motor_Typdef.h
 gimbal\freertos.o: ../Application/inc/ToggleBullet.h
-gimbal\freertos.o: ../Application/inc/ChassisSolver.h
+gimbal\freertos.o: ../Application/inc/KeyMouse.h
 gimbal\freertos.o: ../Application/inc/DT7_Controller.h
-gimbal\freertos.o: ../Application/inc/ChassisSolver.h
+gimbal\freertos.o: ../Application/inc/KeyMouse.h
 gimbal\freertos.o: ../Application/inc/VTM_Controller.h
 gimbal\freertos.o: ../Application/inc/pc_serial.h
 gimbal\freertos.o: ../Algorithm/inc/algorithmOfCRC.h

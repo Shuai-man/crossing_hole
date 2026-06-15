@@ -59,6 +59,12 @@ typedef struct GimbalController
 {
 	  DM_MIT DM_Yaw_Motor;
 		DM_MIT DM_Pitch_Motor;
+
+    //转向控制
+    //最小回正角度
+    float angle_err;//初始角度误差
+    float angle_err_360;//误差补角
+    float min_angle_err;//最小回正角度
 	
     // Pitch 轴
     PID_t pitch_current_pid;           // 电流环
