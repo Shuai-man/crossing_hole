@@ -57,6 +57,13 @@ void Lifting_Error_Check(float target_height)
 		return; // 确认前不检测阻塞
 	}
 
+	//Tof离线
+	if(global_debugger.tof_debugger.state != ON)
+	{
+		lifting_controller.error = true;
+		return;
+	}
+
 	float pos_err = fabs(Tof_ReceiveData.distance - target_height);
 
 	if (pos_err > OBSTACLE_ERR_THRESHOLD)

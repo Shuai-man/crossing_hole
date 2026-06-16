@@ -5,7 +5,7 @@
 void mecanum_pid_init()
 {
     // 转向PID初始化
-		PID_Init(&infantry.turn_pos_pid, 20, 0, 0.1, 	0.3, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
+		PID_Init(&infantry.turn_pos_pid, 20, 0, 0.0, 	0.3, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
     PID_Init(&infantry.turn_speed_pid, 8, 0, 0.0, 	1.0, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
     // 底盘跟随前馈初始化
     infantry.Mecanum_Follow_FF_Coefficient[0] = -0.9f;

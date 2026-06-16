@@ -1,19 +1,7 @@
 #include "DT7_Controller.h"
 
-// 检查右拨杆是否有值
-uint8_t on_right_lr = 0;
-uint8_t on_right_ud = 0;
-
 void DT7_GimbalControl(float delta_t)
 {
-    // 过洞姿态下，直接发yaw速度，不动云台
-    if (remote_controller.gimbal_position == DOWN)
-    {
-        if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50)
-        {
-            chassis_solver.chassis_speed_w = -(float)(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) / CH_RANGE;
-        }
-    }
     // 根据遥控器输入控制云台
     // yaw
     if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50) // 过零检测
@@ -35,33 +23,37 @@ void DT7_ChassisControl(void)
     // 前后x
     if (abs(dt7_remote.ch[RIGHT_CH_UD] - CH_MIDDLE) > 50) // 过零检测
     {
-        on_right_ud = 1;
         chassis_solver.chassis_speed_x = (float)(dt7_remote.ch[RIGHT_CH_UD] - CH_MIDDLE) / CH_RANGE;
     }
     else // 松手保护
     {
-        if (on_right_ud == 1)
-        {
-            chassis_solver.chassis_speed_x = 0;
-        }
-        on_right_ud = 0;
+        chassis_solver.chassis_speed_x = 0;
     }
     // 左右y
     if (abs(dt7_remote.ch[RIGHT_CH_LR] - CH_MIDDLE) > 50) // 过零检测
     {
-        on_right_lr = 1;
+
         chassis_solver.chassis_speed_y = (float)(dt7_remote.ch[RIGHT_CH_LR] - CH_MIDDLE) / CH_RANGE;
     }
     else // 松手保护
     {
-        if (on_right_lr == 1)
-        {
-            chassis_solver.chassis_speed_y = 0;
-        }
-        on_right_lr = 0;
+
+        chassis_solver.chassis_speed_y = 0;
     }
     // 旋转w
-    if (remote_controller.chassis_mode_action == CV_ROTATE)
+
+    if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，直接发yaw速度
+    {
+        if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50)
+        {
+            chassis_solver.chassis_speed_w = -(float)(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) / CH_RANGE;
+        }
+        else
+        {
+            chassis_solver.chassis_speed_w = 0.0f;
+        }
+    }
+    else if (remote_controller.chassis_mode_action == CV_ROTATE) // 必须与过洞模式并列，否则硬件干涉
     {
         chassis_solver.chassis_speed_w = 1.0f;
     }
@@ -128,22 +120,11 @@ void DT7_Update(float delta_t)
                 setGimbalAction(GIMBAL_ACT_MODE);
                 setSuperPower(POWER_TO_BATTERY);
                 setGimbalPosition(DOWN);
-                Gimbal_Return();
+                gimbal_controller.return_flag = 1;
             }
+            DT7_GimbalControl(delta_t);
+            DT7_ChassisControl();
 
-            //应该改为转向完成之前不跟随，要不然下降完成之前一直动不了
-            if (fabsf(gimbal_controller.min_angle_err) > 0.5f)
-            {
-                
-                setChassisModeAction(NOT_CONTROL_MODE);
-            }
-            else
-            {
-                setChassisModeAction(FOLLOW_GIMBAL);
-                DT7_ChassisControl();
-            }
-
-            DT7_GimbalControl(delta_t); // 顺序必须在底盘控制后面，否则speedw被覆盖
             break;
         default:
             setAllModeOff();
@@ -153,6 +134,7 @@ void DT7_Update(float delta_t)
 
     case Mid:
         // 切换键鼠控制
+        gimbal_controller.return_flag = 1;
         initRemoteControl(KEY_MOUSE);
         break;
     case Up:

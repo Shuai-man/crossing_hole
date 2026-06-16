@@ -6,6 +6,8 @@
 #include "pid.h"
 #include "M2006.h"
 
+#include "debug.h"
+
 #define GIMBAL_HIGH_STATE 177 //此处修改最高处的设定值（单位:mm）
 #define GIMBAL_LOW_STATE 30
 #define LIFTING_SPEED_MAX 2700.0f

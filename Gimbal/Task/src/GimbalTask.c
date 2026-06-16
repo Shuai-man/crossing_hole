@@ -34,6 +34,36 @@ void autoReverse(void)
     }
 }
 
+// 云台YAW回正
+void Gimbal_Return(void)
+{
+    if (gimbal_controller.return_flag == 1)
+    {
+        gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + gimbal_controller.err_angle;
+
+        if (fabsf(gimbal_controller.err_angle) < 0.5f)  
+        {
+            gimbal_controller.return_flag = 0;
+            setChassisModeAction(FOLLOW_GIMBAL);
+					return;
+        }
+        setChassisModeAction(NOT_CONTROL_MODE);
+    }
+}
+
+void Gimbal_Act_Cal(void)
+{
+    // pitch限制幅值
+    limitPitchAngle();
+    // yaw计算
+    Gimbal_Return();
+
+    Gimbal_Yaw_Calculate(gimbal_controller.target_yaw_angle);
+    Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
+
+    pc_send_data.mode_want = NOT_USE_AIM;
+}
+
 void Gimbal_Auto_aim_Cal(void) // 打车
 {
     gimbal_controller.pc_recv_rad[PITCH_MOTOR] = pc_recv_data.pitch;
@@ -98,17 +128,6 @@ void Gimbal_SI_Cal()
     // 限幅
 
 #endif
-}
-
-void Gimbal_Act_Cal(void)
-{
-    // pitch限制幅值
-    limitPitchAngle();
-    // yaw计算
-    Gimbal_Yaw_Calculate(gimbal_controller.target_yaw_angle);
-    Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
-
-    pc_send_data.mode_want = NOT_USE_AIM;
 }
 
 void Shoot_Power_down_Cal(void)
@@ -265,7 +284,7 @@ void Gimbal_Task(void *pvParameters)
         xLastWakeTime = xTaskGetTickCount();
 
         Gimbal_Msg_Update();
-        Gimbal_Get_Dir(gimbal_controller.DM_Yaw_Motor.P_angle, GIMBAL_ANGLE_ZERO);
+        Gimbal_ErrorAngle();
 
         switch (remote_controller.gimbal_action)
         {
@@ -303,7 +322,7 @@ void Gimbal_Task(void *pvParameters)
         }
 
         // 控制丝杆升降
-        Lifting_Control();
+       Lifting_Control();
 
         if (index % 2 == 0) // 500hz
         {

@@ -149,11 +149,11 @@ void GimbalClear(void)
  */
 void limitPitchAngle()
 {
-    float arr_angle = 0;
+    float err_angle = 0;
     if (remote_controller.gimbal_position == DOWN)
     {
-        arr_angle = GIMBAL_PITCH_MOTOR_SIGN * (gimbal_controller.DM_Pitch_Motor.P_angle - GIMBAL_PITCH_ZERO);
-        gimbal_controller.target_pitch_angle = LIMIT_MAX_MIN(gimbal_controller.target_pitch_angle, GIMBAL_ANGLE_MAX - arr_angle, 8.0f - arr_angle);
+        err_angle = GIMBAL_PITCH_MOTOR_SIGN * (gimbal_controller.DM_Pitch_Motor.P_angle - GIMBAL_PITCH_ZERO);
+        gimbal_controller.target_pitch_angle = LIMIT_MAX_MIN(gimbal_controller.target_pitch_angle, GIMBAL_ANGLE_MAX - err_angle, 8.0f - err_angle);
     }
     else
     {
@@ -161,12 +161,14 @@ void limitPitchAngle()
     }
 }
 
-void Gimbal_Get_Dir(float target_angle, float zero_angle)
+void Gimbal_ErrorAngle(void)
 {
-    float AngErr_front, AngErr_back;
-    AngErr_front = limit_angle(target_angle - zero_angle);
-    AngErr_back = limit_angle(target_angle - zero_angle + 180.0f);
-    if (fabsf(AngErr_front) < fabsf(AngErr_back))
+    //limit_angle可以归一化180度，不需要再判断最小回正角度
+    gimbal_controller.err_angle = limit_angle(gimbal_controller.DM_Yaw_Motor.P_angle - GIMBAL_ANGLE_ZERO);
+    gimbal_controller.err_angle_180 = limit_angle(gimbal_controller.err_angle + 180.0f);
+
+    // 判断方向
+    if (fabsf(gimbal_controller.err_angle) < fabsf(gimbal_controller.err_angle_180))
     {
         gimbal_controller.gimbal_direction = GIMBAL_FRONT;
     }
@@ -174,23 +176,7 @@ void Gimbal_Get_Dir(float target_angle, float zero_angle)
     {
         gimbal_controller.gimbal_direction = GIMBAL_BACK;
     }
-}
 
-// 云台YAW回正
-void Gimbal_Return(void)
-{
-    float angle = (gimbal_controller.DM_Yaw_Motor.P_angle - GIMBAL_ANGLE_ZERO);
-    gimbal_controller.angle_err = limit_angle(angle);
-    gimbal_controller.angle_err_360 = limit_angle(angle + 360.0f);
-    if (fabsf(gimbal_controller.angle_err) < fabsf(gimbal_controller.angle_err_360))
-    {
-        gimbal_controller.min_angle_err=gimbal_controller.angle_err;
-    }
-    else
-    {
-        gimbal_controller.min_angle_err=gimbal_controller.angle_err_360;
-    }
-    gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + gimbal_controller.min_angle_err;
 }
 
 /**

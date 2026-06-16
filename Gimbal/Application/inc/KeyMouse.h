@@ -65,11 +65,6 @@ typedef struct RobotInfo
 
 } RobotInfo;
 
-typedef struct Turn_Back
-{
-	uint8_t turn_finish;
-}Turn_Back;
-
 typedef struct ChassisSolver
 {
     float chassis_speed_x; // 云台方向速度

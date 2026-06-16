@@ -26,11 +26,11 @@
 #define GIMBAL_PITCH_COMP 4000.0f
 #define GIMBAL_PITCH_COMP_COEF 1.0f
 
-//Pitch机械零点角度
+//Pitch角度机械零点
 #define GIMBAL_PITCH_ZERO 209.229126f
 
 //云台底盘的yaw轴零点都需要更改  
-#define GIMBAL_ANGLE_ZERO 48.40f
+#define GIMBAL_ANGLE_ZERO 49.5648193f
 
 
 // yaw
@@ -62,10 +62,11 @@ typedef struct GimbalController
 
     //转向控制
     //最小回正角度
-    float angle_err;//初始角度误差
-    float angle_err_360;//误差补角
-    float min_angle_err;//最小回正角度
+    float err_angle;//初始角度误差
+    float err_angle_180;//误差余角，用于判断方向
 	
+    uint8_t return_flag;//回正标志位，0是完成，1是正在回正
+
     // Pitch 轴
     PID_t pitch_current_pid;           // 电流环
     PID_t pitch_speed_pid;             // 速度环
@@ -118,9 +119,6 @@ typedef struct GimbalController
     uint8_t turn_back_finish_flag; // 上一帧一键掉头标志位
 
     float pc_recv_rad[2]; // PC端发送的数据，弧度制
-
-    bool return_flag; //yaw轴回正：0是完成，1是正在回正
-
 		
 	gimbal_direction_e gimbal_direction;
 	
@@ -132,10 +130,10 @@ void GimbalPidInit(void);
 void GimbalPidChange(void);
 void Auto_GimbalPidChange(void);
 void Small_Buff_Change(void);
-void Gimbal_Get_Dir(float target_angle,float zero_angle);
 void GimbalClear(void);
 void updateGyro(void);
-void Gimbal_Return(void);
+void Gimbal_ErrorAngle(void);
+
 
 // pitch
 void limitPitchAngle(void);

@@ -11,38 +11,15 @@
 
 RobotInfo robotInfo;
 ChassisSolver chassis_solver;
-Turn_Back turn_back;
-
-void Turn(void) // 转头
-{
-    if (turn_back.turn_finish == 0)
-    {
-        float angle = (gimbal_controller.DM_Yaw_Motor.P_angle - GIMBAL_ANGLE_ZERO);
-        gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + angle;
-        turn_back.turn_finish = 1;
-    }
-}
 
 void State_Clear(void)
 {
     // 清空状态
     setGameModeAction(OFF_MODE);
-    turn_back.turn_finish = 0;
 }
-
-TickType_t delta_ts = 0;
-
-uint8_t sbuff_flag = 0;
 
 void KeyMouseUpdate(ChassisSolver *infantry)
 {
-
-    //    static uint8_t sbuff_flag = 0;
-    static TickType_t last_recv_ts = 0;
-    TickType_t now_ts = xTaskGetTickCount();
-    delta_ts = now_ts - last_recv_ts;
-    last_recv_ts = now_ts;
-
     // 无遥控直接下电
     if ((global_debugger.DT7_debugger.state != ON) &&
         (global_debugger.VTM_debugger.state != ON))
@@ -66,7 +43,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             {
                 setShootAction(SHOOT_POWER_DOWN_MODE);
                 setGameModeAction(TEST_MODE);
-                Turn();
             }
             else if (dt7_remote.s[LEFT_SW] == Mid) // 检录模式
             {
@@ -115,7 +91,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             }
             else
             {
-                Turn();
+                
                 setGameModeAction(TEST_MODE);
                 VTM_Fire();
             }
@@ -206,8 +182,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             if (remote_controller.game_mode == GAME_MODE)
             {
                 setGimbalPosition(DOWN);
-                Gimbal_Return();
-                //这里不好设置底盘不跟随，因为不是实时执行的
+                gimbal_controller.return_flag = 1;
             }
             break;
         case KEY_R:
