@@ -9,6 +9,10 @@ void setChassisModeAction(enum CHASSIS_MODE_ACTION action)
     if (remote_controller.robot_state == CONTROL_MODE)
     {
         remote_controller.chassis_mode_action = action;
+        if (action != NOT_CONTROL_MODE)
+        {
+            remote_controller.last_chassis_mode_action = action;
+        }
     }
 }
 

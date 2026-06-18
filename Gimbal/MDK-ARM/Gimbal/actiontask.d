@@ -47,11 +47,11 @@ gimbal\actiontask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 gimbal\actiontask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\actiontask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\actiontask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
+gimbal\actiontask.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 gimbal\actiontask.o: ../Application/inc/remote_control.h
 gimbal\actiontask.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
 gimbal\actiontask.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 gimbal\actiontask.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-gimbal\actiontask.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 gimbal\actiontask.o: ../Components/boards/inc/bsp_VTM.h
 gimbal\actiontask.o: ../Core/Inc/usart.h
 gimbal\actiontask.o: ../Components/tools/inc/debug.h

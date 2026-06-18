@@ -5,8 +5,8 @@
 void mecanum_pid_init()
 {
     // 转向PID初始化
-		PID_Init(&infantry.turn_pos_pid, 20, 0, 0.0, 	0.3, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
-    PID_Init(&infantry.turn_speed_pid, 8, 0, 0.0, 	1.0, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
+    PID_Init(&infantry.turn_pos_pid, 20, 0, 0.0, 0.3, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
+    PID_Init(&infantry.turn_speed_pid, 8, 0, 0.0, 1.0, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
     // 底盘跟随前馈初始化
     infantry.Mecanum_Follow_FF_Coefficient[0] = -0.9f;
     infantry.Mecanum_Follow_FF_Coefficient[1] = -0.0f;
@@ -57,16 +57,17 @@ void mecanum_follow_control()
 
     // 转向计算，角度环 + 前馈
 
-    if(gimbal_receiver_pack1.autoaim_id == 2 || gimbal_receiver_pack1.autoaim_id == 4)
-	{
-		infantry.set_yaw_v = 0;
-	}else{
-    infantry.turn_speed_pid.Ref = GIMBAL_MOTOR_SIGN *PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
-		infantry.target_pid_yaw_v = PID_Calculate(&infantry.turn_speed_pid, infantry.yaw_v, infantry.turn_speed_pid.Ref);
-//		infantry.target_pid_yaw_v = GIMBAL_MOTOR_SIGN *PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
-		infantry.set_yaw_v = infantry.target_pid_yaw_v + infantry.target_yaw_v;
-
-	}
+    if (gimbal_receiver_pack1.autoaim_id == 2 || gimbal_receiver_pack1.autoaim_id == 4)
+    {
+        infantry.set_yaw_v = 0;
+    }
+    else
+    {
+        infantry.turn_speed_pid.Ref = GIMBAL_MOTOR_SIGN * PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
+        infantry.target_pid_yaw_v = PID_Calculate(&infantry.turn_speed_pid, infantry.yaw_v, infantry.turn_speed_pid.Ref);
+        //		infantry.target_pid_yaw_v = GIMBAL_MOTOR_SIGN *PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
+        infantry.set_yaw_v = infantry.target_pid_yaw_v + infantry.target_yaw_v;
+    }
 
     // 逆运动学解算
     mecanum_inv_kinematics();
@@ -105,11 +106,10 @@ void mecanum_chassis_control()
     // 正运动学解算
     mecanum_pos_kinematics();
 
-    
-		infantry.set_x_v = infantry.target_x_v * infantry.cos_dir - infantry.target_y_v * infantry.sin_dir;
+    infantry.set_x_v = infantry.target_x_v * infantry.cos_dir - infantry.target_y_v * infantry.sin_dir;
     infantry.set_y_v = infantry.target_y_v * infantry.cos_dir + infantry.target_x_v * infantry.sin_dir;
     infantry.set_yaw_v = 0;
-	
+
     // 逆运动学解算
     mecanum_inv_kinematics();
 

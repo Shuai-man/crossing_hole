@@ -43,7 +43,7 @@ void DT7_ChassisControl(void)
     // 旋转w
 
     if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，直接发yaw速度
-    {
+    {                                              // 键鼠模式也需要这个
         if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50)
         {
             chassis_solver.chassis_speed_w = -(float)(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) / CH_RANGE;
@@ -57,6 +57,11 @@ void DT7_ChassisControl(void)
     {
         chassis_solver.chassis_speed_w = 1.0f;
     }
+//    else if (remote_controller.chassis_mode_action == FOLLOW_GIMBAL)
+//    {
+//		PID_Calculate(&gimbal_controller.follow_gimbal_pid, gimbal_controller.target_yaw_angle, gimbal_controller.gyro_yaw_angle);
+//        chassis_solver.chassis_speed_w = -gimbal_controller.follow_gimbal_pid.Output; 
+//    }
     else
     {
         chassis_solver.chassis_speed_w = 0.0f;
@@ -116,11 +121,11 @@ void DT7_Update(float delta_t)
             if (sw_changed)
             {
                 setRobotState(CONTROL_MODE);
+                setChassisModeAction(FOLLOW_GIMBAL);
                 setShootAction(SHOOT_POWER_DOWN_MODE);
                 setGimbalAction(GIMBAL_ACT_MODE);
                 setSuperPower(POWER_TO_BATTERY);
                 setGimbalPosition(DOWN);
-                gimbal_controller.return_flag = 1;
             }
             DT7_GimbalControl(delta_t);
             DT7_ChassisControl();
@@ -134,7 +139,6 @@ void DT7_Update(float delta_t)
 
     case Mid:
         // 切换键鼠控制
-        gimbal_controller.return_flag = 1;
         initRemoteControl(KEY_MOUSE);
         break;
     case Up:
@@ -180,14 +184,6 @@ void DT7_Update(float delta_t)
                 if (chassis_solver.Rotate_Counter % 2 == 1)
                 {
                     chassis_solver.chassis_speed_w *= -1;
-                    if (chassis_solver.chassis_speed_w < 0)
-                    {
-                        chassis_solver.chassis_speed_w = chassis_solver.chassis_speed_w;
-                    }
-                    else if (chassis_solver.chassis_speed_w > 0)
-                    {
-                        chassis_solver.chassis_speed_w = chassis_solver.chassis_speed_w;
-                    }
                 }
             }
             else
@@ -202,12 +198,12 @@ void DT7_Update(float delta_t)
             if (sw_changed)
             {
                 setRobotState(CONTROL_MODE);
-                setChassisModeAction(NOT_CONTROL_MODE);
                 setShootAction(SHOOT_FIRE_MODE);
                 setGimbalAction(GIMBAL_ACT_MODE);
                 setSuperPower(POWER_TO_BATTERY);
                 setGimbalPosition(UP);
             }
+            setChassisModeAction(NOT_CONTROL_MODE);
             DT7_GimbalControl(delta_t);
             if (abs(dt7_remote.ch[RIGHT_LR] - CH_MIDDLE) > 150)
             {

@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * @file    ChassisSolver.c
- * @brief   底盘解算器
+ * @file    KeyMouse.c
+ * @brief   键鼠更新
  ******************************************************************************
  * @attention
  ******************************************************************************
@@ -9,7 +9,6 @@
 
 #include "KeyMouse.h"
 
-RobotInfo robotInfo;
 ChassisSolver chassis_solver;
 
 void State_Clear(void)
@@ -57,7 +56,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             else
             {
                 setGameModeAction(OFF_MODE);
-                infantry->chassis_speed_w = 0.00f; // rad /s
             }
         }
     }
@@ -91,16 +89,16 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             }
             else
             {
-                
+
                 setGameModeAction(TEST_MODE);
                 VTM_Fire();
             }
         }
     }
 
-    chassis_solver.speed_state = NORMAL_SPEED_STATE; // 主动电容
+    chassis_solver.speed_state = NORMAL_SPEED_STATE; // 普通速度
     // 按键检测
-    volatile uint16_t keyValue = remote_controller.dji_remote.keyValue;
+    uint16_t keyValue = remote_controller.dji_remote.keyValue;
     remote_controller.dji_remote.keyChangeOn = (remote_controller.dji_remote.last_keyValue ^ remote_controller.dji_remote.keyValue) & remote_controller.dji_remote.keyValue;
 
     remote_controller.dji_remote.keyChangeOff = (remote_controller.dji_remote.last_keyValue ^ remote_controller.dji_remote.keyValue) & remote_controller.dji_remote.last_keyValue;
@@ -143,16 +141,16 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_C:
             break;
         case KEY_D:
-            speed_y = 0.3;
+            speed_y = 0.2;
             break;
         case KEY_A:
-            speed_y = -0.3;
+            speed_y = -0.2;
             break;
         case KEY_S:
-            speed_x = -0.3; // 后退太灵敏，衰减一下
+            speed_x = -0.2; // 后退太灵敏，衰减一下
             break;
         case KEY_W:
-            speed_x = 0.3;
+            speed_x = 0.2;
             break;
         default:
             break;
@@ -182,7 +180,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             if (remote_controller.game_mode == GAME_MODE)
             {
                 setGimbalPosition(DOWN);
-                gimbal_controller.return_flag = 1;
             }
             break;
         case KEY_R:
@@ -271,12 +268,15 @@ void KeyMouseUpdate(ChassisSolver *infantry)
     chassis_solver.chassis_speed_y = speed_y;
 
     // 鼠标操作
-    gimbal_controller.target_yaw_angle -= remote_controller.dji_remote.mouse.x * 0.005f;
-    gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.y * 0.004;
-    gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.z * 0.001;
+    gimbal_controller.target_yaw_angle -= remote_controller.dji_remote.mouse.x * MOUSE_YAW_SENSITIVITY;
+    gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.y * MOUSE_PITCH_SENSITIVITY;
+    gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.z * MOUSE_SCROLL_SENSITIVITY;
+
+    Feedforward_Calculate(&gimbal_controller.follow_gimbal_forward, gimbal_controller.target_yaw_angle);
+    chassis_solver.chassis_speed_w = gimbal_controller.follow_gimbal_forward.Output;
 
     // 鼠标左键检测
-    volatile unsigned char press_l = remote_controller.dji_remote.mouse.press_l;
+    unsigned char press_l = remote_controller.dji_remote.mouse.press_l;
     remote_controller.dji_remote.mouse.mouseChangeOn_l = (remote_controller.dji_remote.mouse.last_press_l ^ press_l) & press_l;
 
     remote_controller.dji_remote.mouse.mouseChangeOff_l = (remote_controller.dji_remote.mouse.last_press_l ^ press_l) & remote_controller.dji_remote.mouse.last_press_l;
@@ -297,7 +297,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         remote_controller.single_shoot_flag = TRUE;
     }
 
-    volatile unsigned char press_r = remote_controller.dji_remote.mouse.press_r;
+    unsigned char press_r = remote_controller.dji_remote.mouse.press_r;
     remote_controller.dji_remote.mouse.mouseChangeOn_r = (remote_controller.dji_remote.mouse.last_press_r ^ press_r) &
                                                          press_r;
     remote_controller.dji_remote.mouse.mouseChangeOff_r = (remote_controller.dji_remote.mouse.last_press_r ^ press_r) &
@@ -393,31 +393,5 @@ void get_control_info(ChassisSolver *infantry)
         break;
     default:
         break;
-    }
-}
-
-/*解码函数*/
-void InfoUnpack(ChassisGetPack_1 *pack)
-{
-    // 更新底盘数据相隔时间
-    robotInfo.last_cnt = global_debugger.receive_chassis_debugger[0].last_cnt;
-    robotInfo.delta_t = DWT_GetDeltaT(&robotInfo.last_cnt);
-
-    robotInfo.yaw_last_cnt = global_debugger.yaw_debugger.last_cnt;
-    robotInfo.yaw_delta_t = DWT_GetDeltaT(&robotInfo.yaw_last_cnt);
-
-    robotInfo.pitch_last_cnt = global_debugger.pitch_debugger.last_cnt;
-    robotInfo.pitch_delta_t = DWT_GetDeltaT(&robotInfo.pitch_last_cnt);
-
-    // 如果当前云台已经超过了1S没有收到底盘数据，则自动将底盘初始化标志位置零
-    if (robotInfo.delta_t > 1.0f)
-    {
-        robotInfo.if_communication_lost = TRUE;
-        robotInfo.chassis_state = CHASSIS_SENSORS_OFF;
-    }
-    else
-    {
-        robotInfo.if_communication_lost = FALSE;
-        robotInfo.chassis_state = CONTROLLING;
     }
 }

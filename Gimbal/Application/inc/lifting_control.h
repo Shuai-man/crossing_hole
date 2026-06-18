@@ -5,7 +5,7 @@
 #include "tof.h"
 #include "pid.h"
 #include "M2006.h"
-
+#include <stdint.h>
 #include "debug.h"
 
 #define GIMBAL_HIGH_STATE 177 //此处修改最高处的设定值（单位:mm）

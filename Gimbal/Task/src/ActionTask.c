@@ -25,9 +25,6 @@ void Action_Task(void const * argument)
         /* 从遥控器或者蓝牙中获取控制信息 */
         get_control_info(&chassis_solver);
 
-        /*Data Unpack*/
-        InfoUnpack(&chassis_pack_get_1);
-
         /*  延时  */
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }

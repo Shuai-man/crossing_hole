@@ -1,4 +1,4 @@
-﻿#include "GimbalTask.h"
+#include "GimbalTask.h"
 
 int8_t dji_motors_send_data_can1[8];
 int8_t dji_motors_send_data_can2[8];
@@ -10,42 +10,48 @@ SawToothWave saw_tooth_wave;
  * @brief 拨盘转速检测&自动反转
  * @param[in] void
  */
-void autoReverse(void)
+void autoReverse(GimbalController *gimbal, ToggleController *toggle)
 {
     // 暂时只有位置控
-    if (fabsf(toggle_controller.toggle_pos_pid.Err) > ONE_GRID_ANGLE)
+    if (fabsf(toggle->toggle_pos_pid.Err) > ONE_GRID_ANGLE)
     {
-        if (gimbal_controller.if_spin_reverse >= 0.99f) // 正转时候检测卡弹
+        if (gimbal->if_spin_reverse >= 0.99f) // 正转时候检测卡弹
         {
             // 当拨盘速度小于参考参考值
-            if (fabsf(toggle_controller.toggle_info.speed) < 0.3f * fabsf(toggle_controller.toggle_speed_pid.Ref))
+            if (fabsf(toggle->toggle_info.speed) < 0.3f * fabsf(toggle->toggle_speed_pid.Ref))
             {
-                gimbal_controller.if_spin_reverse = -1.3f; // 开启反拨
+                gimbal->if_spin_reverse = -1.3f; // 开启反拨
             }
         }
     }
-    else if (gimbal_controller.if_spin_reverse <= -1) // 进入这说明误差到了一格内
+    else if (gimbal->if_spin_reverse <= -1) // 进入这说明误差到了一格内
     {
-        if (fabsf(toggle_controller.toggle_pos_pid.Err) < 0.3f * ONE_GRID_ANGLE) // 进一步收敛
+        if (fabsf(toggle->toggle_pos_pid.Err) < 0.3f * ONE_GRID_ANGLE) // 进一步收敛
         {
             // 结束反拨
-            gimbal_controller.if_spin_reverse = 1.0f;
+            gimbal->if_spin_reverse = 1.0f;
         }
     }
 }
 
 // 云台YAW回正
-void Gimbal_Return(void)
+void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
 {
-    if (gimbal_controller.return_flag == 1)
+    if (gimbal->return_flag)
     {
-        gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + gimbal_controller.err_angle;
+        if (gimbal->return_flag == 1)
+        { // 记录当前模式
+            remote->last_chassis_mode_action = remote->chassis_mode_action;
+            gimbal->return_flag = 2;
+        }
 
-        if (fabsf(gimbal_controller.err_angle) < 0.5f)  
+        gimbal->target_yaw_angle = gimbal->gyro_yaw_angle + gimbal->err_angle;
+        if (fabsf(gimbal->err_angle) < 0.5f)
         {
-            gimbal_controller.return_flag = 0;
-            setChassisModeAction(FOLLOW_GIMBAL);
-					return;
+            gimbal->return_flag = 0;
+            // 能不能改成上一次的模式
+            setChassisModeAction(remote->last_chassis_mode_action);
+            return;
         }
         setChassisModeAction(NOT_CONTROL_MODE);
     }
@@ -56,7 +62,7 @@ void Gimbal_Act_Cal(void)
     // pitch限制幅值
     limitPitchAngle();
     // yaw计算
-    Gimbal_Return();
+    Gimbal_Return(&gimbal_controller, &remote_controller);
 
     Gimbal_Yaw_Calculate(gimbal_controller.target_yaw_angle);
     Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
@@ -204,7 +210,7 @@ void execute_func(void)
     int8_t send_data[2][8] = {0};
 
     // 单独接电机进行测试时，会进行保护，tff不会赋值
-    if (robotInfo.yaw_delta_t < 1.0f && robotInfo.pitch_delta_t < 1.0f)
+    if (global_debugger.pitch_debugger.state == ON && global_debugger.yaw_debugger.state == ON)
     {
         if (remote_controller.gimbal_action == GIMBAL_POWER_DOWN)
         {
@@ -322,7 +328,7 @@ void Gimbal_Task(void *pvParameters)
         }
 
         // 控制丝杆升降
-       Lifting_Control();
+        Lifting_Control();
 
         if (index % 2 == 0) // 500hz
         {
@@ -336,4 +342,3 @@ void Gimbal_Task(void *pvParameters)
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }
-

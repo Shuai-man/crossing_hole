@@ -38,6 +38,10 @@ void GimbalPidInit(void)
     // float ff_c_yaw_v[3] = {0, 0, 0};
     Feedforward_Init(&gimbal_controller.yaw_angle_forward, 7000, ff_c_yaw, 0.05, 1, 1);
     // Feedforward_Init(&gimbal_controller.yaw_speed_forward, 7000, ff_c_yaw_v, 0.05, 1, 1);
+
+    // 底盘转向前馈
+    float ff_c_follow[3] = {0,0.01,0};
+    Feedforward_Init(&gimbal_controller.follow_gimbal_forward, 1.0f, ff_c_follow, 0.05, 1, 1);
 }
 
 void GimbalPidChange(void)

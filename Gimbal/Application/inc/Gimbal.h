@@ -30,7 +30,7 @@
 #define GIMBAL_PITCH_ZERO 209.229126f
 
 //云台底盘的yaw轴零点都需要更改  
-#define GIMBAL_ANGLE_ZERO 49.5648193f
+#define GIMBAL_ANGLE_ZERO 264.962769f
 
 
 // yaw
@@ -65,7 +65,7 @@ typedef struct GimbalController
     float err_angle;//初始角度误差
     float err_angle_180;//误差余角，用于判断方向
 	
-    uint8_t return_flag;//回正标志位，0是完成，1是正在回正
+    uint8_t return_flag;//回正标志位，0是完成，1是开始回正，2是正在回正
 
     // Pitch 轴
     PID_t pitch_current_pid;           // 电流环
@@ -111,12 +111,11 @@ typedef struct GimbalController
     float pitch_out;
 		float yaw_out;
 		
+    Feedforward_t follow_gimbal_forward; //底盘转向前馈
+
     float if_spin_reverse;   // 是否反拨拨盘
     float stuck_time;        // 卡弹持续时间
     float spin_reverse_time; // 反转时间
-
-    uint8_t turn_back_start_flag;  // 一键掉头标志位
-    uint8_t turn_back_finish_flag; // 上一帧一键掉头标志位
 
     float pc_recv_rad[2]; // PC端发送的数据，弧度制
 		

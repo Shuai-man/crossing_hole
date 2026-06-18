@@ -16,7 +16,7 @@ void DM_Motor_Control(DM_MIT *Motor, int8_t *send_data, DM_MODE mode)
 	static int8_t disable_data[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFD};
 	static int8_t clear_error_data[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFB};
 
-	if (Motor->ERR_State == 0xd)
+	if (Motor->ERR_State >1)
 	{
 		memcpy(send_data, clear_error_data, 8);
 		return;

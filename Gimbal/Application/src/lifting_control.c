@@ -33,7 +33,9 @@ void Lifting_State_Check(void)
 		lifting_controller.is_up = false;
 		lifting_controller.last_distance = 0;
 		lifting_controller.recovery_ref = 0;
+		//云台回正
 		gimbal_controller.target_pitch_angle = 5.0f;
+		gimbal_controller.return_flag = 1;
 	}
 }
 

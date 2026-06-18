@@ -147,11 +147,12 @@ typedef struct RemoteController
 {
     enum CONTROL_TYPE control_type; // 控制类型(遥控器，蓝牙等)
     enum ROBOT_STATE robot_state;   // 机器人状态(掉线模式，控制模式)
-    enum GAME_MODE game_mode; // 游戏模式(下电模式，测试模式，比赛模式)
+    enum GAME_MODE game_mode;       // 游戏模式(下电模式，测试模式，比赛模式)
     enum GAME_MODE last_game_mode;
-    enum GIMBAL_ACTION gimbal_action; // 云台
-    enum SHOOT_ACTION shoot_action; // 打弹模式
-    enum CHASSIS_MODE_ACTION chassis_mode_action;// 底盘模式(平衡模式，倒地自救模式)
+    enum GIMBAL_ACTION gimbal_action;             // 云台
+    enum SHOOT_ACTION shoot_action;               // 打弹模式
+    enum CHASSIS_MODE_ACTION chassis_mode_action; // 底盘模式
+    enum CHASSIS_MODE_ACTION last_chassis_mode_action;
     enum PowerControlState super_power_state;
     enum GIMBAL_POSITION gimbal_position; // 头部模式
 
