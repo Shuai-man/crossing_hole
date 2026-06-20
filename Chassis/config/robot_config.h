@@ -31,7 +31,7 @@ typedef enum YAW_MOTOR_TYPE
 
 //机械拆头后需要重新标零点，否则可能前后左右反过来
 #if ROBOT == CHEN_JING_YUAN
-#define GIMBAL_FOLLOW_ZERO 264.962769f  // 底盘跟随角度零点
+#define GIMBAL_FOLLOW_ZERO 9.51965332f  // 底盘跟随角度零点
 #define GIMBAL_MOTOR_SIGN -1    // 云台电机方向，以逆时针为正
 #endif
 void setRobotType(void);

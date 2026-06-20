@@ -27,10 +27,10 @@
 #define GIMBAL_PITCH_COMP_COEF 1.0f
 
 //Pitch角度机械零点
-#define GIMBAL_PITCH_ZERO 209.229126f
+#define GIMBAL_PITCH_ZERO 214.229126f
 
 //云台底盘的yaw轴零点都需要更改  
-#define GIMBAL_ANGLE_ZERO 264.962769f
+#define GIMBAL_ANGLE_ZERO 9.51965332f
 
 
 // yaw

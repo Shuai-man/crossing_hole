@@ -192,9 +192,9 @@ void updateGyro()
     float speed = 0;
     // 对Pitch和roll进行交换（由于IMU安装问题）
     // pitch角度
-    gimbal_controller.gyro_pitch_angle = GIMBAL_PITCH_GYRO_SIGN * INS.Roll;
+    gimbal_controller.gyro_pitch_angle = GIMBAL_PITCH_GYRO_SIGN * INS.Pitch;
     // pitch角速度
-    speed = GIMBAL_PITCH_GYRO_SIGN * INS.Gyro[1] / PI * 180.0f;
+    speed = GIMBAL_PITCH_GYRO_SIGN * INS.Gyro[0] / PI * 180.0f;
     iir(&gimbal_controller.gyro_pitch_speed, speed, 0.3);
 
     // yaw角度
