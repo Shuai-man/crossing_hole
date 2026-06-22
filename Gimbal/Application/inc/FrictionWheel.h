@@ -22,13 +22,26 @@
 #define BULLET_17MM_26MS_SPEED_R BULLET_17MM_26MS_SPEED_L
 #define BULLET_17MM_30MS_SPEED_R BULLET_17MM_30MS_SPEED_L
 
+typedef struct Calculate_Acc
+{
+	uint32_t dwt;
+	float last_speed_l;
+	float last_speed_r;
+
+	float acc_l;
+	float acc_r;
+} Calculate_Acc_t;
+
 /*  摩擦轮结构体  */
 typedef struct FrictionWheel_t
 {
     PID_t PidFrictionSpeed[2];
+		Feedforward_t feedforward[2];
     M3508_Recv friction_motor_recv[2];
     M3508_Info friction_motor_msgs[2];
     float send_to_motor_current[2];
+
+		Calculate_Acc_t calculate_acc;
 	
 		float shoot_speed;
 		float last_shoot_Speed;

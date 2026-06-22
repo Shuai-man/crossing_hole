@@ -6,10 +6,14 @@ void FrictionWheel_Init()
 {
 	// 超调会超弹速
 	PID_Init(&friction_wheels.PidFrictionSpeed[LEFT_FRICTION_WHEEL],
-					 C620_MAX_SEND_CURRENT, 7000.0f, 0.0, 2.5, 0.1, 0.02, 1000, 1000, 0, 0, 1, ChangingIntegrationRate);
+					 C620_MAX_SEND_CURRENT, 7000.0f, 0.0, 2.5, 0.0, 0.00, 1000, 1000, 0, 0, 1, ChangingIntegrationRate);
 	PID_Init(&friction_wheels.PidFrictionSpeed[RIGHT_FRICTION_WHEEL],
-					 C620_MAX_SEND_CURRENT, 7000.0f, 0.0, 2.5, 0.1, 0.02, 1000, 1000, 0, 0, 1, ChangingIntegrationRate);
-	// 实测弹速会超0.5左右，但是基本不低于设定弹速
+					 C620_MAX_SEND_CURRENT, 7000.0f, 0.0, 2.5, 0.0, 0.00, 1000, 1000, 0, 0, 1, ChangingIntegrationRate);
+	float ff_c_l[3] = {0.003f,0,0};
+	float ff_c_r[3] = {0.001f,0,0};
+	Feedforward_Init(&friction_wheels.feedforward[LEFT_FRICTION_WHEEL], 16384,ff_c_l,0.05,1,1);
+	Feedforward_Init(&friction_wheels.feedforward[RIGHT_FRICTION_WHEEL], 16384,ff_c_r,0.05,1,1);
+					 // 实测弹速会超0.5左右，但是基本不低于设定弹速
 	friction_wheels.friction_speed = 23.78f; // 初始弹速设置
 }
 
@@ -66,9 +70,11 @@ void FrictionWheel_Set(float speed) // 度/s
 {
 	friction_wheels.send_to_motor_current[LEFT_FRICTION_WHEEL] =
 			PID_Calculate(&friction_wheels.PidFrictionSpeed[LEFT_FRICTION_WHEEL],
-										friction_wheels.friction_motor_msgs[LEFT_FRICTION_WHEEL].speed, speed);
+										friction_wheels.friction_motor_msgs[LEFT_FRICTION_WHEEL].speed, speed) +
+			Feedforward_Calculate(&friction_wheels.feedforward[LEFT_FRICTION_WHEEL], speed);
 
 	friction_wheels.send_to_motor_current[RIGHT_FRICTION_WHEEL] =
 			PID_Calculate(&friction_wheels.PidFrictionSpeed[RIGHT_FRICTION_WHEEL],
-										friction_wheels.friction_motor_msgs[RIGHT_FRICTION_WHEEL].speed, -speed);
+										friction_wheels.friction_motor_msgs[RIGHT_FRICTION_WHEEL].speed, -speed) +
+			Feedforward_Calculate(&friction_wheels.feedforward[RIGHT_FRICTION_WHEEL], -speed);
 }
