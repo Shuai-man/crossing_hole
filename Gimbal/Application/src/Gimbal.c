@@ -40,7 +40,7 @@ void GimbalPidInit(void)
     // Feedforward_Init(&gimbal_controller.yaw_speed_forward, 7000, ff_c_yaw_v, 0.05, 1, 1);
 
     // 底盘转向前馈
-    float ff_c_follow[3] = {0,0.01,0};
+    float ff_c_follow[3] = {0, 0.01, 0};
     Feedforward_Init(&gimbal_controller.follow_gimbal_forward, 1.0f, ff_c_follow, 0.05, 1, 1);
 }
 
@@ -153,21 +153,24 @@ void GimbalClear(void)
  */
 void limitPitchAngle()
 {
-    float err_angle = 0;
+    gimbal_controller.chassis_err_angle = GIMBAL_PITCH_MOTOR_SIGN * (GIMBAL_PITCH_ZERO - gimbal_controller.DM_Pitch_Motor.P_angle);
+    gimbal_controller.chassis_pitch_angle = gimbal_controller.gyro_pitch_angle + gimbal_controller.chassis_err_angle;
     if (remote_controller.gimbal_position == DOWN)
     {
-        err_angle = GIMBAL_PITCH_MOTOR_SIGN * (gimbal_controller.DM_Pitch_Motor.P_angle - GIMBAL_PITCH_ZERO);
-        gimbal_controller.target_pitch_angle = LIMIT_MAX_MIN(gimbal_controller.target_pitch_angle, GIMBAL_ANGLE_MAX - err_angle, 8.0f - err_angle);
+        gimbal_controller.pitch_max_angle = GIMBAL_ANGLE_MAX + gimbal_controller.chassis_pitch_angle;
+        gimbal_controller.pitch_min_angle = gimbal_controller.chassis_pitch_angle;
     }
     else
     {
-        gimbal_controller.target_pitch_angle = LIMIT_MAX_MIN(gimbal_controller.target_pitch_angle, GIMBAL_ANGLE_MAX, GIMBAL_ANGLE_MIN);
+        gimbal_controller.pitch_max_angle = GIMBAL_ANGLE_MAX;
+        gimbal_controller.pitch_min_angle = GIMBAL_ANGLE_MIN;
     }
+    gimbal_controller.target_pitch_angle = LIMIT_MAX_MIN(gimbal_controller.target_pitch_angle, gimbal_controller.pitch_max_angle, gimbal_controller.pitch_min_angle);
 }
 
 void Gimbal_ErrorAngle(void)
 {
-    //limit_angle可以归一化180度，不需要再判断最小回正角度
+    // limit_angle可以归一化180度，不需要再判断最小回正角度
     gimbal_controller.err_angle = limit_angle(gimbal_controller.DM_Yaw_Motor.P_angle - GIMBAL_ANGLE_ZERO);
     gimbal_controller.err_angle_180 = limit_angle(gimbal_controller.err_angle + 180.0f);
 
@@ -180,7 +183,6 @@ void Gimbal_ErrorAngle(void)
     {
         gimbal_controller.gimbal_direction = GIMBAL_BACK;
     }
-
 }
 
 /**
@@ -207,28 +209,29 @@ void updateGyro()
 /**
  * @brief 由于重力补偿的作用，云台需要施加一个非线性力抵消重力影响，该力需要根据实际来进行测定
  */
+volatile float pitch_comp[5] = {-0.024386f, -0.328869f, -0.138744f, 30.807712f, 1750.2f};
+
 float GimbalPitchComp()
 {
-    // //记得每调一台车都需要重新更新参数
-    // const static float pitch_comp[5] = {0.1399, -0.9144, -10.2, 9.038, -3337};
-    // float x[4];
+    // 记得每调一台车都需要重新更新参数
+    float x[4];
 
-    // //解析静止时的非线性函数，只能大致补偿，然后靠PID的I使最终无静差
-    // //低于一定角度或高于一定角度，根据测量结果，输出应大致不变
-    // x[3] = LIMIT_MAX_MIN(gimbal_controller.gyro_pitch_angle, 8, -12);
-    // x[2] = x[3] * x[3];
-    // x[1] = x[2] * x[3];
-    // x[0] = x[1] * x[3];
+    // 解析静止时的非线性函数，只能大致补偿，然后靠PID的I使最终无静差
+    // 低于一定角度或高于一定角度，根据测量结果，输出应大致不变
+    x[3] = LIMIT_MAX_MIN(gimbal_controller.gyro_pitch_angle, 8, -12);
+    x[2] = x[3] * x[3];
+    x[1] = x[2] * x[3];
+    x[0] = x[1] * x[3];
 
-    // float sum = pitch_comp[4];
-    // for (int i = 0; i < 4; i++)
-    // {
-    //     sum += x[i] * pitch_comp[i];
-    // }
-    // iir(&gimbal_controller.comp_pitch_current, sum * GIMBAL_PITCH_COMP_COEF, 0.7);
-    // return gimbal_controller.comp_pitch_current;
-    iir(&gimbal_controller.comp_pitch_current, GIMBAL_PITCH_COMP * arm_cos_f32(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) * GIMBAL_PITCH_COMP_COEF, 0.7);
+    float sum = pitch_comp[4];
+    for (int i = 0; i < 4; i++)
+    {
+        sum += x[i] * pitch_comp[i];
+    }
+    iir(&gimbal_controller.comp_pitch_current, sum * GIMBAL_PITCH_COMP_COEF, 0.7f);
     return gimbal_controller.comp_pitch_current;
+    // iir(&gimbal_controller.comp_pitch_current, GIMBAL_PITCH_COMP * arm_cos_f32(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) * GIMBAL_PITCH_COMP_COEF, 0.7);
+    // return gimbal_controller.comp_pitch_current;
 }
 
 /**

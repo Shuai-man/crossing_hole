@@ -43,6 +43,7 @@ void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
         { // 记录当前模式
             remote->last_chassis_mode_action = remote->chassis_mode_action;
             gimbal->return_flag = 2;
+            setChassisModeAction(NOT_CONTROL_MODE);
         }
 
         gimbal->target_yaw_angle = gimbal->gyro_yaw_angle + gimbal->err_angle;
@@ -53,7 +54,6 @@ void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
             setChassisModeAction(remote->last_chassis_mode_action);
             return;
         }
-        setChassisModeAction(NOT_CONTROL_MODE);
     }
 }
 
@@ -62,7 +62,6 @@ void Gimbal_Act_Cal(void)
     // pitch限制幅值
     limitPitchAngle();
     // yaw计算
-    Gimbal_Return(&gimbal_controller, &remote_controller);
 
     Gimbal_Yaw_Calculate(gimbal_controller.target_yaw_angle);
     Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
@@ -291,6 +290,7 @@ void Gimbal_Task(void *pvParameters)
 
         Gimbal_Msg_Update();
         Gimbal_ErrorAngle();
+        Gimbal_Return(&gimbal_controller, &remote_controller);
 
         switch (remote_controller.gimbal_action)
         {

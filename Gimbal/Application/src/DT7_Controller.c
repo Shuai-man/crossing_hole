@@ -57,11 +57,6 @@ void DT7_ChassisControl(void)
     {
         chassis_solver.chassis_speed_w = 1.0f;
     }
-//    else if (remote_controller.chassis_mode_action == FOLLOW_GIMBAL)
-//    {
-//		PID_Calculate(&gimbal_controller.follow_gimbal_pid, gimbal_controller.target_yaw_angle, gimbal_controller.gyro_yaw_angle);
-//        chassis_solver.chassis_speed_w = -gimbal_controller.follow_gimbal_pid.Output; 
-//    }
     else
     {
         chassis_solver.chassis_speed_w = 0.0f;

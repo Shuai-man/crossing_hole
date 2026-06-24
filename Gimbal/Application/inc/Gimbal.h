@@ -27,7 +27,7 @@
 #define GIMBAL_PITCH_COMP_COEF 1.0f
 
 //Pitch角度机械零点
-#define GIMBAL_PITCH_ZERO 214.229126f
+#define GIMBAL_PITCH_ZERO 215.172729f
 
 //云台底盘的yaw轴零点都需要更改  
 #define GIMBAL_ANGLE_ZERO 9.51965332f
@@ -107,6 +107,8 @@ typedef struct GimbalController
     // pitch 限位计算
     float pitch_max_angle;
     float pitch_min_angle;
+    float chassis_err_angle; // 底盘pitch误差角度
+    float chassis_pitch_angle; // 底盘pitch估计角度
 
     float pitch_out;
 		float yaw_out;
