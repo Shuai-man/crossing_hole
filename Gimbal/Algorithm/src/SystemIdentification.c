@@ -15,7 +15,7 @@ float SIRun(SI_t *SI_object, float delta_t)
 {
     if (delta_t > 0.01f)
     {
-        delta_t = 0.001f;
+        delta_t = 0.002f;
     }
     //幅值区间
     static float F_set[] = {1, 24, 40, 120, 200, 250, 333, 500};

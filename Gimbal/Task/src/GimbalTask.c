@@ -71,11 +71,11 @@ void Gimbal_Act_Cal(void)
 
 void Gimbal_Auto_aim_Cal(void) // 打车
 {
-    gimbal_controller.pc_recv_rad[PITCH_MOTOR] = pc_recv_data.pitch;
-    gimbal_controller.pc_recv_rad[YAW_MOTOR] = pc_recv_data.yaw;
+    gimbal_controller.pc_recv_rad[PITCH_MOTOR] = pc_recv_data.pitch_setpoint;
+    gimbal_controller.pc_recv_rad[YAW_MOTOR] = pc_recv_data.yaw_setpoint;
 
     // 设置目标角度
-    if (pc_recv_data.detect_number != 0 && fabsf(gimbal_controller.target_pitch_angle - pc_recv_data.pitch) < 60.0f && fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw) < 70.0f)
+    if (pc_recv_data.detect_number != 0 && fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) < 70.0f)
     {
         if (global_debugger.pc_receive_debugger.state == ON)
         {
@@ -96,11 +96,11 @@ void Gimbal_Auto_aim_Cal(void) // 打车
 
 void Gimbal_Buff_Cal(void)
 {
-    gimbal_controller.pc_recv_rad[PITCH_MOTOR] = pc_recv_data.pitch;
-    gimbal_controller.pc_recv_rad[YAW_MOTOR] = pc_recv_data.yaw;
+    gimbal_controller.pc_recv_rad[PITCH_MOTOR] = pc_recv_data.pitch_setpoint;
+    gimbal_controller.pc_recv_rad[YAW_MOTOR] = pc_recv_data.yaw_setpoint;
 
     // 设置目标角度
-    if (pc_recv_data.detect_number != 0 && fabsf(gimbal_controller.target_pitch_angle - pc_recv_data.pitch) < 60.0f && fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw) < 70.0f)
+    if (pc_recv_data.detect_number != 0 && fabsf(gimbal_controller.target_pitch_angle - pc_recv_data.pitch_setpoint) < 60.0f && fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) < 70.0f)
     {
         if (global_debugger.pc_receive_debugger.state == ON && remote_controller.auto_arm == 1) // pc掉线后数据不会更新，所以要加检测
         {
@@ -273,12 +273,14 @@ void Gimbal_Task(void *pvParameters)
     // 云台PID初始化
     GimbalMotorInit();
     GimbalPidInit();
+    /* 系统辨识以及测试 */
+    Gimbal_SystemID_Init();
     // 拨弹电机PID初始化
     Toggle_Init();
     // 丝杆电机初始化
     LiftPidInit();
-    /* 系统辨识以及测试 */
-    MX_USB_DEVICE_Init(); // USB初始化会默认放到freertos的第一个task里面,一定要确保调用了,否则无法成功初始化
+    // USB初始化会默认放到freertos的第一个task里面,一定要确保调用了,否则无法成功初始化
+    MX_USB_DEVICE_Init();
     vTaskDelay(1000);
 
     int index = 0;
@@ -289,9 +291,16 @@ void Gimbal_Task(void *pvParameters)
         xLastWakeTime = xTaskGetTickCount();
 
         Gimbal_Msg_Update();
+        gimbal_controller.delta_t = DWT_GetDeltaT(&gimbal_controller.last_cnt);
         Gimbal_ErrorAngle();
         Gimbal_Return(&gimbal_controller, &remote_controller);
 
+#if GIMBAL_SYSID
+        if (!gimbal_controller.gimbal_sysid_done)
+        {
+            Gimbal_SystemID_Run();
+        }
+#endif
         switch (remote_controller.gimbal_action)
         {
         case GIMBAL_POWER_DOWN: // 掉电模式

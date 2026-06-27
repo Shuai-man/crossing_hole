@@ -85,7 +85,7 @@ I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
 I (../Components/motor/inc/M3508.h)(0x6A368B6E)
 I (../Application/inc/ChassisGet.h)(0x6A2FF64C)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Application/inc/ins.h)(0x69C8DDF6)
@@ -101,6 +101,9 @@ I (../Application/inc/lifting_control.h)(0x6A312D53)
 I (../Application/inc/tof.h)(0x6A25595F)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 F (../Core/Src/gpio.c)(0x69CA4C2E)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\gpio.o --omf_browse gimbal\gpio.crf --depend gimbal\gpio.d)
 I (../Core/Inc/gpio.h)(0x69C4B028)
@@ -222,12 +225,15 @@ I (../Application/inc/tof.h)(0x6A25595F)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Components/boards/inc/bsp_buzzer.h)(0x69FEA950)
 I (../Components/boards/inc/bsp_led.h)(0x69CA4CBA)
 I (../Task/inc/GimbalTask.h)(0x6A300EBE)
@@ -240,10 +246,8 @@ I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/KeyMouse.h)(0x6A33F156)
 I (../Application/inc/DT7_Controller.h)(0x6A33A54B)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
-I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
-I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../USB_DEVICE/App/usb_device.h)(0x69C4B02A)
 I (../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h)(0x68FA3AEB)
 I (../USB_DEVICE/Target/usbd_conf.h)(0x69C4B02A)
@@ -705,7 +709,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h)(0x68FA3AEB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h)(0x68FA3AEB)
 I (../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h)(0x68FA3AEB)
 I (../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h)(0x68FA3AEB)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (D:\keil\ARM\ARMCC\include\math.h)(0x588B8344)
 I (../Application/inc/ins.h)(0x69C8DDF6)
@@ -2163,7 +2167,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x68FA3A9A)
-F (..\Algorithm\src\RLS_Identification.c)(0x68388988)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\rls_identification.o --omf_browse gimbal\rls_identification.crf --depend gimbal\rls_identification.d)
+F (..\Algorithm\src\RLS_Identification.c)(0x6A3D2BB8)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\rls_identification.o --omf_browse gimbal\rls_identification.crf --depend gimbal\rls_identification.d)
 I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -2188,7 +2192,7 @@ I (../Drivers/CMSIS/Include/cmsis_compiler.h)(0x68FA3AED)
 I (../Drivers/CMSIS/Include/cmsis_armcc.h)(0x68FA3AED)
 I (D:\keil\ARM\ARMCC\include\float.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
-F (..\Algorithm\src\SystemIdentification.c)(0x68388988)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\systemidentification.o --omf_browse gimbal\systemidentification.crf --depend gimbal\systemidentification.d)
+F (..\Algorithm\src\SystemIdentification.c)(0x6A3D2C04)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\systemidentification.o --omf_browse gimbal\systemidentification.crf --depend gimbal\systemidentification.d)
 I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
 I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -2202,7 +2206,7 @@ I (../Drivers/CMSIS/Include/cmsis_compiler.h)(0x68FA3AED)
 I (../Drivers/CMSIS/Include/cmsis_armcc.h)(0x68FA3AED)
 I (D:\keil\ARM\ARMCC\include\float.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
-F (..\Algorithm\src\TD.c)(0x69E4D432)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\td.o --omf_browse gimbal\td.crf --depend gimbal\td.d)
+F (..\Algorithm\src\TD.c)(0x6A3F7DDE)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\td.o --omf_browse gimbal\td.crf --depend gimbal\td.d)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
@@ -2390,7 +2394,7 @@ I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
 I (../Components/motor/inc/M3508.h)(0x6A368B6E)
 I (../Application/inc/ChassisGet.h)(0x6A2FF64C)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Application/inc/ins.h)(0x69C8DDF6)
@@ -2412,6 +2416,9 @@ I (../Application/inc/lifting_control.h)(0x6A312D53)
 I (../Application/inc/tof.h)(0x6A25595F)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 F (..\Components\boards\src\bsp_dwt.c)(0x68FCCF68)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\bsp_dwt.o --omf_browse gimbal\bsp_dwt.crf --depend gimbal\bsp_dwt.d)
 I (../Components/boards/inc/bsp_dwt.h)(0x690324D6)
@@ -2933,7 +2940,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -2944,16 +2951,19 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/KeyMouse.h)(0x6A33F156)
 I (../Application/inc/DT7_Controller.h)(0x6A33A54B)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/FrictionWheel.h)(0x6A368EE1)
 I (../Components/motor/inc/M3508.h)(0x6A368B6E)
-F (..\Application\src\Gimbal.c)(0x6A3B6477)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\gimbal.o --omf_browse gimbal\gimbal.crf --depend gimbal\gimbal.d)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+F (..\Application\src\Gimbal.c)(0x6A3FC05C)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\gimbal.o --omf_browse gimbal\gimbal.crf --depend gimbal\gimbal.d)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Core/Inc/main.h)(0x69CA4C32)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68FA3AEB)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x69CFC306)
@@ -3041,6 +3051,9 @@ I (../Application/inc/tof.h)(0x6A25595F)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 F (..\Application\src\ins.c)(0x6A2BBCFF)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\ins.o --omf_browse gimbal\ins.crf --depend gimbal\ins.d)
 I (../Application/inc/ins.h)(0x69C8DDF6)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -3110,8 +3123,8 @@ I (../Algorithm/inc/pid.h)(0x6A266C7D)
 I (../Components/tools/inc/tools.h)(0x69CBE5F2)
 I (../Components/boards/inc/bsp_dwt.h)(0x690324D6)
 I (../Components/tools/inc/debug.h)(0x6A257C3C)
-F (..\Application\src\pc_serial.c)(0x6A2CF0AC)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\pc_serial.o --omf_browse gimbal\pc_serial.crf --depend gimbal\pc_serial.d)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+F (..\Application\src\pc_serial.c)(0x6A3F79D2)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\pc_serial.o --omf_browse gimbal\pc_serial.crf --depend gimbal\pc_serial.d)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -3182,7 +3195,7 @@ I (../Components/tools/inc/tools.h)(0x69CBE5F2)
 I (../Components/boards/inc/bsp_dwt.h)(0x690324D6)
 I (../Components/tools/inc/debug.h)(0x6A257C3C)
 I (../Application/inc/ChassisGet.h)(0x6A2FF64C)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
@@ -3201,6 +3214,9 @@ I (../Application/inc/tof.h)(0x6A25595F)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Algorithm/FastMath/arm_atan2_f32.h)(0x68388988)
 I (../USB_DEVICE/App/usbd_cdc_if.h)(0x69C4B02A)
 I (../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h)(0x68FA3AEB)
@@ -3209,7 +3225,6 @@ I (../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h)(0x68FA3AEB)
 I (../USB_DEVICE/Target/usbd_conf.h)(0x69C4B02A)
 I (../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h)(0x68FA3AEB)
 I (../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h)(0x68FA3AEB)
-I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 F (..\Application\src\remote_control.c)(0x6A339CFA)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\remote_control.o --omf_browse gimbal\remote_control.crf --depend gimbal\remote_control.d)
 I (../Application/inc/remote_control.h)(0x6A3396B3)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
@@ -3288,7 +3303,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -3299,6 +3314,9 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 F (..\Application\src\VTM_Controller.c)(0x6A2D07CA)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\vtm_controller.o --omf_browse gimbal\vtm_controller.crf --depend gimbal\vtm_controller.d)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
 I (../Core/Inc/main.h)(0x69CA4C32)
@@ -3375,7 +3393,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -3387,11 +3405,14 @@ I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Core/Inc/tim.h)(0x69CA47D2)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Components/boards/inc/bsp_buzzer.h)(0x69FEA950)
 I (../Components/boards/inc/bsp_led.h)(0x69CA4CBA)
 I (../Application/inc/KeyMouse.h)(0x6A33F156)
 I (../Application/inc/DT7_Controller.h)(0x6A33A54B)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/FrictionWheel.h)(0x6A368EE1)
@@ -3476,7 +3497,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -3487,8 +3508,11 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/FrictionWheel.h)(0x6A368EE1)
@@ -3775,7 +3799,7 @@ I (../Application/inc/ChassisGet.h)(0x6A2FF64C)
 I (../Components/boards/inc/bsp_buzzer.h)(0x69FEA950)
 I (../Core/Inc/tim.h)(0x69CA47D2)
 I (../Components/boards/inc/bsp_led.h)(0x69CA4CBA)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Algorithm/inc/pid.h)(0x6A266C7D)
 I (../Algorithm/inc/user_lib.h)(0x690DD44C)
 I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x68FA3A9A)
@@ -3798,6 +3822,9 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/tof.h)(0x6A25595F)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 F (..\Application\src\tof.c)(0x6A256162)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\tof.o --omf_browse gimbal\tof.crf --depend gimbal\tof.d)
@@ -3925,7 +3952,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -3936,9 +3963,12 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/DT7_Controller.h)(0x6A33A54B)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/FrictionWheel.h)(0x6A368EE1)
@@ -4018,7 +4048,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -4030,6 +4060,9 @@ I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Core/Inc/tim.h)(0x69CA47D2)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Components/boards/inc/bsp_buzzer.h)(0x69FEA950)
 I (../Components/boards/inc/bsp_led.h)(0x69CA4CBA)
 F (..\Task\src\ActionTask.c)(0x6A33A212)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\actiontask.o --omf_browse gimbal\actiontask.crf --depend gimbal\actiontask.d)
@@ -4112,7 +4145,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -4123,9 +4156,12 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/DT7_Controller.h)(0x6A33A54B)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/FrictionWheel.h)(0x6A368EE1)
@@ -4210,7 +4246,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -4221,9 +4257,12 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/DT7_Controller.h)(0x6A33A54B)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
 I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/FrictionWheel.h)(0x6A368EE1)
@@ -4302,7 +4341,7 @@ I (../Core/Inc/tim.h)(0x69CA47D2)
 I (../Algorithm/inc/pid.h)(0x6A266C7D)
 I (../Components/tools/inc/tools.h)(0x69CBE5F2)
 I (../Components/tools/inc/debug.h)(0x6A257C3C)
-F (..\Task\src\GimbalTask.c)(0x6A3B922A)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\gimbaltask.o --omf_browse gimbal\gimbaltask.crf --depend gimbal\gimbaltask.d)
+F (..\Task\src\GimbalTask.c)(0x6A3F998F)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Algorithm/inc -I ../Task/inc -I ../Components/motor/inc -I ../Components/tools/inc -I ../Components/boards/inc -I ../Application/inc -I ../Config -I ../Middlewares/ST/ARM/DSP/Inc -I ../Algorithm/FastMath-I.\RTE\_Gimbal-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o gimbal\gimbaltask.o --omf_browse gimbal\gimbaltask.crf --depend gimbal\gimbaltask.d)
 I (../Task/inc/GimbalTask.h)(0x6A300EBE)
 I (../Core/Inc/FreeRTOSConfig.h)(0x69C4B02A)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -4381,7 +4420,7 @@ I (D:\keil\ARM\ARMCC\include\limits.h)(0x588B8344)
 I (../Components/motor/inc/M2006.h)(0x69FEB43E)
 I (../Components/tools/inc/ZeroCheck.h)(0x694E35A0)
 I (../Algorithm/inc/my_filter.h)(0x68388988)
-I (../Application/inc/Gimbal.h)(0x6A3B5BF5)
+I (../Application/inc/Gimbal.h)(0x6A3FBE82)
 I (../Components/motor/inc/GM6020.h)(0x69C4B560)
 I (../Components/motor/inc/DM_Motor.h)(0x6A25491D)
 I (../Core/Inc/can.h)(0x69C4B02A)
@@ -4392,6 +4431,9 @@ I (../Algorithm/inc/kalman_filter.h)(0x690CAB70)
 I (../Components/boards/inc/bsp_PWM.h)(0x68388988)
 I (../Algorithm/inc/TD.h)(0x68FDA52A)
 I (../Config/Robot_config.h)(0x6A02086E)
+I (../Algorithm/inc/RLS_Identification.h)(0x68388988)
+I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
+I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../Application/inc/FrictionWheel.h)(0x6A368EE1)
 I (../Components/motor/inc/M3508.h)(0x6A368B6E)
 I (../Config/can_config.h)(0x6A24F3FE)
@@ -4401,10 +4443,8 @@ I (../Application/inc/ToggleBullet.h)(0x6A2FEF59)
 I (../Application/inc/KeyMouse.h)(0x6A33F156)
 I (../Application/inc/DT7_Controller.h)(0x6A33A54B)
 I (../Application/inc/VTM_Controller.h)(0x6A300EBE)
-I (../Application/inc/pc_serial.h)(0x69F57D52)
+I (../Application/inc/pc_serial.h)(0x6A3F79D2)
 I (../Algorithm/inc/algorithmOfCRC.h)(0x68388988)
-I (../Algorithm/inc/SystemIdentification.h)(0x68388988)
-I (../Algorithm/inc/SignalGenerator.h)(0x68388988)
 I (../USB_DEVICE/App/usb_device.h)(0x69C4B02A)
 I (../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h)(0x68FA3AEB)
 I (../USB_DEVICE/Target/usbd_conf.h)(0x69C4B02A)

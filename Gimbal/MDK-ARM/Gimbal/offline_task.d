@@ -88,5 +88,8 @@ gimbal\offline_task.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\offline_task.o: ../Core/Inc/tim.h
 gimbal\offline_task.o: ../Algorithm/inc/TD.h
 gimbal\offline_task.o: ../Config/Robot_config.h
+gimbal\offline_task.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\offline_task.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\offline_task.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_led.h

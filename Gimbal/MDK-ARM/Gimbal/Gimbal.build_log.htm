@@ -27,11 +27,22 @@ Project File Date:  06/15/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\keil\ARM\ARMCC\Bin'
 Build target 'Gimbal'
-compiling GimbalTask.c...
+compiling Gimbal.c...
+..\Application\src\Gimbal.c(232): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          
+IMBAL_YAW_J * gimbal_controller.pos_yaw_td.ddx +     // 惯量 × 加速度
+..\Application\src\Gimbal.c(233): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          
+IMBAL_YAW_B * gimbal_controller.pos_yaw_td.dx +      // 阻尼 × 速度
+..\Application\src\Gimbal.c(15): warning:  #550-D: variable "sysid_timer"  was set but never used
+  static float sysid_timer = 0.0f;
+..\Application\src\Gimbal.c(16): warning:  #550-D: variable "sysid_speed_cmd"  was set but never used
+  static float sysid_speed_cmd = 0.0f;
+..\Application\src\Gimbal.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=81536 RO-data=4388 RW-data=1580 ZI-data=51788  
+Program Size: Code=84568 RO-data=4380 RW-data=1644 ZI-data=51228  
 FromELF: creating hex file...
-"Gimbal\Gimbal.axf" - 0 Error(s), 0 Warning(s).
+"Gimbal\Gimbal.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,7 +65,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE@6.1.0
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:05
 </pre>
 </body>
 </html>

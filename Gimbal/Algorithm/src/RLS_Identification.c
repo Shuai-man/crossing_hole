@@ -29,6 +29,11 @@ void RLS_Init(RLS *rls_identification, uint8_t x_hat_size, uint8_t y_size, float
     memset(rls_identification->P_data, 0, sizeof_float * x_hat_size * x_hat_size);
     arm_mat_init_f32(&rls_identification->P, x_hat_size, x_hat_size, (float *)rls_identification->P_data);
 
+    for (int i = 0; i < x_hat_size; i++)
+    {
+        rls_identification->P_data[i * x_hat_size + i] = 1e6f;
+    }
+
     // H
     rls_identification->H_data = (float *)malloc(sizeof_float * x_hat_size * y_size);
     memset(rls_identification->H_data, 0, sizeof_float * x_hat_size * y_size);

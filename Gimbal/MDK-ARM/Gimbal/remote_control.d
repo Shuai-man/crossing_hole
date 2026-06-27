@@ -89,3 +89,6 @@ gimbal\remote_control.o: ../Algorithm/inc/kalman_filter.h
 gimbal\remote_control.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\remote_control.o: ../Algorithm/inc/TD.h
 gimbal\remote_control.o: ../Config/Robot_config.h
+gimbal\remote_control.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\remote_control.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\remote_control.o: ../Algorithm/inc/SignalGenerator.h

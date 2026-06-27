@@ -1,6 +1,8 @@
 #include "TD.h"
 
 /*************************** Tracking Differentiator ***************************/
+//td.x 跟踪的变量，td.dx 跟踪的变量的导数，td.ddx 跟踪的变量的二阶导数
+//假设目标值是角度，td.x 是平滑后的角度值，td.dx 是角速度，td.ddx 是角加速度
 void TD_Init(TD_t *td, float r, float h0)
 {
     td->r = r;
@@ -42,7 +44,7 @@ float TD_Calculate(TD_t *td, float input)
 
     td->ddx = fhan;
     td->dx += (td->ddx + td->last_ddx) * td->dt / 2;
-    td->x += (td->dx + td->last_dx) * td->dt / 2;
+    td->x += (td->dx + td->last_dx) * td->dt / 2;  
 
     td->last_ddx = td->ddx;
     td->last_dx = td->dx;

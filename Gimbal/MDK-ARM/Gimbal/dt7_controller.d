@@ -91,6 +91,9 @@ gimbal\dt7_controller.o: ../Algorithm/inc/kalman_filter.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\dt7_controller.o: ../Algorithm/inc/TD.h
 gimbal\dt7_controller.o: ../Config/Robot_config.h
+gimbal\dt7_controller.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\dt7_controller.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\dt7_controller.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\dt7_controller.o: ../Application/inc/DT7_Controller.h
 gimbal\dt7_controller.o: ../Application/inc/VTM_Controller.h
 gimbal\dt7_controller.o: ../Application/inc/KeyMouse.h

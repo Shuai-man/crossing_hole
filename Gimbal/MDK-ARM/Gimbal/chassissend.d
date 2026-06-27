@@ -90,6 +90,9 @@ gimbal\chassissend.o: ../Algorithm/inc/kalman_filter.h
 gimbal\chassissend.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\chassissend.o: ../Algorithm/inc/TD.h
 gimbal\chassissend.o: ../Config/Robot_config.h
+gimbal\chassissend.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\chassissend.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\chassissend.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\chassissend.o: ../Application/inc/KeyMouse.h
 gimbal\chassissend.o: ../Application/inc/DT7_Controller.h
 gimbal\chassissend.o: ../Application/inc/KeyMouse.h

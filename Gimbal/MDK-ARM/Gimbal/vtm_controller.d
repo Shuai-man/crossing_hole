@@ -89,6 +89,9 @@ gimbal\vtm_controller.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\vtm_controller.o: ../Core/Inc/tim.h
 gimbal\vtm_controller.o: ../Algorithm/inc/TD.h
 gimbal\vtm_controller.o: ../Config/Robot_config.h
+gimbal\vtm_controller.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\vtm_controller.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\vtm_controller.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_led.h
 gimbal\vtm_controller.o: ../Application/inc/KeyMouse.h

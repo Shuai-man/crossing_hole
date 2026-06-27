@@ -95,4 +95,7 @@ gimbal\bsp_can.o: ../Application/inc/tof.h
 gimbal\bsp_can.o: ../Application/inc/Gimbal.h
 gimbal\bsp_can.o: ../Algorithm/inc/TD.h
 gimbal\bsp_can.o: ../Config/Robot_config.h
+gimbal\bsp_can.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\bsp_can.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\bsp_can.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\bsp_can.o: ../Application/inc/ToggleBullet.h

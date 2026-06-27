@@ -90,6 +90,9 @@ gimbal\keymouse.o: ../Algorithm/inc/kalman_filter.h
 gimbal\keymouse.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\keymouse.o: ../Algorithm/inc/TD.h
 gimbal\keymouse.o: ../Config/Robot_config.h
+gimbal\keymouse.o: ../Algorithm/inc/RLS_Identification.h
+gimbal\keymouse.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\keymouse.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\keymouse.o: ../Application/inc/DT7_Controller.h
 gimbal\keymouse.o: ../Application/inc/KeyMouse.h
 gimbal\keymouse.o: ../Application/inc/VTM_Controller.h
