@@ -55,7 +55,7 @@ void DT7_ChassisControl(void)
     }
     else if (remote_controller.chassis_mode_action == CV_ROTATE) // 必须与过洞模式并列，否则硬件干涉
     {
-        chassis_solver.chassis_speed_w = 1.0f;
+        chassis_solver.chassis_speed_w = 0.5f;
     }
     else
     {

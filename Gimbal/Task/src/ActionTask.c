@@ -10,6 +10,7 @@ void Action_Task(void const * argument)
     const portTickType xFrequency = 4; // 250HZ
 
     vTaskDelay(100);
+		KeyMouse_Init();
 
     DWT_GetDeltaT(&chassis_solver.last_cnt); // 时间初始化
     vTaskDelay(1);

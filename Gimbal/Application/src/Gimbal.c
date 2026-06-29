@@ -11,7 +11,7 @@ void GimbalMotorInit(void)
 }
 
 // 系统辨识初始化
-// 在文件顶部添加一些静态变量（或者放在结构体里）
+
 static float sysid_timer = 0.0f;
 static float sysid_speed_cmd = 0.0f;
 float J, B, C = 0;
@@ -27,7 +27,7 @@ void Gimbal_SystemID_Init(void)
     sysid_timer = 0.0f;
     sysid_speed_cmd = 0.0f;
 
-    gimbal_controller.gimbal_sysid_done = 1; // debug设为0启动
+    gimbal_controller.gimbal_sysid_done = 1; // debug设为0启动，启动后云台会自动旋转，直到辨识完成
     gimbal_controller.gimbal_sysid_last_speed = 0.0f;
 }
 
@@ -108,12 +108,13 @@ void Gimbal_SystemID_Run(void)
         RLS_Update(&gimbal_controller.rls_yaw);
     }
 
-    // ===== 4. 判定辨识完成（可选） =====
+    // ===== 4. 判定辨识完成 =====
     // 可以设定运行时间，比如跑 30 秒后自动结束
     if (sysid_timer > 30.0f)
     {
         gimbal_controller.gimbal_sysid_done = 1;
         gimbal_controller.yaw_speed_pid.Ref = 0;
+        // 提取辨识参数
         J = gimbal_controller.rls_yaw.x_data[0];
         B = gimbal_controller.rls_yaw.x_data[1];
         C = gimbal_controller.rls_yaw.x_data[2];
@@ -130,23 +131,17 @@ void GimbalPidInit(void)
 {
 
     // Pitch
-    PID_Init(&gimbal_controller.pitch_angle_pid, 500.0f, 0, 0.0f, 20.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
-    PID_Init(&gimbal_controller.pitch_speed_pid, 5000, 4000, 0.0f, 40.0f, 100.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit);
-
-    TD_Init(&gimbal_controller.pos_pitch_td, 700, 0.005);
+    PID_Init(&gimbal_controller.pitch_angle_pid, 5000.0f, 0, 0.0f, 1000.0f, 500, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
+    PID_Init(&gimbal_controller.pitch_speed_pid, 5000, 4000, 0.0f, 60.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit);
+    // td结构体: r:加速度因子, h0:滤波系数，单位s
+    TD_Init(&gimbal_controller.pos_pitch_td, 800, 0.005);
 
     // Yaw
     PID_Init(&gimbal_controller.yaw_angle_pid, 5000.0, 0, 0, 1000.0f, 0, 0.0f, 0, 0, 0.0, 0.02f, 1, DerivativeFilter);
-    PID_Init(&gimbal_controller.yaw_speed_pid, 9000, 1600, 0.0, 200.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit | Trapezoid_Intergral);
-
-    // 跟踪微分器
-    // td结构体: r:加速度因子, h0:滤波系数，单位s
+    PID_Init(&gimbal_controller.yaw_speed_pid, 5000, 1600, 0.0, 100.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit | Trapezoid_Intergral);
+    // td结构体: r:越大，突变越大，离原始信号越接近； h0:滤波系数，单位s，h0越大延迟越大
+    // r增大，可以增加加速度项，从而加大前馈的输出值
     TD_Init(&gimbal_controller.pos_yaw_td, 700, 0.005);
-
-    // YAW前馈
-    gimbal_controller.ff_yaw[0] = GIMBAL_YAW_C;
-    gimbal_controller.ff_yaw[1] = GIMBAL_YAW_B;
-    gimbal_controller.ff_yaw[2] = GIMBAL_YAW_J;
 
     // 底盘转向前馈
     float ff_c_follow[3] = {0, 0.01, 0};
@@ -194,6 +189,7 @@ void Small_Buff_Change(void)
  * @brief 云台控制
  * @param[in] set_point 角度值设定 度
  */
+// todo 把重力补偿加上
 float Gimbal_Pitch_Calculate(float set_point)
 {
     TD_Calculate(&gimbal_controller.pos_pitch_td, set_point);
@@ -203,6 +199,17 @@ float Gimbal_Pitch_Calculate(float set_point)
     return gimbal_controller.pitch_out;
 }
 
+/*MPC 轨迹:  θ_target(t), ω_target(t), α_target(t)
+  │
+  ├── 前馈路径（物理模型，开环）:
+  │   I_ff = (J·α_target + B·ω_target + C·sign(ω_target) + G(θ_target)) / K_t
+  │
+  ├── 反馈路径（PID，闭环）:
+  │   I_fb = (Kp·e_pos + Kd·e_vel + Ki·∫e_pos) / K_t
+  │
+  └── 总电流指令:
+      I_cmd = I_ff + I_fb  →  电流环（FOC / 电机驱动）  →  电机出力
+*/
 float Gimbal_Yaw_Calculate(float set_point)
 {
 #if GIMBAL_SYSID
@@ -210,30 +217,16 @@ float Gimbal_Yaw_Calculate(float set_point)
     gimbal_controller.yaw_out = gimbal_controller.yaw_speed_pid.Output;
     return gimbal_controller.yaw_out;
 #else
-    // 电机加速度不够，即使给了前馈，还是跟不上，所以现象和大pid控制差不多
-    // 可以把角度环的输出减小，留一部分给前馈，可以防止超调
-    // 超调其实是因为电机加速度不够，无法修正导致，直接减小输出即可
-    /*MPC 轨迹:  θ_target(t), ω_target(t), α_target(t)
-      │
-      ├── 前馈路径（物理模型，开环）:
-      │   I_ff = (J·α_target + B·ω_target + C·sign(ω_target) + G(θ_target)) / K_t
-      │
-      ├── 反馈路径（PID，闭环）:
-      │   I_fb = (Kp·e_pos + Kd·e_vel + Ki·∫e_pos) / K_t
-      │
-      └── 总电流指令:
-          I_cmd = I_ff + I_fb  →  电流环（FOC / 电机驱动）  →  电机出力
-    */
     // 由前馈电流负责控制，pid只负责闭环修正位置
     // 输出滤波的角度，角速度，角加速度
     TD_Calculate(&gimbal_controller.pos_yaw_td, set_point);
     // 计算前馈力矩
     gimbal_controller.ff_tff =
-        GIMBAL_YAW_J * gimbal_controller.pos_yaw_td.ddx +     // 惯量 × 加速度
+        GIMBAL_YAW_J * gimbal_controller.pos_yaw_td.ddx +     // 惯量 × 加速度，主要输出项
         GIMBAL_YAW_B * gimbal_controller.pos_yaw_td.dx +      // 阻尼 × 速度
         GIMBAL_YAW_C * sign(gimbal_controller.pos_yaw_td.dx); // 库伦摩擦 × 速度方向   // pid闭环
     PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, gimbal_controller.pos_yaw_td.x);
-    PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, gimbal_controller.pos_yaw_td.dx);
+    PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, gimbal_controller.pos_yaw_td.dx); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
     // 总输出 = 前馈 + 角度环输出 + 速度环输出
     gimbal_controller.yaw_out = gimbal_controller.ff_tff + gimbal_controller.yaw_angle_pid.Output + gimbal_controller.yaw_speed_pid.Output;
     return gimbal_controller.yaw_out;
@@ -266,7 +259,6 @@ void GimbalClear(void)
     // yaw
     PID_Clear(&gimbal_controller.yaw_angle_pid);
     PID_Clear(&gimbal_controller.yaw_speed_pid);
-
 
     TD_Clear(&gimbal_controller.pos_yaw_td, gimbal_controller.gyro_yaw_angle);
     gimbal_controller.ff_tff = 0;
@@ -330,7 +322,7 @@ void updateGyro()
     gimbal_controller.gyro_yaw_angle = GIMBAL_YAW_GYRO_SIGN * INS.YawTotalAngle;
     // yaw角速度
     speed = GIMBAL_YAW_GYRO_SIGN * INS.Gyro[2] / PI * 180.0f;
-    iir(&gimbal_controller.gyro_yaw_speed, speed, 0.3);
+    iir(&gimbal_controller.gyro_yaw_speed, speed, 0.6);//还是超调可以试试加大滤波
 }
 
 /**

@@ -37,10 +37,9 @@
 // 作为云台控制的yaw角度需要以逆时针为正(角度增加)
 #define GIMBAL_YAW_MOTOR_SIGN -1.0f // 用来标记电机的方向，逆时针为正
 #define GIMBAL_YAW_GYRO_SIGN 1.0f   // 用来标记gyro的方向，逆时针为正
-// #define GIMBAL_YAW_POS_FORWARD_COEF 0.3f // 角度环前馈系数
-// #define GIMBAL_YAW_SPEED_FORWARD_COEF 0.f
-#define GIMBAL_YAW_J 8.92400551  // 转动惯量
-#define GIMBAL_YAW_B 19.584095 // 阻尼系数，与速度有关
+//系统辨识参数
+#define GIMBAL_YAW_J 4.92400551f  // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
+#define GIMBAL_YAW_B 19.584095f // 阻尼系数，与速度有关
 #define GIMBAL_YAW_C 26.2818222f   // 库伦摩擦系数，与结构有关
 
 // 系统辨识开关（0=关闭, 1=开启）
@@ -71,9 +70,9 @@ typedef struct GimbalController
   uint8_t return_flag; // 回正标志位，0是完成，1是开始回正，2是正在回正
 
   // Pitch 轴
+  TD_t pos_pitch_td;                 // 位置跟踪微分器  
   PID_t pitch_speed_pid;             // 速度环
   PID_t pitch_angle_pid;             // 角度环
-  TD_t pos_pitch_td;                 // 位置跟踪微分器
 
   float comp_pitch_current; // 重力补偿
 
@@ -88,11 +87,10 @@ typedef struct GimbalController
 
   // Yaw在底盘控制
   // Yaw 轴
+  TD_t pos_yaw_td;                 // 位置跟踪微分器  
   PID_t yaw_speed_pid;             // 速度环
   PID_t yaw_angle_pid;             // 角度环
-  float ff_yaw[3];                 // 0:角度前馈，1:速度前馈，2:加速度前馈
   float ff_tff;                    // 前馈扭矩
-  TD_t pos_yaw_td;                 // 位置跟踪微分器
 
   // 陀螺仪信息及其解算
   float gyro_yaw_speed;

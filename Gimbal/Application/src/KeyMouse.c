@@ -17,6 +17,18 @@ void State_Clear(void)
     setGameModeAction(OFF_MODE);
 }
 
+void KeyMouse_Init(void)
+{
+    // 初始化微分器
+    // 底盘速度，低敏
+    TD_Init(&chassis_solver.speed_x_td, 30, 0.08);
+    TD_Init(&chassis_solver.speed_y_td, 20, 0.08);
+    TD_Init(&chassis_solver.speed_w_td, 30, 0.08);
+    // 鼠标速度，高敏
+    TD_Init(&chassis_solver.mouse_x_td, 50000, 0.005);
+    TD_Init(&chassis_solver.mouse_y_td, 50000, 0.005);
+}
+
 void KeyMouseUpdate(ChassisSolver *infantry)
 {
     // 无遥控直接下电
@@ -107,7 +119,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
 
     /* 按键操作 */
 
-    float speed_x = 0.0f, speed_y = 0.0f;
+    float speed_x = 0.0f, speed_y = 0.0f, speed_w = 0.0f;
     // 长按生效
     for (uint16_t i = 1; i > 0; i <<= 1)
     {
@@ -139,18 +151,23 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_X:
             break;
         case KEY_C:
+            if (remote_controller.game_mode == GAME_MODE && remote_controller.gimbal_position == UP)
+            {
+                setChassisModeAction(CV_ROTATE);
+                speed_w = 0.5f;
+            }
             break;
         case KEY_D:
-            speed_y = 0.3f;//建议加个缓启动
+            speed_y = 0.4f; // 建议加个缓启动
             break;
         case KEY_A:
-            speed_y = -0.3f;
+            speed_y = -0.4f;
             break;
         case KEY_S:
-            speed_x = -0.3f; // 后退太灵敏，衰减一下
+            speed_x = -0.4f; // 后退太灵敏，衰减一下
             break;
         case KEY_W:
-            speed_x = 0.3f;
+            speed_x = 0.4f;
             break;
         default:
             break;
@@ -198,12 +215,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             setGimbalAction(GIMBAL_SMALL_BUFF_MODE);
             break;
         case KEY_C:
-            if (remote_controller.game_mode == GAME_MODE && remote_controller.gimbal_position == UP)
-            {
-                setChassisModeAction(CV_ROTATE);
-                chassis_solver.chassis_speed_w = 0.5f;
-            }
-
             break;
         case KEY_D:
             break;
@@ -248,7 +259,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             if (remote_controller.game_mode == GAME_MODE)
             {
                 setChassisModeAction(FOLLOW_GIMBAL);
-                chassis_solver.chassis_speed_w = 0.0;
+                speed_w = 0.0f;
             }
             break;
         case KEY_D:
@@ -263,19 +274,27 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             break;
         }
     }
-
-    chassis_solver.chassis_speed_x = speed_x;
-    chassis_solver.chassis_speed_y = speed_y;
+    // 等待测试
+    TD_Calculate(&chassis_solver.speed_x_td, speed_x);
+    TD_Calculate(&chassis_solver.speed_y_td, speed_y);
+    TD_Calculate(&chassis_solver.speed_w_td, speed_w);
+    chassis_solver.chassis_speed_x = chassis_solver.speed_x_td.x;
+    chassis_solver.chassis_speed_y = chassis_solver.speed_y_td.x;
 
     // 鼠标操作
-    gimbal_controller.target_yaw_angle -= remote_controller.dji_remote.mouse.x * MOUSE_YAW_SENSITIVITY;
-    gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.y * MOUSE_PITCH_SENSITIVITY;
+    TD_Calculate(&chassis_solver.mouse_x_td, remote_controller.dji_remote.mouse.x);
+    TD_Calculate(&chassis_solver.mouse_y_td, remote_controller.dji_remote.mouse.y);
+    gimbal_controller.target_yaw_angle -= chassis_solver.mouse_x_td.x * MOUSE_YAW_SENSITIVITY;
+    gimbal_controller.target_pitch_angle += chassis_solver.mouse_y_td.x * MOUSE_PITCH_SENSITIVITY;
     gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.z * MOUSE_SCROLL_SENSITIVITY;
 
-    if(remote_controller.chassis_mode_action == FOLLOW_GIMBAL)
+    if (remote_controller.gimbal_position == DOWN)
     {
-        Feedforward_Calculate(&gimbal_controller.follow_gimbal_forward, gimbal_controller.target_yaw_angle);
-        chassis_solver.chassis_speed_w = gimbal_controller.follow_gimbal_forward.Output;
+       chassis_solver.chassis_speed_w = gimbal_controller.pos_yaw_td.dx * MOUSE_YAW_SPEED;
+    }
+    else if (remote_controller.chassis_mode_action == CV_ROTATE)
+    {
+        chassis_solver.chassis_speed_w = chassis_solver.speed_w_td.x;
     }
 
     // 鼠标左键检测

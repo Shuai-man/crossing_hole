@@ -21,14 +21,14 @@ void DM_Motor_Control(DM_MIT *Motor, int8_t *send_data, DM_MODE mode)
 		memcpy(send_data, clear_error_data, 8);
 		return;
 	}
-	if (mode == DM_ENABLE || !Motor->Motor_Enable)
+	if (mode == DM_DISABLE)
+	{
+		memcpy(send_data, disable_data, 8);
+	}	
+	else if (mode == DM_ENABLE || !Motor->Motor_Enable)
 	{
 		memcpy(send_data, enable_data, 8);
 		Motor->Motor_Enable = 1;
-	}
-	else if (mode == DM_DISABLE)
-	{
-		memcpy(send_data, disable_data, 8);
 	}
 	else
 	{

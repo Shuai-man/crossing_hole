@@ -120,6 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name>?_w漯?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -177,7 +178,7 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>remote_controller,0x0A</ItemText>
+          <ItemText>remote_controller,0x10</ItemText>
         </Ww>
         <Ww>
           <count>5</count>

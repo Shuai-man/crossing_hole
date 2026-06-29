@@ -43,17 +43,16 @@ void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
         { // 记录当前模式
             remote->last_chassis_mode_action = remote->chassis_mode_action;
             gimbal->return_flag = 2;
-            setChassisModeAction(NOT_CONTROL_MODE);
         }
 
         gimbal->target_yaw_angle = gimbal->gyro_yaw_angle + gimbal->err_angle;
         if (fabsf(gimbal->err_angle) < 0.5f)
         {
             gimbal->return_flag = 0;
-            // 能不能改成上一次的模式
             setChassisModeAction(remote->last_chassis_mode_action);
             return;
         }
+        setChassisModeAction(NOT_CONTROL_MODE);
     }
 }
 
@@ -215,10 +214,10 @@ void execute_func(void)
         {
             // 设置为0力矩
             gimbal_controller.DM_Pitch_Motor.t_ff = 0;
-            DM_Motor_Control(&gimbal_controller.DM_Pitch_Motor, send_data[PITCH_MOTOR], DM_MIT_CONTROL);
+            DM_Motor_Control(&gimbal_controller.DM_Pitch_Motor, send_data[PITCH_MOTOR], DM_DISABLE); // 失能有阻力，防止下降磕头
 
             gimbal_controller.DM_Yaw_Motor.t_ff = 0;
-            DM_Motor_Control(&gimbal_controller.DM_Yaw_Motor, send_data[YAW_MOTOR], DM_MIT_CONTROL);
+            DM_Motor_Control(&gimbal_controller.DM_Yaw_Motor, send_data[YAW_MOTOR], DM_DISABLE);
         }
         else
         {
@@ -232,7 +231,7 @@ void execute_func(void)
     else
     {
         // 两种情况：
-        // 少电机，全部下电
+        // 少电机，全部下电，留个绿灯，方便判断是那个电机掉了
         // 初始化，力矩给0  如果发现重新上电后电机初始化不了,reset后才行能初始化，建议检查can芯片是不是掉了
         gimbal_controller.DM_Pitch_Motor.t_ff = 0;
         gimbal_controller.DM_Yaw_Motor.t_ff = 0;
