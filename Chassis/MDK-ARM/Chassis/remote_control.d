@@ -40,4 +40,5 @@ chassis\remote_control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.
 chassis\remote_control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\remote_control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 chassis\remote_control.o: ../Components/tools/inc/debug.h
+chassis\remote_control.o: ../Core/Inc/main.h
 chassis\remote_control.o: ../Components/tools/inc/tools.h

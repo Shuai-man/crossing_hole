@@ -1,12 +1,6 @@
 chassis\debug.o: ..\Components\tools\src\debug.c
 chassis\debug.o: ../Components/tools/inc/debug.h
-chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
-chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
-chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
-chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-chassis\debug.o: ../Components/tools/inc/tools.h
-chassis\debug.o: ../boards/inc/bsp_dwt.h
+chassis\debug.o: ../Core/Inc/main.h
 chassis\debug.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 chassis\debug.o: ../Core/Inc/stm32f4xx_hal_conf.h
 chassis\debug.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
@@ -14,6 +8,7 @@ chassis\debug.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
 chassis\debug.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 chassis\debug.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h
 chassis\debug.o: ../Drivers/CMSIS/Include/core_cm4.h
+chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
 chassis\debug.o: ../Drivers/CMSIS/Include/cmsis_version.h
 chassis\debug.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 chassis\debug.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
@@ -40,3 +35,9 @@ chassis\debug.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 chassis\debug.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 chassis\debug.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\debug.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\debug.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\debug.o: ../Components/tools/inc/tools.h
+chassis\debug.o: ../boards/inc/bsp_dwt.h

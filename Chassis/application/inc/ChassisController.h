@@ -10,19 +10,12 @@
 #include "arm_atan2_f32.h"
 
 #include "tools.h"
-
-
 #include "user_lib.h"
-#include "remote_control.h"
 #include "pid.h"
-
-//#include "wheel_ins.h"
-
 
 #include "can_config.h"
 #include "TD.h"
 
-//#include "SuperPower.h"
 #include "PowerLimit.h"
 
 #include "M3508.h"

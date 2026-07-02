@@ -85,11 +85,13 @@ gimbal\freertos.o: ../Components/motor/inc/M2006.h
 gimbal\freertos.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\freertos.o: ../Algorithm/inc/my_filter.h
 gimbal\freertos.o: ../Application/inc/Gimbal.h
+gimbal\freertos.o: ../Config/Robot_config.h
 gimbal\freertos.o: ../Components/motor/inc/GM6020.h
 gimbal\freertos.o: ../Components/motor/inc/DM_Motor.h
 gimbal\freertos.o: ../Core/Inc/can.h
+gimbal\freertos.o: ../Application/inc/pc_serial.h
+gimbal\freertos.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\freertos.o: ../Algorithm/inc/TD.h
-gimbal\freertos.o: ../Config/Robot_config.h
 gimbal\freertos.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\freertos.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\freertos.o: ../Algorithm/inc/SignalGenerator.h
@@ -106,8 +108,6 @@ gimbal\freertos.o: ../Application/inc/KeyMouse.h
 gimbal\freertos.o: ../Application/inc/DT7_Controller.h
 gimbal\freertos.o: ../Application/inc/KeyMouse.h
 gimbal\freertos.o: ../Application/inc/VTM_Controller.h
-gimbal\freertos.o: ../Application/inc/pc_serial.h
-gimbal\freertos.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\freertos.o: ../USB_DEVICE/App/usb_device.h
 gimbal\freertos.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
 gimbal\freertos.o: ../USB_DEVICE/Target/usbd_conf.h

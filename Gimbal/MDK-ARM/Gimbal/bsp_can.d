@@ -72,6 +72,7 @@ gimbal\bsp_can.o: ../Algorithm/inc/my_filter.h
 gimbal\bsp_can.o: ../Components/motor/inc/M3508.h
 gimbal\bsp_can.o: ../Application/inc/ChassisGet.h
 gimbal\bsp_can.o: ../Application/inc/Gimbal.h
+gimbal\bsp_can.o: ../Config/Robot_config.h
 gimbal\bsp_can.o: ../Components/motor/inc/GM6020.h
 gimbal\bsp_can.o: ../Components/motor/inc/DM_Motor.h
 gimbal\bsp_can.o: ../Application/inc/ins.h
@@ -93,8 +94,9 @@ gimbal\bsp_can.o: ../Components/boards/inc/bsp_led.h
 gimbal\bsp_can.o: ../Application/inc/lifting_control.h
 gimbal\bsp_can.o: ../Application/inc/tof.h
 gimbal\bsp_can.o: ../Application/inc/Gimbal.h
+gimbal\bsp_can.o: ../Application/inc/pc_serial.h
+gimbal\bsp_can.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\bsp_can.o: ../Algorithm/inc/TD.h
-gimbal\bsp_can.o: ../Config/Robot_config.h
 gimbal\bsp_can.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\bsp_can.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\bsp_can.o: ../Algorithm/inc/SignalGenerator.h

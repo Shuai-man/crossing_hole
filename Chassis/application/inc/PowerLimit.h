@@ -1,10 +1,6 @@
 #ifndef _POWER_LIMIT_H
 #define _POWER_LIMIT_H
 
-#include "SuperPower.h"
-//#include "Referee.h"
-
-#include "remote_control.h"
 #include "Motor_Typdef.h"
 #include "RLS_Identification.h"
 #include "robot_config.h"

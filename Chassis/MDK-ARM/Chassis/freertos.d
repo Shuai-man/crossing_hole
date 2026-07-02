@@ -78,8 +78,6 @@ chassis\freertos.o: ../config/can_config.h
 chassis\freertos.o: ../Core/Inc/can.h
 chassis\freertos.o: ../Algorithm/inc/TD.h
 chassis\freertos.o: ../application/inc/PowerLimit.h
-chassis\freertos.o: ../application/inc/SuperPower.h
-chassis\freertos.o: ../application/inc/PowerLimit.h
 chassis\freertos.o: ../Components/motor/inc/Motor_Typdef.h
 chassis\freertos.o: ../Algorithm/inc/RLS_Identification.h
 chassis\freertos.o: ../Components/motor/inc/M3508.h

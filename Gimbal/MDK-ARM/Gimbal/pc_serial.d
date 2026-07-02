@@ -72,6 +72,7 @@ gimbal\pc_serial.o: ../Components/boards/inc/bsp_dwt.h
 gimbal\pc_serial.o: ../Components/tools/inc/debug.h
 gimbal\pc_serial.o: ../Application/inc/ChassisGet.h
 gimbal\pc_serial.o: ../Application/inc/Gimbal.h
+gimbal\pc_serial.o: ../Config/Robot_config.h
 gimbal\pc_serial.o: ../Components/motor/inc/GM6020.h
 gimbal\pc_serial.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\pc_serial.o: ../Algorithm/inc/my_filter.h
@@ -91,7 +92,6 @@ gimbal\pc_serial.o: ../Application/inc/tof.h
 gimbal\pc_serial.o: ../Components/motor/inc/M2006.h
 gimbal\pc_serial.o: ../Application/inc/Gimbal.h
 gimbal\pc_serial.o: ../Algorithm/inc/TD.h
-gimbal\pc_serial.o: ../Config/Robot_config.h
 gimbal\pc_serial.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\pc_serial.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\pc_serial.o: ../Algorithm/inc/SignalGenerator.h

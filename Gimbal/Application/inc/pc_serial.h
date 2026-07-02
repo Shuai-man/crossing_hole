@@ -11,8 +11,7 @@ typedef enum AUTOAIM_MODE
 {
 	NOT_USE_AIM = 0,
 	STD_AUTO_AIM,
-	BUFF,
-	STATIC_AUTO_AIM,
+	SMALL_BUFF,
 	BIG_BUFF,
 } AUTOAIM_MODE;
 
@@ -68,8 +67,8 @@ typedef struct PCRecvData
 	float yaw_setpoint;						 // 目标yaw
 	float pitch_omega_setpoint;					 // 目标pitch角速度
 	float yaw_omega_setpoint;						 // 目标yaw角速度
-	float pitch_tff_setpoint;					 // 目标pitch力矩
-	float yaw_tff_setpoint;						 // 目标yaw力矩
+	float pitch_acc_setpoint;					 // 目标pitch加速度
+	float yaw_acc_setpoint;						 // 目标yaw加速度
 	uint16_t crc16;
 	uint8_t frame_tail; // 0x0D
 

@@ -9,19 +9,16 @@
 
 #include "stdint.h"
 #include "GimbalReceive.h"
-//#include "SuperPower.h"
 
 #include "bsp_referee.h"
 #include "Referee.h"
 
 #include "algorithmOfCRC.h"
-//#include "remote_control.h"
 
-//#include "ins.h"
+
 #include "ChassisController.h"
 #include "PowerControlTask.h"
 
-//#include "iwdg.h"
 
 #define IMAGE_CENTER_X 1920 / 2 // ͼ��X����
 #define IMAGE_CENTER_Y 1080 / 2 // ͼ��Y����

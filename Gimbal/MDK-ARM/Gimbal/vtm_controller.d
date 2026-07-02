@@ -78,6 +78,7 @@ gimbal\vtm_controller.o: ../Components/motor/inc/M2006.h
 gimbal\vtm_controller.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\vtm_controller.o: ../Algorithm/inc/my_filter.h
 gimbal\vtm_controller.o: ../Application/inc/Gimbal.h
+gimbal\vtm_controller.o: ../Config/Robot_config.h
 gimbal\vtm_controller.o: ../Components/motor/inc/GM6020.h
 gimbal\vtm_controller.o: ../Components/motor/inc/DM_Motor.h
 gimbal\vtm_controller.o: ../Core/Inc/can.h
@@ -87,8 +88,9 @@ gimbal\vtm_controller.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\vtm_controller.o: ../Algorithm/inc/kalman_filter.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\vtm_controller.o: ../Core/Inc/tim.h
+gimbal\vtm_controller.o: ../Application/inc/pc_serial.h
+gimbal\vtm_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\vtm_controller.o: ../Algorithm/inc/TD.h
-gimbal\vtm_controller.o: ../Config/Robot_config.h
 gimbal\vtm_controller.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\vtm_controller.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\vtm_controller.o: ../Algorithm/inc/SignalGenerator.h
@@ -98,8 +100,6 @@ gimbal\vtm_controller.o: ../Application/inc/KeyMouse.h
 gimbal\vtm_controller.o: ../Application/inc/DT7_Controller.h
 gimbal\vtm_controller.o: ../Application/inc/KeyMouse.h
 gimbal\vtm_controller.o: ../Application/inc/VTM_Controller.h
-gimbal\vtm_controller.o: ../Application/inc/pc_serial.h
-gimbal\vtm_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\vtm_controller.o: ../Application/inc/ToggleBullet.h
 gimbal\vtm_controller.o: ../Application/inc/FrictionWheel.h
 gimbal\vtm_controller.o: ../Components/motor/inc/M3508.h

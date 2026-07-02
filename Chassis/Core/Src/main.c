@@ -27,7 +27,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "remote_control.h"
 #include "robot_config.h"
 #include "ChassisController.h" 
 /* USER CODE END Includes */

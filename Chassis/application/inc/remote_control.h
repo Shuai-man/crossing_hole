@@ -24,9 +24,9 @@ enum ROBOT_STATE
 enum CHASSIS_MODE_ACTION
 {
     NOT_CONTROL_MODE,
-    NOT_FOLLOW_GIMBAL,   // 仅底盘运动模式
-    FOLLOW_GIMBAL,       // 云台跟随模式
-    CV_ROTATE,           // 恒速度旋转
+    NOT_FOLLOW_GIMBAL, // 仅底盘运动模式
+    FOLLOW_GIMBAL,     // 云台跟随模式
+    CV_ROTATE,         // 恒速度旋转
 
 };
 
@@ -54,8 +54,9 @@ enum CHASSIS_FORMAT
 
 enum GIMBAL_POSITION
 {
-		DOWM,//低头
-		UP,//抬头
+    POWER_DOWN, // 下电
+    DOWN,       // 低头
+    UP,         // 抬头
 };
 
 #pragma pack(1)
@@ -142,15 +143,14 @@ typedef struct
 
 typedef struct RemoteController
 {
-    enum CONTROL_TYPE control_type; // 控制类型(遥控器，蓝牙等)
     enum ROBOT_STATE robot_state;   // 机器人状态(掉线模式，控制模式)
     enum ROBOT_STATE last_robot_state;
     enum GIMBAL_ACTION gimbal_action; // 云台模式
     enum GIMBAL_ACTION last_gimbal_action;
-    enum CHASSIS_MODE_ACTION control_mode_action;	
+    enum CHASSIS_MODE_ACTION control_mode_action;
     enum CHASSIS_MODE_ACTION last_control_mode_action; // 底盘模式
-    enum PowerControlState super_power_state;	//主动电容标志位
-		enum GIMBAL_POSITION gimbal_position;//设置头部模式
+    enum PowerControlState super_power_state;          // 主动电容标志位
+    enum GIMBAL_POSITION gimbal_position;              // 设置头部模式
 
     RC_Ctl_t dji_remote;
 
@@ -163,16 +163,11 @@ typedef struct RemoteController
 void setGimbalAction(enum GIMBAL_ACTION action);
 void setControlMode(enum CONTROL_TYPE type);
 void setRobotState(enum ROBOT_STATE state);
-void setControlModeAction(enum CHASSIS_MODE_ACTION action);
+void setChassisAction(enum CHASSIS_MODE_ACTION action);
 void initRemoteControl(enum CONTROL_TYPE type);
 void setSuperPower(enum PowerControlState super_power_state);
 void setGimbalPosition(enum GIMBAL_POSITION gimbal_position);
 
-
-// 遥控器
-void RemoteReceive(volatile unsigned char rx_buffer[]);
-
-void RC_Rst(void);
 
 extern RemoteController remote_controller;
 

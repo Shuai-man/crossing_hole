@@ -2,20 +2,24 @@
 #define _GIMBAL_H
 
 #include "main.h"
-#include "pid.h"
-#include "GM6020.h"
-#include "DM_Motor.h"
-#include "ins.h"
-#include "remote_control.h"
-#include "my_filter.h"
-#include "TD.h"
 
 #include "Robot_config.h"
+
+#include "GM6020.h"
+#include "DM_Motor.h"
+
+#include "ins.h"
+#include "remote_control.h"
+#include "pc_serial.h"
+
+#include "pid.h"
+#include "my_filter.h"
+#include "TD.h"
 #include "RLS_Identification.h"
 #include "SystemIdentification.h"
 
 // pitch
-#define GIMBAL_PITCH_GYRO_SIGN -1.0f // pitch符号，向上为正
+#define GIMBAL_PITCH_GYRO_SIGN 1.0f // pitch符号，向上为正
 #define GIMBAL_PITCH_BIAS 0.0f       // pitch最低角度(imu测得) - 实际最低角度(机械处测得)
 
 #define GIMBAL_PITCH_MOTOR_SIGN -1.0f // 云台PITCH电机方向，向上为正
@@ -37,10 +41,10 @@
 // 作为云台控制的yaw角度需要以逆时针为正(角度增加)
 #define GIMBAL_YAW_MOTOR_SIGN -1.0f // 用来标记电机的方向，逆时针为正
 #define GIMBAL_YAW_GYRO_SIGN 1.0f   // 用来标记gyro的方向，逆时针为正
-//系统辨识参数
-#define GIMBAL_YAW_J 4.92400551f  // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
-#define GIMBAL_YAW_B 19.584095f // 阻尼系数，与速度有关
-#define GIMBAL_YAW_C 26.2818222f   // 库伦摩擦系数，与结构有关
+// 系统辨识参数
+#define GIMBAL_YAW_J 4.92400551f // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
+#define GIMBAL_YAW_B 19.584095f  // 阻尼系数，与速度有关
+#define GIMBAL_YAW_C 26.2818222f // 库伦摩擦系数，与结构有关
 
 // 系统辨识开关（0=关闭, 1=开启）
 #define GIMBAL_SYSID 0
@@ -59,6 +63,9 @@ typedef enum
 
 typedef struct GimbalController
 {
+  uint32_t last_cnt;
+  float delta_t; // 两帧计算之间的时间差
+
   DM_MIT DM_Yaw_Motor;
   DM_MIT DM_Pitch_Motor;
 
@@ -66,59 +73,54 @@ typedef struct GimbalController
   // 最小回正角度
   float err_angle;     // 初始角度误差
   float err_angle_180; // 误差余角，用于判断方向
-
   uint8_t return_flag; // 回正标志位，0是完成，1是开始回正，2是正在回正
-
-  // Pitch 轴
-  TD_t pos_pitch_td;                 // 位置跟踪微分器  
-  PID_t pitch_speed_pid;             // 速度环
-  PID_t pitch_angle_pid;             // 角度环
-
-  float comp_pitch_current; // 重力补偿
-
+  gimbal_direction_e gimbal_direction;
+  /*----------Pitch 轴-----------------*/
   // 陀螺仪信息及其解算
   float gyro_pitch_speed;
   float gyro_pitch_angle;
   float gyro_pitch_accel; // 加速度
-  uint32_t last_cnt;
-  float delta_t; // 两帧计算之间的时间差
 
+  TD_t pos_pitch_td;     // 位置跟踪微分器
+  PID_t pitch_speed_pid; // 速度环
+  PID_t pitch_angle_pid; // 角度环
+
+  float comp_pitch_current; // 重力补偿
   float target_pitch_angle; // 设定的角度值
 
-  // Yaw在底盘控制
-  // Yaw 轴
-  TD_t pos_yaw_td;                 // 位置跟踪微分器  
-  PID_t yaw_speed_pid;             // 速度环
-  PID_t yaw_angle_pid;             // 角度环
-  float ff_tff;                    // 前馈扭矩
+  float pitch_out;
 
+  // pitch 限位计算
+  float pitch_max_angle;
+  float pitch_min_angle;
+  /*----------Yaw 轴-----------------*/
   // 陀螺仪信息及其解算
   float gyro_yaw_speed;
   float gyro_yaw_angle;
   float gyro_yaw_accel; // 加速度
 
+  // Yaw 轴
+  TD_t pos_yaw_td;     // 位置跟踪微分器
+  PID_t yaw_speed_pid; // 速度环
+  PID_t yaw_angle_pid; // 角度环
+
+  float ff_tff; // 前馈扭矩
   float target_yaw_angle;
 
-  // pitch 限位计算
-  float pitch_max_angle;
-  float pitch_min_angle;
+  float yaw_out;
+  /*----------底盘控制-----------------*/
+  // 底盘姿态估计
   float chassis_err_angle;   // 底盘pitch误差角度
   float chassis_pitch_angle; // 底盘pitch估计角度
 
-  float pitch_out;
-  float yaw_out;
-
   Feedforward_t follow_gimbal_forward; // 底盘转向前馈
 
+  /*----------反拨检测-----------------*/
   float if_spin_reverse;   // 是否反拨拨盘
   float stuck_time;        // 卡弹持续时间
   float spin_reverse_time; // 反转时间
 
-  float pc_recv_rad[2]; // PC端发送的数据，弧度制
-
-  gimbal_direction_e gimbal_direction;
-
-  // 系统辨识全局变量
+  /*----------系统辨识全局变量-----------------*/
   RLS rls_yaw;
   SI_t si_yaw;
   TD_t td_sysid_omega;
@@ -130,9 +132,6 @@ typedef struct GimbalController
 extern GimbalController gimbal_controller;
 void GimbalMotorInit(void);
 void GimbalPidInit(void);
-void GimbalPidChange(void);
-void Auto_GimbalPidChange(void);
-void Small_Buff_Change(void);
 void GimbalClear(void);
 void updateGyro(void);
 void Gimbal_ErrorAngle(void);
@@ -148,7 +147,6 @@ float Gimbal_Pitch_Calculate(float set_point);
 
 // Yaw
 float Gimbal_Yaw_Calculate(float set_point);
-float Gimbal_Speed_Calculate(float set_point);
 float GimbalFrictionModel(void);
 
 float limit_angle(float in);

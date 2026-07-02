@@ -12,12 +12,7 @@ chassis\offline_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_w
 chassis\offline_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 chassis\offline_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
 chassis\offline_task.o: ../Components/tools/inc/debug.h
-chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
-chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
-chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-chassis\offline_task.o: ../Components/tools/inc/tools.h
-chassis\offline_task.o: ../boards/inc/bsp_dwt.h
+chassis\offline_task.o: ../Core/Inc/main.h
 chassis\offline_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 chassis\offline_task.o: ../Core/Inc/stm32f4xx_hal_conf.h
 chassis\offline_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
@@ -50,3 +45,9 @@ chassis\offline_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex
 chassis\offline_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 chassis\offline_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\offline_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
+chassis\offline_task.o: ../Components/tools/inc/tools.h
+chassis\offline_task.o: ../boards/inc/bsp_dwt.h

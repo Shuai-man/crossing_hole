@@ -27,8 +27,7 @@ void setGameModeAction(enum GAME_MODE action)
         switch (remote_controller.game_mode)
         {
         case OFF_MODE:
-            setChassisModeAction(NOT_CONTROL_MODE);
-            setShootAction(SHOOT_POWER_DOWN_MODE);
+            Change_Init();
             break;
         case TEST_MODE:
             Test_Init();
@@ -169,4 +168,11 @@ void Game_Init(void)
     setGimbalPosition(UP);
     setChassisModeAction(FOLLOW_GIMBAL); // 当进入到这个模式的时候，先进入底盘跟随模式
     setSuperPower(POWER_TO_BATTERY);
+}
+
+void Change_Init(void)//切换遥控模式
+{
+    setChassisModeAction(NOT_CONTROL_MODE);
+    setShootAction(SHOOT_POWER_DOWN_MODE);
+    setGimbalAction(GIMBAL_POWER_DOWN);
 }

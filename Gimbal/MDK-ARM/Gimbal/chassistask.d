@@ -81,6 +81,7 @@ gimbal\chassistask.o: ../Components/motor/inc/M2006.h
 gimbal\chassistask.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\chassistask.o: ../Algorithm/inc/my_filter.h
 gimbal\chassistask.o: ../Application/inc/Gimbal.h
+gimbal\chassistask.o: ../Config/Robot_config.h
 gimbal\chassistask.o: ../Components/motor/inc/GM6020.h
 gimbal\chassistask.o: ../Components/motor/inc/DM_Motor.h
 gimbal\chassistask.o: ../Core/Inc/can.h
@@ -89,16 +90,15 @@ gimbal\chassistask.o: ../Application/inc/BMI088driver.h
 gimbal\chassistask.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\chassistask.o: ../Algorithm/inc/kalman_filter.h
 gimbal\chassistask.o: ../Components/boards/inc/bsp_PWM.h
+gimbal\chassistask.o: ../Application/inc/pc_serial.h
+gimbal\chassistask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\chassistask.o: ../Algorithm/inc/TD.h
-gimbal\chassistask.o: ../Config/Robot_config.h
 gimbal\chassistask.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\chassistask.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\chassistask.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\chassistask.o: ../Application/inc/DT7_Controller.h
 gimbal\chassistask.o: ../Application/inc/KeyMouse.h
 gimbal\chassistask.o: ../Application/inc/VTM_Controller.h
-gimbal\chassistask.o: ../Application/inc/pc_serial.h
-gimbal\chassistask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\chassistask.o: ../Application/inc/ToggleBullet.h
 gimbal\chassistask.o: ../Application/inc/FrictionWheel.h
 gimbal\chassistask.o: ../Components/motor/inc/M3508.h

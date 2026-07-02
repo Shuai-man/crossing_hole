@@ -5,7 +5,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "remote_control.h"
+#include "main.h"
+
 #include "can_config.h"
 #include "GM6020.h"
 #include "M2006.h"
@@ -15,7 +16,6 @@
 #include "GimbalSend.h"
 
 #include "SystemIdentification.h"
-//#include "iwdg.h"
 
 void GimbalTask(void const * argument);
 

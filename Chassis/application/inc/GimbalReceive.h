@@ -2,7 +2,7 @@
 #define _GIMBAL_RECEIVE_H
 
 #include "stdint.h"
-
+#include "debug.h"
 #include "remote_control.h"
 
 #pragma pack(push, 1)
@@ -43,7 +43,7 @@ extern GimbalReceivePack1 gimbal_receiver_pack1;
 extern int8_t gimbal_receive_1_update;
 extern int8_t gimbal_receive_2_update;
 
-void Gimbal_msgs_Decode1(void);
-void Gimbal_msgs_Decode2(void);
+void Gimbal_msgs_Update1(void);
+void Gimbal_msgs_Update2(void);
 
 #endif // !_GIMBAL_RECEIVE_H

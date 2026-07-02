@@ -7,6 +7,9 @@
  ******************************************************************************
  */
 
+// 移动超功率；缓启动平移没效果
+// 小陀螺后跟随零点发送变化
+
 #include "KeyMouse.h"
 
 ChassisSolver chassis_solver;
@@ -21,9 +24,10 @@ void KeyMouse_Init(void)
 {
     // 初始化微分器
     // 底盘速度，低敏
-    TD_Init(&chassis_solver.speed_x_td, 30, 0.08);
-    TD_Init(&chassis_solver.speed_y_td, 20, 0.08);
-    TD_Init(&chassis_solver.speed_w_td, 30, 0.08);
+    speed_smoother_init(&chassis_solver.speed_x_smoother, 0.10f, 0.6f, 2.0f);
+    speed_smoother_init(&chassis_solver.speed_y_smoother, 0.10f, 0.6f, 2.0f);
+    speed_smoother_init(&chassis_solver.speed_w_smoother, 0.10f, 0.6f, 2.0f);
+
     // 鼠标速度，高敏
     TD_Init(&chassis_solver.mouse_x_td, 50000, 0.005);
     TD_Init(&chassis_solver.mouse_y_td, 50000, 0.005);
@@ -82,12 +86,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             VTM_Init();
             State_Clear();
         }
-        else if (chassis_pack_get_1.alive_flag == 0)
-        {
-            // 死后需要重新按开始
-            VTM_Init();
-            State_Clear();
-        }
         else
         {
             if (vtm_remote.sw[Pause] == 1)
@@ -101,7 +99,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             }
             else
             {
-
                 setGameModeAction(TEST_MODE);
                 VTM_Fire();
             }
@@ -241,7 +238,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_CTRL:
             break;
         case KEY_Q:
-            //            setLegAction(RAW_LENGTH);
             break;
         case KEY_E:
             break;
@@ -274,12 +270,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             break;
         }
     }
-    // 等待测试
-    TD_Calculate(&chassis_solver.speed_x_td, speed_x);
-    TD_Calculate(&chassis_solver.speed_y_td, speed_y);
-    TD_Calculate(&chassis_solver.speed_w_td, speed_w);
-    chassis_solver.chassis_speed_x = chassis_solver.speed_x_td.x;
-    chassis_solver.chassis_speed_y = chassis_solver.speed_y_td.x;
 
     // 鼠标操作
     TD_Calculate(&chassis_solver.mouse_x_td, remote_controller.dji_remote.mouse.x);
@@ -290,12 +280,14 @@ void KeyMouseUpdate(ChassisSolver *infantry)
 
     if (remote_controller.gimbal_position == DOWN)
     {
-       chassis_solver.chassis_speed_w = gimbal_controller.pos_yaw_td.dx * MOUSE_YAW_SPEED;
+        chassis_solver.chassis_speed_w = gimbal_controller.pos_yaw_td.dx * MOUSE_YAW_SPEED;
     }
-    else if (remote_controller.chassis_mode_action == CV_ROTATE)
+    else
     {
-        chassis_solver.chassis_speed_w = chassis_solver.speed_w_td.x;
+        chassis_solver.chassis_speed_w = speed_smoother_update(&chassis_solver.speed_w_smoother, speed_w, chassis_solver.delta_t);
     }
+    chassis_solver.chassis_speed_x = speed_smoother_update(&chassis_solver.speed_x_smoother, speed_x, chassis_solver.delta_t);
+    chassis_solver.chassis_speed_y = speed_smoother_update(&chassis_solver.speed_y_smoother, speed_y, chassis_solver.delta_t);
 
     // 鼠标左键检测
     unsigned char press_l = remote_controller.dji_remote.mouse.press_l;
@@ -326,30 +318,28 @@ void KeyMouseUpdate(ChassisSolver *infantry)
                                                           remote_controller.dji_remote.mouse.last_press_r;
     remote_controller.dji_remote.mouse.last_press_r = press_r;
 
+    // 打算单发和双发改成中键切换，不用按键切换，这样逻辑就不用那么复杂了
     if (remote_controller.dji_remote.mouse.mouseChangeOn_r)
     {
-        // 开启辅瞄
-        remote_controller.auto_arm = 1;
-
+        remote_controller.auto_arm =1;
         // 利用上升沿做初始化，防止重复赋值
         if (remote_controller.gimbal_action == GIMBAL_SMALL_BUFF_MODE)
         {
-            Small_Buff_Change(); // 小符
-            // X键进入小符
+            pc_send_data.mode_want = SMALL_BUFF;
+        }
+        else if (remote_controller.gimbal_action == GIMBAL_BIG_BUFF_MODE)
+        {
+            pc_send_data.mode_want = BIG_BUFF;
         }
         else
         {
-            // 右键进入打车
-            Auto_GimbalPidChange(); // 打车
+            pc_send_data.mode_want = STD_AUTO_AIM;
             setGimbalAction(GIMBAL_AUTO_AIM_MODE);
         }
     }
     else if (remote_controller.dji_remote.mouse.mouseChangeOff_r)
     {
-        // 关闭辅瞄
-        remote_controller.auto_arm = 0;
-
-        GimbalPidChange();
+        remote_controller.auto_arm =0;
         if (remote_controller.gimbal_action == GIMBAL_AUTO_AIM_MODE)
         {
             setGimbalAction(GIMBAL_ACT_MODE); // 打车没有按键退出，单独加判断
@@ -416,4 +406,79 @@ void get_control_info(ChassisSolver *infantry)
     default:
         break;
     }
+}
+
+void speed_smoother_init(SpeedSmoother *sm, float start_speed, float accel, float decel)
+{
+    sm->current_speed = 0.0f;
+    sm->start_speed = start_speed;
+    sm->accel = accel;
+    sm->decel = decel;
+}
+
+float speed_smoother_update(SpeedSmoother *sm, float target, float dt)
+{
+    // -------- 1. 防御性处理：防止 dt 异常 ----------
+    if (dt > 0.1f)
+        dt = 0.005f; // 若卡顿，使用默认步长
+
+    // -------- 2. 目标为 0（松手）：执行减速停止 ----------
+    if (fabsf(target) < 0.001f)
+    {
+        // 如果当前速度已经极小，直接归零
+        if (fabsf(sm->current_speed) < 0.001f)
+        {
+            sm->current_speed = 0.0f;
+        }
+        else
+        {
+            float step = sm->decel * dt;
+            if (sm->current_speed > 0)
+            {
+                sm->current_speed = (sm->current_speed - step > 0) ? (sm->current_speed - step) : 0.0f;
+            }
+            else
+            {
+                sm->current_speed = (sm->current_speed + step < 0) ? (sm->current_speed + step) : 0.0f;
+            }
+        }
+        return sm->current_speed;
+    }
+
+    // -------- 3. 目标非 0：处理起步和加速 ----------
+    // 3.1 判断当前是否处于“静止”或“接近静止”
+    if (fabsf(sm->current_speed) < 0.001f)
+    {
+        // 3.1.1 目标速度 <= 冲击阈值：直接透传（保证微操不窜）
+        if (fabsf(target) <= sm->start_speed)
+        {
+            sm->current_speed = target;
+        }
+        else
+        {
+            // 3.1.2 目标速度 > 冲击阈值：瞬间给一个冲击速度突破静摩擦
+            sm->current_speed = (target > 0) ? sm->start_speed : -sm->start_speed;
+        }
+        return sm->current_speed;
+    }
+
+    // 3.2 车辆已在运动中：执行加速度限幅（速率限制）
+    float delta = target - sm->current_speed;
+    float max_delta = sm->accel * dt;
+
+    // 限幅变化量（正负都限制）
+    if (delta > max_delta)
+        delta = max_delta;
+    if (delta < -max_delta)
+        delta = -max_delta;
+
+    sm->current_speed += delta;
+
+    // 3.3 防止超调
+    if ((delta > 0 && sm->current_speed > target) || (delta < 0 && sm->current_speed < target))
+    {
+        sm->current_speed = target;
+    }
+
+    return sm->current_speed;
 }

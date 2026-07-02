@@ -39,14 +39,21 @@ enum CHASSIS_STATE_e
     CHASSIS_STATE_ABNORMAL // 底盘状态异常
 };
 
+typedef struct {
+    float current_speed;   // 当前平滑输出值（即上一帧发给底盘的值）
+    float start_speed;      // 启动冲击阈值（标幺值，建议 0.05）
+    float accel;     // 最大加速度斜率（标幺值/秒，建议 0.6~1.0）
+    float decel;     // 最大减速度斜率（标幺值/秒，建议是 accel 的 1.5~2 倍）
+} SpeedSmoother;
+
 typedef struct ChassisSolver
 {
     float chassis_speed_x; // 云台方向速度
     float chassis_speed_y; // 垂直云台方向速度
     float chassis_speed_w; // 小陀螺状态的速度期望
-    TD_t speed_x_td; //前后方向速度跟踪微分器
-    TD_t speed_y_td; //左右方向速度跟踪微分器
-    TD_t speed_w_td; //旋转速度跟踪微分器
+    SpeedSmoother speed_x_smoother;
+    SpeedSmoother speed_y_smoother;
+    SpeedSmoother speed_w_smoother;
 
     //鼠标返回值是离散的，需要进行平滑处理
     TD_t mouse_x_td; //鼠标x轴速度跟踪微分器
@@ -69,5 +76,7 @@ void KeyMouse_Init(void);
 void get_control_info(ChassisSolver *infantry);
 
 void chassis_direction_get(float target_rate, float zeros_rate);
+void speed_smoother_init(SpeedSmoother *sm, float start_speed, float accel, float decel);
+float speed_smoother_update(SpeedSmoother *sm, float target, float dt);
 
 #endif // !_CHASSIS_SOLVER_H

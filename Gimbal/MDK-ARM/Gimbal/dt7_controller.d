@@ -81,6 +81,7 @@ gimbal\dt7_controller.o: ../Components/motor/inc/M2006.h
 gimbal\dt7_controller.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\dt7_controller.o: ../Algorithm/inc/my_filter.h
 gimbal\dt7_controller.o: ../Application/inc/Gimbal.h
+gimbal\dt7_controller.o: ../Config/Robot_config.h
 gimbal\dt7_controller.o: ../Components/motor/inc/GM6020.h
 gimbal\dt7_controller.o: ../Components/motor/inc/DM_Motor.h
 gimbal\dt7_controller.o: ../Core/Inc/can.h
@@ -89,16 +90,15 @@ gimbal\dt7_controller.o: ../Application/inc/BMI088driver.h
 gimbal\dt7_controller.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\dt7_controller.o: ../Algorithm/inc/kalman_filter.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_PWM.h
+gimbal\dt7_controller.o: ../Application/inc/pc_serial.h
+gimbal\dt7_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\dt7_controller.o: ../Algorithm/inc/TD.h
-gimbal\dt7_controller.o: ../Config/Robot_config.h
 gimbal\dt7_controller.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\dt7_controller.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\dt7_controller.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\dt7_controller.o: ../Application/inc/DT7_Controller.h
 gimbal\dt7_controller.o: ../Application/inc/VTM_Controller.h
 gimbal\dt7_controller.o: ../Application/inc/KeyMouse.h
-gimbal\dt7_controller.o: ../Application/inc/pc_serial.h
-gimbal\dt7_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\dt7_controller.o: ../Application/inc/ToggleBullet.h
 gimbal\dt7_controller.o: ../Application/inc/FrictionWheel.h
 gimbal\dt7_controller.o: ../Components/motor/inc/M3508.h

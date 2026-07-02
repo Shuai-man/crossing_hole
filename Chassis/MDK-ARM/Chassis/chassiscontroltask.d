@@ -24,7 +24,7 @@ chassis\chassiscontroltask.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 chassis\chassiscontroltask.o: ../Algorithm/inc/arm_atan2_f32.h
 chassis\chassiscontroltask.o: ../Components/tools/inc/tools.h
 chassis\chassiscontroltask.o: ../Algorithm/inc/user_lib.h
-chassis\chassiscontroltask.o: ../application/inc/remote_control.h
+chassis\chassiscontroltask.o: ../Algorithm/inc/pid.h
 chassis\chassiscontroltask.o: ../boards/inc/bsp_dwt.h
 chassis\chassiscontroltask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 chassis\chassiscontroltask.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -55,15 +55,11 @@ chassis\chassiscontroltask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 chassis\chassiscontroltask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 chassis\chassiscontroltask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\chassiscontroltask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-chassis\chassiscontroltask.o: ../Components/tools/inc/debug.h
-chassis\chassiscontroltask.o: ../Algorithm/inc/pid.h
 chassis\chassiscontroltask.o: ../config/can_config.h
 chassis\chassiscontroltask.o: ../Core/Inc/can.h
 chassis\chassiscontroltask.o: ../Core/Inc/main.h
 chassis\chassiscontroltask.o: ../config/robot_config.h
 chassis\chassiscontroltask.o: ../Algorithm/inc/TD.h
-chassis\chassiscontroltask.o: ../application/inc/PowerLimit.h
-chassis\chassiscontroltask.o: ../application/inc/SuperPower.h
 chassis\chassiscontroltask.o: ../application/inc/PowerLimit.h
 chassis\chassiscontroltask.o: ../Components/motor/inc/Motor_Typdef.h
 chassis\chassiscontroltask.o: ../Algorithm/inc/RLS_Identification.h
@@ -75,6 +71,8 @@ chassis\chassiscontroltask.o: ../boards/inc/bsp_can.h
 chassis\chassiscontroltask.o: ../application/inc/ChassisController.h
 chassis\chassiscontroltask.o: ../application/inc/wireless.h
 chassis\chassiscontroltask.o: ../application/inc/Gimbalreceive.h
+chassis\chassiscontroltask.o: ../Components/tools/inc/debug.h
+chassis\chassiscontroltask.o: ../application/inc/remote_control.h
 chassis\chassiscontroltask.o: ../application/inc/NingCap.h
 chassis\chassiscontroltask.o: ../application/inc/mecanum.h
 chassis\chassiscontroltask.o: ../Algorithm/inc/accel.h

@@ -13,7 +13,7 @@ chassis\robot_config.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 chassis\robot_config.o: ../Algorithm/inc/arm_atan2_f32.h
 chassis\robot_config.o: ../Components/tools/inc/tools.h
 chassis\robot_config.o: ../Algorithm/inc/user_lib.h
-chassis\robot_config.o: ../application/inc/remote_control.h
+chassis\robot_config.o: ../Algorithm/inc/pid.h
 chassis\robot_config.o: ../boards/inc/bsp_dwt.h
 chassis\robot_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 chassis\robot_config.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -45,15 +45,11 @@ chassis\robot_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex
 chassis\robot_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 chassis\robot_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\robot_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-chassis\robot_config.o: ../Components/tools/inc/debug.h
-chassis\robot_config.o: ../Algorithm/inc/pid.h
 chassis\robot_config.o: ../config/can_config.h
 chassis\robot_config.o: ../Core/Inc/can.h
 chassis\robot_config.o: ../Core/Inc/main.h
 chassis\robot_config.o: ../config/robot_config.h
 chassis\robot_config.o: ../Algorithm/inc/TD.h
-chassis\robot_config.o: ../application/inc/PowerLimit.h
-chassis\robot_config.o: ../application/inc/SuperPower.h
 chassis\robot_config.o: ../application/inc/PowerLimit.h
 chassis\robot_config.o: ../Components/motor/inc/Motor_Typdef.h
 chassis\robot_config.o: ../Algorithm/inc/RLS_Identification.h
@@ -65,6 +61,8 @@ chassis\robot_config.o: ../boards/inc/bsp_can.h
 chassis\robot_config.o: ../application/inc/ChassisController.h
 chassis\robot_config.o: ../application/inc/wireless.h
 chassis\robot_config.o: ../application/inc/Gimbalreceive.h
+chassis\robot_config.o: ../Components/tools/inc/debug.h
+chassis\robot_config.o: ../application/inc/remote_control.h
 chassis\robot_config.o: ../application/inc/NingCap.h
 chassis\robot_config.o: ../application/inc/mecanum.h
 chassis\robot_config.o: ../Algorithm/inc/accel.h

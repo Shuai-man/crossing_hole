@@ -77,6 +77,7 @@ gimbal\offline_task.o: ../Components/motor/inc/M2006.h
 gimbal\offline_task.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\offline_task.o: ../Algorithm/inc/my_filter.h
 gimbal\offline_task.o: ../Application/inc/Gimbal.h
+gimbal\offline_task.o: ../Config/Robot_config.h
 gimbal\offline_task.o: ../Components/motor/inc/GM6020.h
 gimbal\offline_task.o: ../Components/motor/inc/DM_Motor.h
 gimbal\offline_task.o: ../Core/Inc/can.h
@@ -86,8 +87,9 @@ gimbal\offline_task.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\offline_task.o: ../Algorithm/inc/kalman_filter.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\offline_task.o: ../Core/Inc/tim.h
+gimbal\offline_task.o: ../Application/inc/pc_serial.h
+gimbal\offline_task.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\offline_task.o: ../Algorithm/inc/TD.h
-gimbal\offline_task.o: ../Config/Robot_config.h
 gimbal\offline_task.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\offline_task.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\offline_task.o: ../Algorithm/inc/SignalGenerator.h

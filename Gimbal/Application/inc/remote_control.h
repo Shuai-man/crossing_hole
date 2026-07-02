@@ -178,6 +178,7 @@ void setGimbalPosition(enum GIMBAL_POSITION gimbal_position);
 void setAllModeOff(void);
 void Test_Init(void);
 void Game_Init(void);
+void Change_Init(void);
 
 // 遥控器
 void RemoteGet(void);

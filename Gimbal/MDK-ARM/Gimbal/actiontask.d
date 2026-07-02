@@ -81,6 +81,7 @@ gimbal\actiontask.o: ../Components/motor/inc/M2006.h
 gimbal\actiontask.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\actiontask.o: ../Algorithm/inc/my_filter.h
 gimbal\actiontask.o: ../Application/inc/Gimbal.h
+gimbal\actiontask.o: ../Config/Robot_config.h
 gimbal\actiontask.o: ../Components/motor/inc/GM6020.h
 gimbal\actiontask.o: ../Components/motor/inc/DM_Motor.h
 gimbal\actiontask.o: ../Core/Inc/can.h
@@ -89,16 +90,15 @@ gimbal\actiontask.o: ../Application/inc/BMI088driver.h
 gimbal\actiontask.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\actiontask.o: ../Algorithm/inc/kalman_filter.h
 gimbal\actiontask.o: ../Components/boards/inc/bsp_PWM.h
+gimbal\actiontask.o: ../Application/inc/pc_serial.h
+gimbal\actiontask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\actiontask.o: ../Algorithm/inc/TD.h
-gimbal\actiontask.o: ../Config/Robot_config.h
 gimbal\actiontask.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\actiontask.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\actiontask.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\actiontask.o: ../Application/inc/DT7_Controller.h
 gimbal\actiontask.o: ../Application/inc/KeyMouse.h
 gimbal\actiontask.o: ../Application/inc/VTM_Controller.h
-gimbal\actiontask.o: ../Application/inc/pc_serial.h
-gimbal\actiontask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\actiontask.o: ../Application/inc/ToggleBullet.h
 gimbal\actiontask.o: ../Application/inc/FrictionWheel.h
 gimbal\actiontask.o: ../Components/motor/inc/M3508.h

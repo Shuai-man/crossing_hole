@@ -138,7 +138,7 @@ void VTM_Frame_Parse(uint8_t *buf, VTM_Remote *data)
     data->keyboard = (uint16_t)VTM_Bit_Extract(buf, 136, 16);
 
     // 调试信息
-		LossUpdate(&global_debugger.VTM_debugger,0.0025f);
+		LossUpdate(&global_debugger.VTM_debugger,0.05f);
 }
 
 // ==================== 初始化UART6 DMA接收和空闲中断 ====================

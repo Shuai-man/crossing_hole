@@ -1,5 +1,4 @@
 #include "PowerLimit.h"
-#include "SuperPower.h"
 #include "ChassisController.h"
 
 #include "NingCap.h"
@@ -208,8 +207,7 @@ void power_fit_init(PowerLimiter *limitter)
 
 void power_fitting(PowerLimiter *limitter)
 {
-		LossJudge(&global_debugger.super_power_debugger);
-		if(global_debugger.super_power_debugger.loss_time < 50)
+		if(global_debugger.super_power_debugger.state == ON)
 		{
 			power_rls.y_data[0] = cap_recv_data.chassis_power/100.0f - limitter->power_k[WI]*limitter->sum_w_i_collect - limitter->power_k[P0] * 4;
 			power_rls.H_data[0] = limitter->sum_i_2_collect;

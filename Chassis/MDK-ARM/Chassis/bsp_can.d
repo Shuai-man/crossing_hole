@@ -48,13 +48,9 @@ chassis\bsp_can.o: ../Drivers/CMSIS/Include/core_cm4.h
 chassis\bsp_can.o: ../Algorithm/inc/arm_atan2_f32.h
 chassis\bsp_can.o: ../Components/tools/inc/tools.h
 chassis\bsp_can.o: ../Algorithm/inc/user_lib.h
-chassis\bsp_can.o: ../application/inc/remote_control.h
-chassis\bsp_can.o: ../boards/inc/bsp_dwt.h
-chassis\bsp_can.o: ../Components/tools/inc/debug.h
 chassis\bsp_can.o: ../Algorithm/inc/pid.h
+chassis\bsp_can.o: ../boards/inc/bsp_dwt.h
 chassis\bsp_can.o: ../Algorithm/inc/TD.h
-chassis\bsp_can.o: ../application/inc/PowerLimit.h
-chassis\bsp_can.o: ../application/inc/SuperPower.h
 chassis\bsp_can.o: ../application/inc/PowerLimit.h
 chassis\bsp_can.o: ../Components/motor/inc/Motor_Typdef.h
 chassis\bsp_can.o: ../Algorithm/inc/RLS_Identification.h
@@ -81,10 +77,12 @@ chassis\bsp_can.o: ../application/inc/Referee.h
 chassis\bsp_can.o: ../Components/tools/inc/protocol.h
 chassis\bsp_can.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\bsp_can.o: ../Core/Inc/usart.h
+chassis\bsp_can.o: ../Components/tools/inc/debug.h
 chassis\bsp_can.o: ../boards/inc/bsp_referee.h
 chassis\bsp_can.o: ../application/inc/Referee.h
 chassis\bsp_can.o: ../application/inc/HeatControl.h
 chassis\bsp_can.o: ../application/inc/GimbalReceive.h
+chassis\bsp_can.o: ../application/inc/remote_control.h
 chassis\bsp_can.o: ../application/inc/NingCap.h
 chassis\bsp_can.o: ../application/inc/wireless.h
 chassis\bsp_can.o: ../application/inc/ChassisController.h

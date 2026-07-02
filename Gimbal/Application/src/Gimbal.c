@@ -148,43 +148,6 @@ void GimbalPidInit(void)
     Feedforward_Init(&gimbal_controller.follow_gimbal_forward, 1.0f, ff_c_follow, 0.05, 1, 1);
 }
 
-void GimbalPidChange(void)
-{
-
-    // Pitch
-    PID_Change(&gimbal_controller.pitch_angle_pid, 500.0f, 0, 0.0f, 20.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
-    PID_Change(&gimbal_controller.pitch_speed_pid, 5000, 4000, 0.0f, 40.0f, 100.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit);
-
-    // Yaw
-    PID_Change(&gimbal_controller.yaw_angle_pid, 500.0, 0, 0, 20.0f, 0, 0.1f, 0, 0, 0.0, 0.02f, 1, DerivativeFilter);
-    PID_Change(&gimbal_controller.yaw_speed_pid, 9000, 1600, 0.0, 120.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit | Trapezoid_Intergral);
-}
-
-void Auto_GimbalPidChange(void)
-{
-    // 打车需要锯齿波跟踪  /|/|/|
-
-    // Pitch
-    PID_Change(&gimbal_controller.pitch_angle_pid, 500.0f, 0, 0.0f, 12.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
-    PID_Change(&gimbal_controller.pitch_speed_pid, 5000, 4000, 0.0f, 10.0f, 400.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit);
-
-    // Yaw
-    PID_Change(&gimbal_controller.yaw_angle_pid, 500.0, 0, 0, 20.0f, 0, 0.1f, 0, 0, 0.0, 0.02f, 1, DerivativeFilter);
-    PID_Change(&gimbal_controller.yaw_speed_pid, 7000, 1600, 0.0, 90.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit | Trapezoid_Intergral);
-}
-
-void Small_Buff_Change(void)
-{
-
-    // Pitch
-    PID_Change(&gimbal_controller.pitch_angle_pid, 500.0f, 0, 0.0f, 12.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
-    PID_Change(&gimbal_controller.pitch_speed_pid, 5000, 4000, 0.0f, 10.0f, 400.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit);
-
-    // Yaw
-    PID_Change(&gimbal_controller.yaw_angle_pid, 500.0, 0, 0, 20.0f, 0, 0.1f, 0, 0, 0.0, 0.02f, 1, DerivativeFilter);
-    PID_Change(&gimbal_controller.yaw_speed_pid, 7000, 1600, 0.0, 90.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit | Trapezoid_Intergral);
-}
-
 /**
  * @brief 云台控制
  * @param[in] set_point 角度值设定 度
@@ -322,7 +285,7 @@ void updateGyro()
     gimbal_controller.gyro_yaw_angle = GIMBAL_YAW_GYRO_SIGN * INS.YawTotalAngle;
     // yaw角速度
     speed = GIMBAL_YAW_GYRO_SIGN * INS.Gyro[2] / PI * 180.0f;
-    iir(&gimbal_controller.gyro_yaw_speed, speed, 0.6);//还是超调可以试试加大滤波
+    iir(&gimbal_controller.gyro_yaw_speed, speed, 0.6); // 还是超调可以试试加大滤波
 }
 
 /**

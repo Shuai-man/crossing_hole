@@ -125,8 +125,6 @@ void Referee_UnpackFifoData()
 				{
 					referee_data.decoder.judgementStep = STEP_HEADER_SOF;
 					referee_data.decoder.index = 0;
-
-					global_debugger.referee_debugger.err_msgs_num++;
 				}
 			}
 		}
@@ -144,11 +142,11 @@ void Referee_UnpackFifoData()
 				if (Verify_CRC16_Check_Sum((unsigned char *)fullDataBuffer, REF_HEADER_CRC_CMDID_LEN + referee_data.decoder.data_len))
 				{
 					Referee_SolveFifoData((unsigned char *)fullDataBuffer);
-					global_debugger.referee_debugger.recv_msgs_num++;
+					LossUpdate(&global_debugger.referee_debugger, 0.5);
 				}
 				else
 				{
-					global_debugger.referee_debugger.err_msgs_num++;
+					// CRC16 error
 				}
 			}
 		}

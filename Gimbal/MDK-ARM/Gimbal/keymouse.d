@@ -80,6 +80,7 @@ gimbal\keymouse.o: ../Components/motor/inc/M2006.h
 gimbal\keymouse.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\keymouse.o: ../Algorithm/inc/my_filter.h
 gimbal\keymouse.o: ../Application/inc/Gimbal.h
+gimbal\keymouse.o: ../Config/Robot_config.h
 gimbal\keymouse.o: ../Components/motor/inc/GM6020.h
 gimbal\keymouse.o: ../Components/motor/inc/DM_Motor.h
 gimbal\keymouse.o: ../Core/Inc/can.h
@@ -88,16 +89,15 @@ gimbal\keymouse.o: ../Application/inc/BMI088driver.h
 gimbal\keymouse.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\keymouse.o: ../Algorithm/inc/kalman_filter.h
 gimbal\keymouse.o: ../Components/boards/inc/bsp_PWM.h
+gimbal\keymouse.o: ../Application/inc/pc_serial.h
+gimbal\keymouse.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\keymouse.o: ../Algorithm/inc/TD.h
-gimbal\keymouse.o: ../Config/Robot_config.h
 gimbal\keymouse.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\keymouse.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\keymouse.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\keymouse.o: ../Application/inc/DT7_Controller.h
 gimbal\keymouse.o: ../Application/inc/KeyMouse.h
 gimbal\keymouse.o: ../Application/inc/VTM_Controller.h
-gimbal\keymouse.o: ../Application/inc/pc_serial.h
-gimbal\keymouse.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\keymouse.o: ../Application/inc/ToggleBullet.h
 gimbal\keymouse.o: ../Application/inc/FrictionWheel.h
 gimbal\keymouse.o: ../Components/motor/inc/M3508.h

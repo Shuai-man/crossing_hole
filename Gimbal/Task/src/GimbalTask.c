@@ -56,6 +56,27 @@ void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
     }
 }
 
+void Gimbal_PC_Cal(void)
+{
+    // PITCH
+    gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
+    limitPitchAngle(); // pitch限制幅值
+    PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.target_pitch_angle);
+    PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, pc_recv_data.pitch_omega_setpoint);
+    gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output;
+
+    // YAW
+    gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
+    gimbal_controller.ff_tff =
+        GIMBAL_YAW_J * pc_recv_data.yaw_acc_setpoint +        // 惯量 × 加速度，主要输出项
+        GIMBAL_YAW_B * pc_recv_data.yaw_omega_setpoint +      // 阻尼 × 速度
+        GIMBAL_YAW_C * sign(pc_recv_data.yaw_omega_setpoint); // 库伦摩擦 × 速度方向   // pid闭环
+    PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, pc_recv_data.yaw_setpoint);
+    PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, pc_recv_data.yaw_omega_setpoint); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
+    // 总输出 = 前馈 + 角度环输出 + 速度环输出
+    gimbal_controller.yaw_out = gimbal_controller.ff_tff + gimbal_controller.yaw_angle_pid.Output + gimbal_controller.yaw_speed_pid.Output;
+}
+
 void Gimbal_Act_Cal(void)
 {
     // pitch限制幅值
@@ -70,59 +91,18 @@ void Gimbal_Act_Cal(void)
 
 void Gimbal_Auto_aim_Cal(void) // 打车
 {
-    gimbal_controller.pc_recv_rad[PITCH_MOTOR] = pc_recv_data.pitch_setpoint;
-    gimbal_controller.pc_recv_rad[YAW_MOTOR] = pc_recv_data.yaw_setpoint;
-
+     // 改变发送的模式
     // 设置目标角度
-    if (pc_recv_data.detect_number != 0 && fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) < 70.0f)
+    if (pc_recv_data.detect_number == 0 || fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
     {
-        if (global_debugger.pc_receive_debugger.state == ON)
-        {
-            gimbal_controller.target_pitch_angle = gimbal_controller.pc_recv_rad[PITCH_MOTOR];
-            gimbal_controller.target_yaw_angle = gimbal_controller.pc_recv_rad[YAW_MOTOR];
-        }
+        Gimbal_Act_Cal();
     }
-
-    pc_send_data.mode_want = STD_AUTO_AIM; // 改变发送的模式
-
-    // pitch限制幅值
-    limitPitchAngle();
-
-    // 角度计算
-    Gimbal_Yaw_Calculate(gimbal_controller.target_yaw_angle);
-    Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
+    else
+    {
+        Gimbal_PC_Cal();
+    }
 }
 
-void Gimbal_Buff_Cal(void)
-{
-    gimbal_controller.pc_recv_rad[PITCH_MOTOR] = pc_recv_data.pitch_setpoint;
-    gimbal_controller.pc_recv_rad[YAW_MOTOR] = pc_recv_data.yaw_setpoint;
-
-    // 设置目标角度
-    if (pc_recv_data.detect_number != 0 && fabsf(gimbal_controller.target_pitch_angle - pc_recv_data.pitch_setpoint) < 60.0f && fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) < 70.0f)
-    {
-        if (global_debugger.pc_receive_debugger.state == ON && remote_controller.auto_arm == 1) // pc掉线后数据不会更新，所以要加检测
-        {
-            gimbal_controller.target_pitch_angle = gimbal_controller.pc_recv_rad[PITCH_MOTOR];
-            gimbal_controller.target_yaw_angle = gimbal_controller.pc_recv_rad[YAW_MOTOR];
-        }
-    }
-    if (remote_controller.gimbal_action == GIMBAL_SMALL_BUFF_MODE)
-    {
-        pc_send_data.mode_want = BUFF; // 改变发送的模式
-    }
-    else if (remote_controller.gimbal_action == GIMBAL_BIG_BUFF_MODE)
-    {
-        pc_send_data.mode_want = BIG_BUFF;
-    }
-
-    // pitch限制幅值
-    limitPitchAngle();
-
-    // yaw计算
-    Gimbal_Yaw_Calculate(gimbal_controller.target_yaw_angle);
-    Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
-}
 
 void Gimbal_SI_Cal()
 {
@@ -312,10 +292,10 @@ void Gimbal_Task(void *pvParameters)
             Gimbal_Auto_aim_Cal();
             break;
         case GIMBAL_SMALL_BUFF_MODE:
-            Gimbal_Buff_Cal();
+            Gimbal_Auto_aim_Cal();
             break;
         case GIMBAL_BIG_BUFF_MODE:
-            Gimbal_Buff_Cal();
+            Gimbal_Auto_aim_Cal();
             break;
         default:
             GimbalClear();
