@@ -42,12 +42,16 @@
 #define GIMBAL_YAW_MOTOR_SIGN -1.0f // 用来标记电机的方向，逆时针为正
 #define GIMBAL_YAW_GYRO_SIGN 1.0f   // 用来标记gyro的方向，逆时针为正
 // 系统辨识参数
-#define GIMBAL_YAW_J 4.92400551f // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
-#define GIMBAL_YAW_B 19.584095f  // 阻尼系数，与速度有关
-#define GIMBAL_YAW_C 26.2818222f // 库伦摩擦系数，与结构有关
+#define GIMBAL_YAW_J 3.08758259f // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
+#define GIMBAL_YAW_B 1.21354508f//2.4f  // 阻尼系数，与速度有关
+#define GIMBAL_YAW_C 315.488129f//220.0f // 库伦摩擦系数，与结构有关
 
 // 系统辨识开关（0=关闭, 1=开启）
 #define GIMBAL_SYSID 0
+// 系统辨识步骤选择（配合 GIMBAL_SYSID=1 使用）
+#define GIMBAL_SYSID_STEP_BC 1  // 第一步：稳态速度测试 -> 辨识 B (阻尼) 和 C (库仑摩擦)
+#define GIMBAL_SYSID_STEP_J  2  // 第二步：恒加速测试 -> 辨识 J (转动惯量)，需先用第一步得到 B,C
+#define GIMBAL_SYSID_STEP GIMBAL_SYSID_STEP_BC  // 默认执行第一步
 
 // 摩擦力模型调参
 #define BORDER_FRICTION_SPEED 6.0f    // 临界计算摩擦力速度，大于此速度将是全摩擦力补偿
@@ -60,6 +64,19 @@ typedef enum
   GIMBAL_FRONT = 0,
   GIMBAL_BACK = 1,
 } gimbal_direction_e;
+
+/* 系统辨识全局变量 */
+typedef struct Gimbal_SI
+{
+  float sysid_timer;
+  RLS rls_yaw;
+  SI_t si_yaw;
+  TD_t td_omega;
+  uint8_t gimbal_sysid_done;
+  float J;
+  float B;
+  float C;
+} Gimbal_SI;
 
 typedef struct GimbalController
 {
@@ -120,12 +137,8 @@ typedef struct GimbalController
   float stuck_time;        // 卡弹持续时间
   float spin_reverse_time; // 反转时间
 
-  /*----------系统辨识全局变量-----------------*/
-  RLS rls_yaw;
-  SI_t si_yaw;
-  TD_t td_sysid_omega;
-  uint8_t gimbal_sysid_done;
-  float gimbal_sysid_last_speed;
+  /*----------系统辨识-----------------*/
+  Gimbal_SI yaw_sysid;
 
 } GimbalController;
 

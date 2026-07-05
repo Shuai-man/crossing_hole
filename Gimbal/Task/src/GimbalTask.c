@@ -275,7 +275,7 @@ void Gimbal_Task(void *pvParameters)
         Gimbal_Return(&gimbal_controller, &remote_controller);
 
 #if GIMBAL_SYSID
-        if (!gimbal_controller.gimbal_sysid_done)
+        if (!gimbal_controller.yaw_sysid.gimbal_sysid_done)
         {
             Gimbal_SystemID_Run();
         }

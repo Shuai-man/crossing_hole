@@ -1,4 +1,4 @@
-#include "Gimbal.h"
+﻿#include "Gimbal.h"
 #include "bsp_dwt.h"
 
 GimbalController gimbal_controller;
@@ -8,119 +8,6 @@ void GimbalMotorInit(void)
     DM_Motor_Init(&gimbal_controller.DM_Pitch_Motor, P_MAX, 10, V_MAX);
     //	DM_Motor_Init(&gimbal_controller.DM_Yaw_Motor,P_MAX,T_MAX,V_MAX);
     DM_Motor_Init(&gimbal_controller.DM_Yaw_Motor, P_MAX, 10, V_MAX); // 为了方便调参，放大最大值;pid输出限幅要对应修改
-}
-
-// 系统辨识初始化
-
-static float sysid_timer = 0.0f;
-static float sysid_speed_cmd = 0.0f;
-float J, B, C = 0;
-
-// 系统辨识初始化（移除扫频相关）
-void Gimbal_SystemID_Init(void)
-{
-    TD_Init(&gimbal_controller.td_sysid_omega, 10.0f, 0.005f); // r 设小一点，专门用来压噪声
-    // RLS 初始化（不变）
-    RLS_Init(&gimbal_controller.rls_yaw, 3, 1, 0.99f);
-
-    // 重置计时器
-    sysid_timer = 0.0f;
-    sysid_speed_cmd = 0.0f;
-
-    gimbal_controller.gimbal_sysid_done = 1; // debug设为0启动，启动后云台会自动旋转，直到辨识完成
-    gimbal_controller.gimbal_sysid_last_speed = 0.0f;
-}
-
-// 系统辨识单步运行（500Hz 调用）
-void Gimbal_SystemID_Run(void)
-{
-#if GIMBAL_SYSID
-
-    if (gimbal_controller.gimbal_sysid_done)
-        return;
-
-    // ===== 1. 生成梯形波速度指令（正反转交替） =====
-    float dt = gimbal_controller.delta_t;
-    sysid_timer += dt;
-
-// 梯形波参数（单位：秒）
-#define T_FORWARD 5.0f  // 正转持续时间
-#define T_STOP1 1.0f    // 正转后停顿
-#define T_REVERSE 5.0f  // 反转持续时间
-#define T_STOP2 1.0f    // 反转后停顿
-#define SPEED_AMP 20.0f // 最大速度 (°/s)，绝对安全
-
-    float cycle_time = T_FORWARD + T_STOP1 + T_REVERSE + T_STOP2;
-    float t_phase = fmodf(sysid_timer, cycle_time);
-
-    if (t_phase < T_FORWARD)
-        sysid_speed_cmd = SPEED_AMP;
-    else if (t_phase < T_FORWARD + T_STOP1)
-        sysid_speed_cmd = 0.0f;
-    else if (t_phase < T_FORWARD + T_STOP1 + T_REVERSE)
-        sysid_speed_cmd = -SPEED_AMP;
-    else
-        sysid_speed_cmd = 0.0f;
-
-    // （可选）加入软启动，限制加速度防止冲击
-    static float smooth_speed = 0.0f;
-    float max_accel = 20.0f; // rad/s²，限制加加速度
-    if (smooth_speed < sysid_speed_cmd)
-        smooth_speed += max_accel * dt;
-    else if (smooth_speed > sysid_speed_cmd)
-        smooth_speed -= max_accel * dt;
-    else
-        smooth_speed = sysid_speed_cmd;
-    // 限幅到目标值附近，避免积分误差
-    if (fabsf(smooth_speed - sysid_speed_cmd) < 0.01f)
-        smooth_speed = sysid_speed_cmd;
-
-    // 最终指令，注入速度环
-    gimbal_controller.yaw_speed_pid.Ref = smooth_speed;
-
-    // ===== 2. 采集测量数据（不变） =====
-    float omega_raw = gimbal_controller.gyro_yaw_speed;
-
-    // 使用 TD 对速度进行滤波，并提取平滑后的速度和加速度
-    float omega_processed = TD_Calculate(&gimbal_controller.td_sysid_omega, omega_raw);
-
-    // TD 内部自带的 dx 就是平滑速度，ddx 就是平滑加速度（注意查看你的 TD 结构体是否有 ddx 输出）
-    // 如果你的 TD_Calculate 只返回 x，请确认 td->dx 和 td->ddx 是否更新
-    float alpha_smooth = gimbal_controller.td_sysid_omega.dx;
-    float omega_smooth = gimbal_controller.td_sysid_omega.x;
-    float torque = GIMBAL_YAW_MOTOR_SIGN * gimbal_controller.DM_Yaw_Motor.t_ff_Receive; // 反馈力矩
-
-    // 为了时间对齐，使用历史缓冲区（但此处省略，你可以按之前建议加入）
-    // 如果加，这里用对齐后的扭矩，否则直接用 torque
-
-    // ===== 3. 更新 RLS（增加过零保护） =====
-    // 只有速度绝对值大于阈值（正在匀速运动）才更新
-    // 并且在过零点附近（速度太小）跳过，防止 sign 抖动
-    if (fabsf(omega_smooth) > 0.05f && fabsf(torque) > 0.001f)
-    {
-        // 填充 H 矩阵
-        gimbal_controller.rls_yaw.H_data[0] = alpha_smooth;
-        gimbal_controller.rls_yaw.H_data[1] = omega_smooth;
-        gimbal_controller.rls_yaw.H_data[2] = (omega_smooth > 0.01f) ? 1.0f : ((omega_smooth < -0.01f) ? -1.0f : 0.0f);
-        gimbal_controller.rls_yaw.y_data[0] = torque;
-
-        // 更新 RLS
-        RLS_Update(&gimbal_controller.rls_yaw);
-    }
-
-    // ===== 4. 判定辨识完成 =====
-    // 可以设定运行时间，比如跑 30 秒后自动结束
-    if (sysid_timer > 30.0f)
-    {
-        gimbal_controller.gimbal_sysid_done = 1;
-        gimbal_controller.yaw_speed_pid.Ref = 0;
-        // 提取辨识参数
-        J = gimbal_controller.rls_yaw.x_data[0];
-        B = gimbal_controller.rls_yaw.x_data[1];
-        C = gimbal_controller.rls_yaw.x_data[2];
-    }
-
-#endif
 }
 
 /**
@@ -330,4 +217,145 @@ float GimbalFrictionModel()
     }
     // 全补偿
     return FRICTION_CURRENT_COMP * FRICTION_FORWARD_COEF * sign(gimbal_controller.gyro_yaw_speed);
+}
+
+/*-----------------系统辨识初始化------------------*/
+void Gimbal_SystemID_Init(void)
+{
+    TD_Init(&gimbal_controller.yaw_sysid.td_omega, 10000.0f, 0.005f);
+    gimbal_controller.yaw_sysid.sysid_timer = 0.0f;
+
+    gimbal_controller.yaw_sysid.gimbal_sysid_done = 1;
+
+#if GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_BC
+    RLS_Init(&gimbal_controller.yaw_sysid.rls_yaw, 2, 1, 0.99f);
+#elif GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_J
+    RLS_Init(&gimbal_controller.yaw_sysid.rls_yaw, 1, 1, 0.99f);
+#endif
+}
+
+void Gimbal_SystemID_Run(void)
+{
+#if GIMBAL_SYSID
+
+    if (gimbal_controller.yaw_sysid.gimbal_sysid_done)
+        return;
+
+    float dt = gimbal_controller.delta_t;
+    if (dt > 0.01f)
+        dt = 0.002f;
+    gimbal_controller.yaw_sysid.sysid_timer += dt;
+
+    // ---------- Step 1: 稳态速度测试 -> 辨识 B, C ----------
+#if GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_BC
+
+    const static float vel_pts[] = {-200.0f, -150.0f, -100.0f, -50.0f,
+                                    50.0f, 100.0f, 150.0f, 200.0f};
+    const static uint8_t NUM_PTS = sizeof(vel_pts) / sizeof(vel_pts[0]);
+    const static float SETTLE_TIME = 0.4f;
+    const static float REVS_PER_POINT = 1.0f;
+    const static float DEG_PER_REV = 360.0f;
+
+    static uint8_t step_idx = 0;
+    static float step_timer = 0.0f;
+    static float total_angle = 0.0f;
+    /* 整段数据累加器 */
+    static float torque_sum = 0.0f;
+    static float omega_sum = 0.0f;
+    static uint32_t sample_count = 0;
+
+    step_timer += dt;
+    gimbal_controller.yaw_speed_pid.Ref = vel_pts[step_idx];
+
+    if (step_timer > SETTLE_TIME)
+    {
+        float omega_raw = gimbal_controller.gyro_yaw_speed;
+        float torque = GIMBAL_YAW_MOTOR_SIGN * gimbal_controller.DM_Yaw_Motor.t_ff_Receive;
+
+        total_angle += fabsf(omega_raw) * dt;
+        torque_sum += torque;
+        omega_sum += omega_raw;
+        sample_count++;
+    }
+
+    /* 转够圈数 -> 求平均 -> 喂 RLS -> 跳转 */
+    if (total_angle >= DEG_PER_REV * REVS_PER_POINT)
+    {
+        if (sample_count > 0)
+        {
+            float torque_avg = torque_sum / (float)sample_count;
+            float omega_avg = omega_sum / (float)sample_count;
+            float sign_w = (omega_avg > 0.01f) ? 1.0f : ((omega_avg < -0.01f) ? -1.0f : 0.0f);
+            gimbal_controller.yaw_sysid.rls_yaw.H_data[0] = omega_avg;
+            gimbal_controller.yaw_sysid.rls_yaw.H_data[1] = sign_w;
+            gimbal_controller.yaw_sysid.rls_yaw.y_data[0] = torque_avg;
+            RLS_Update(&gimbal_controller.yaw_sysid.rls_yaw);
+        }
+        step_timer = 0.0f;
+        total_angle = 0.0f;
+        step_idx++;
+        torque_sum = 0.0f;
+        omega_sum = 0.0f;
+        sample_count = 0;
+        TD_Clear(&gimbal_controller.yaw_sysid.td_omega, gimbal_controller.gyro_yaw_speed);
+        if (step_idx >= NUM_PTS)
+        {
+            gimbal_controller.yaw_sysid.gimbal_sysid_done = 1;
+            gimbal_controller.yaw_speed_pid.Ref = 0;
+            gimbal_controller.yaw_sysid.B = gimbal_controller.yaw_sysid.rls_yaw.x_data[0];
+            gimbal_controller.yaw_sysid.C = gimbal_controller.yaw_sysid.rls_yaw.x_data[1];
+        }
+    }
+
+    // ---------- Step 2: 恒加速测试 -> 辨识 J ----------
+
+#elif GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_J
+
+    static const float ACCEL = 80.0f;
+    static const float MAX_SPEED = 250.0f;
+    static float ramp_speed = 0.0f;
+
+    /* 整段累加器 */
+    static float torque_sum = 0.0f;
+    static float omega_sum = 0.0f;
+    static float alpha_sum = 0.0f;
+    static uint32_t sample_count = 0;
+
+    ramp_speed += ACCEL * dt;
+    if (ramp_speed > MAX_SPEED)
+        ramp_speed = MAX_SPEED;
+
+    gimbal_controller.yaw_speed_pid.Ref = ramp_speed;
+
+    /* 跳过起始瞬态后开始积累 */
+    if (gimbal_controller.yaw_sysid.sysid_timer > 0.1f)
+    {
+        float omega_raw = gimbal_controller.gyro_yaw_speed;
+        float omega_smooth = TD_Calculate(&gimbal_controller.yaw_sysid.td_omega, omega_raw);
+        float alpha_smooth = gimbal_controller.yaw_sysid.td_omega.dx;
+        float torque = GIMBAL_YAW_MOTOR_SIGN * gimbal_controller.DM_Yaw_Motor.t_ff_Receive;
+
+        torque_sum += torque;
+        omega_sum += omega_smooth;
+        alpha_sum += alpha_smooth;
+        sample_count++;
+    }
+
+    /* 斜坡结束，用实测均值算 J */
+    if (ramp_speed >= MAX_SPEED)
+    {
+        if (sample_count > 0)
+        {
+            float torque_avg = torque_sum / (float)sample_count;
+            float omega_avg = omega_sum / (float)sample_count;
+            float alpha_avg = alpha_sum / (float)sample_count;
+
+            gimbal_controller.yaw_sysid.J = (torque_avg - GIMBAL_YAW_B * omega_avg - GIMBAL_YAW_C) / alpha_avg;
+        }
+        gimbal_controller.yaw_sysid.gimbal_sysid_done = 1;
+        gimbal_controller.yaw_speed_pid.Ref = 0;
+    }
+#endif
+
+#endif
 }

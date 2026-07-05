@@ -68,7 +68,7 @@ void RLS_Init(RLS *rls_identification, uint8_t x_hat_size, uint8_t y_size, float
         rls_identification->I_data_yy[i * y_size + i] = 1;
     }
 
-    //中间变量
+    // 中间变量
     rls_identification->P_minus_data = (float *)malloc(sizeof_float * x_hat_size * x_hat_size);
     arm_mat_init_f32(&rls_identification->P_minus, x_hat_size, x_hat_size, (float *)rls_identification->P_minus_data);
 
@@ -108,13 +108,14 @@ void RLS_Update(RLS *rls_identification)
     memcpy(rls_identification->P_minus_data, rls_identification->P_data, sizeof(float) * rls_identification->xhatSize * rls_identification->xhatSize);
     memcpy(rls_identification->x_minus_data, rls_identification->x_data, sizeof(float) * rls_identification->xhatSize);
 
-    //求解K
+    // 求解K
     rls_identification->MatStatus =
         arm_mat_mult_f32(&rls_identification->P_minus, &rls_identification->H, &rls_identification->K_temp_1);
     rls_identification->MatStatus =
         arm_mat_trans_f32(&rls_identification->H, &rls_identification->H_T);
     rls_identification->MatStatus =
         arm_mat_mult_f32(&rls_identification->H_T, &rls_identification->K_temp_1, &rls_identification->K_temp_2);
+    rls_identification->I_data_yy[0] = rls_identification->lambda;
     rls_identification->MatStatus =
         arm_mat_add_f32(&rls_identification->I_yy, &rls_identification->K_temp_2, &rls_identification->K_temp_3);
     rls_identification->MatStatus =
@@ -122,7 +123,7 @@ void RLS_Update(RLS *rls_identification)
     rls_identification->MatStatus =
         arm_mat_mult_f32(&rls_identification->K_temp_1, &rls_identification->K_temp_4, &rls_identification->K);
 
-    //求解P
+    // 求解P
     rls_identification->MatStatus =
         arm_mat_mult_f32(&rls_identification->K, &rls_identification->H_T, &rls_identification->P_temp_1);
 
@@ -132,12 +133,12 @@ void RLS_Update(RLS *rls_identification)
     rls_identification->MatStatus =
         arm_mat_mult_f32(&rls_identification->P_temp_2, &rls_identification->P_minus, &rls_identification->P);
 
-    // for (int i = 0; i < rls_identification->xhatSize * rls_identification->xhatSize; i++)
-    // {
-    //     rls_identification->P_data[i] /= rls_identification->lambda;
-    // }
+    for (int i = 0; i < rls_identification->xhatSize * rls_identification->xhatSize; i++)
+    {
+        rls_identification->P_data[i] /= rls_identification->lambda;
+    }
 
-    //求解x
+    // 求解x
     rls_identification->MatStatus =
         arm_mat_mult_f32(&rls_identification->H_T, &rls_identification->x_minus, &rls_identification->x_temp_1);
 
