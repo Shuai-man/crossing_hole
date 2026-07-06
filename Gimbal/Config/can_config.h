@@ -38,6 +38,11 @@
 #define LIFT_LOSS_TIME	0.0035f //s
 #define LIFT_MOTOR_CAN &hcan1
 
+// 编码器
+#define ENCODER_ID 0x01
+#define ENCODER_LOSS_TIME	0.0055f //s
+#define ENCODER_CAN &hcan1
+
 // 底盘通信
 #define SEND_TO_CHASSIS_CAN_ID_1 0x150
 #define SEND_TO_CHASSIS_CAN_ID_2 0x151
@@ -46,6 +51,7 @@
 #define CHASSIS_LOSS_TIME	0.0055f //s
 #define CHASSIS_CAN_COMM_CANx &hcan1
 
+/*---------CAN1------------*/
 // FIFO 0 接收ID
 #define CAN1_FIFO0_ID0 0x000
 #define CAN1_FIFO0_ID1 LIFT_MOTOR_CAN_ID
@@ -55,9 +61,10 @@
 // FIFO 1 接收ID
 #define CAN1_FIFO1_ID0 GET_FROM_CHASSIS_CAN_ID_2
 #define CAN1_FIFO1_ID1 GET_FROM_CHASSIS_CAN_ID_1
-#define CAN1_FIFO1_ID2 0x002
+#define CAN1_FIFO1_ID2 ENCODER_ID
 #define CAN1_FIFO1_ID3 0x003
 
+/*---------CAN2------------*/
 // FIFO 0 接收ID
 #define CAN2_FIFO0_ID0 0x001
 #define CAN2_FIFO0_ID1 PITCH_MOTOR_MASTER_CAN_ID

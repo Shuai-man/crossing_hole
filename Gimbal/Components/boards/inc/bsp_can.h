@@ -13,7 +13,7 @@
 #include "ToggleBullet.h"
 #include "ChassisGet.h"
 #include "lifting_control.h"
-//#include "BombBay.h"
+#include "encoder.h"
 
 void can_filter_init(void);
 

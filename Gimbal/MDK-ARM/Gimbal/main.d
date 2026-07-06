@@ -108,3 +108,4 @@ gimbal\main.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\main.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\main.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\main.o: ../Application/inc/ToggleBullet.h
+gimbal\main.o: ../Application/inc/encoder.h

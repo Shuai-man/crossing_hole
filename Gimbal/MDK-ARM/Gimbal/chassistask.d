@@ -105,4 +105,5 @@ gimbal\chassistask.o: ../Components/motor/inc/M3508.h
 gimbal\chassistask.o: ../Components/boards/inc/bsp_can.h
 gimbal\chassistask.o: ../Config/can_config.h
 gimbal\chassistask.o: ../Config/Motor_Typdef.h
+gimbal\chassistask.o: ../Application/inc/encoder.h
 gimbal\chassistask.o: ../Application/inc/ChassisSend.h

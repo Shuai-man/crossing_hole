@@ -19,6 +19,7 @@ void Buzzer_Configuration(void);
 void Set_Buzzer_Frequency(uint32_t frequency);
 void Initialization_Completed(void);
 void PC_On(void);
+void PC_Off(void);
 void Friction_Off(void);
 
 #endif

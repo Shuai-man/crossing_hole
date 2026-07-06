@@ -34,7 +34,6 @@
 #include "bsp_VTM.h"
 #include "bsp_can.h"
 #include "bsp_led.h"
-#include "bsp_buzzer.h"
 #include "BMI088driver.h"
 #include "tof.h"
 
@@ -123,7 +122,6 @@ int main(void)
 	TOF_Init();		
 	initRemoteControl(REMOTE_CONTROL);
 	
-	Initialization_Completed();//initialization finished buzzing
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */

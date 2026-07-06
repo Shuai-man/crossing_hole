@@ -220,6 +220,13 @@ float GimbalFrictionModel()
 }
 
 /*-----------------系统辨识初始化------------------*/
+/*开启方式：
+*进入Debug，进入键鼠模式（就是只动云台）
+*把gimbal_sysid_done设置为0，开始运行系统辨识
+*输出结果为JBC三个参数，分别为转动惯量，阻尼系数，库伦摩擦系数
+*先测BC，再测J
+*测试时准备一根2m长的烧录线，防止被扯断
+*/
 void Gimbal_SystemID_Init(void)
 {
     TD_Init(&gimbal_controller.yaw_sysid.td_omega, 10000.0f, 0.005f);

@@ -44,3 +44,12 @@ gimbal\bsp_buzzer.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 gimbal\bsp_buzzer.o: ../Core/Inc/tim.h
 gimbal\bsp_buzzer.o: ../Components/tools/inc/tools.h
 gimbal\bsp_buzzer.o: ../Components/boards/inc/bsp_led.h
+gimbal\bsp_buzzer.o: ../Core/Inc/FreeRTOSConfig.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+gimbal\bsp_buzzer.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h

@@ -1,4 +1,8 @@
 #include "bsp_buzzer.h"
+#include "FreeRTOSConfig.h"
+#include "FreeRTOS.h"
+#include "task.h"
+// 把halDelay换成vTaskDelay，防止阻塞主循环
 
 void Set_Buzzer_Frequency(uint32_t frequency)
 {
@@ -12,83 +16,81 @@ void Set_Buzzer_Frequency(uint32_t frequency)
 void Initialization_Completed(void)
 {
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 启动PWM输出
-    
+
     // 原版节奏：180BPM，音符时长严格按照官方乐谱 诺基亚来电铃声
     // 音符格式：频率(Hz), 时长(ms)
-    
+
     // 第一段：E5 → D5 → F#4(四分音符) → G#4(四分音符)
-    Set_Buzzer_Frequency(659);  // E5 - 高音咪
-    HAL_Delay(167);             // 八分音符 (167ms @180BPM)
-    Set_Buzzer_Frequency(0);    // 短暂静音间隔
-    HAL_Delay(10);
-    
-    Set_Buzzer_Frequency(587);  // D5 - 高音来
-    HAL_Delay(167);             // 八分音符
+    Set_Buzzer_Frequency(659); // E5 - 高音咪
+    vTaskDelay(167);           // 八分音符 (167ms @180BPM)
+    Set_Buzzer_Frequency(0);   // 短暂静音间隔
+    vTaskDelay(10);
+
+    Set_Buzzer_Frequency(587); // D5 - 高音来
+    vTaskDelay(167);           // 八分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(10);
-    
-    Set_Buzzer_Frequency(370);  // F#4 - 升发
-    HAL_Delay(333);             // 四分音符 (333ms @180BPM)
+    vTaskDelay(10);
+
+    Set_Buzzer_Frequency(370); // F#4 - 升发
+    vTaskDelay(333);           // 四分音符 (333ms @180BPM)
     Set_Buzzer_Frequency(0);
-    HAL_Delay(15);
-    
-    Set_Buzzer_Frequency(415);  // G#4 - 升嗦
-    HAL_Delay(333);             // 四分音符
+    vTaskDelay(15);
+
+    Set_Buzzer_Frequency(415); // G#4 - 升嗦
+    vTaskDelay(333);           // 四分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(20);
-    
+    vTaskDelay(20);
+
     // 第二段：C#5 → B4 → D4(四分音符) → E4(四分音符)
-    Set_Buzzer_Frequency(554);  // C#5 - 升哆
-    HAL_Delay(167);             // 八分音符
+    Set_Buzzer_Frequency(554); // C#5 - 升哆
+    vTaskDelay(167);           // 八分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(10);
-    
-    Set_Buzzer_Frequency(494);  // B4 - 西
-    HAL_Delay(167);             // 八分音符
+    vTaskDelay(10);
+
+    Set_Buzzer_Frequency(494); // B4 - 西
+    vTaskDelay(167);           // 八分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(10);
-    
-    Set_Buzzer_Frequency(294);  // D4 - 来
-    HAL_Delay(333);             // 四分音符
+    vTaskDelay(10);
+
+    Set_Buzzer_Frequency(294); // D4 - 来
+    vTaskDelay(333);           // 四分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(15);
-    
-    Set_Buzzer_Frequency(330);  // E4 - 咪
-    HAL_Delay(333);             // 四分音符
+    vTaskDelay(15);
+
+    Set_Buzzer_Frequency(330); // E4 - 咪
+    vTaskDelay(333);           // 四分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(20);
-    
+    vTaskDelay(20);
+
     // 第三段：B4 → A4 → C#4(四分音符) → E4(四分音符)
-    Set_Buzzer_Frequency(494);  // B4 - 西
-    HAL_Delay(167);             // 八分音符
+    Set_Buzzer_Frequency(494); // B4 - 西
+    vTaskDelay(167);           // 八分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(10);
-    
-    Set_Buzzer_Frequency(440);  // A4 - 啦
-    HAL_Delay(167);             // 八分音符
+    vTaskDelay(10);
+
+    Set_Buzzer_Frequency(440); // A4 - 啦
+    vTaskDelay(167);           // 八分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(10);
-    
-    Set_Buzzer_Frequency(277);  // C#4 - 升哆
-    HAL_Delay(333);             // 四分音符
+    vTaskDelay(10);
+
+    Set_Buzzer_Frequency(277); // C#4 - 升哆
+    vTaskDelay(333);           // 四分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(15);
-    
-    Set_Buzzer_Frequency(330);  // E4 - 咪
-    HAL_Delay(333);             // 四分音符
+    vTaskDelay(15);
+
+    Set_Buzzer_Frequency(330); // E4 - 咪
+    vTaskDelay(333);           // 四分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(20);
-    
+    vTaskDelay(20);
+
     // 结尾：A4(二分音符) - 经典收尾
-    Set_Buzzer_Frequency(440);  // A4 - 啦
-    HAL_Delay(667);             // 二分音符 (667ms @180BPM)
+    Set_Buzzer_Frequency(440); // A4 - 啦
+    vTaskDelay(667);           // 二分音符 (667ms @180BPM)
     Set_Buzzer_Frequency(0);
-    HAL_Delay(100);
+    vTaskDelay(100);
 
-
-	
-		HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // 停止 PWM
-//		__HAL_RCC_TIM4_CLK_DISABLE(); // 复位 TIM4，防止漏电
+    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // 停止 PWM
+                                             //		__HAL_RCC_TIM4_CLK_DISABLE(); // 复位 TIM4，防止漏电
 
     LED_Off(RED_LED_Pin);
     LED_On(GREEN_LED_Pin);
@@ -96,29 +98,44 @@ void Initialization_Completed(void)
 
 void PC_On(void)
 {
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 启动 TIM4_CH3 PWM 输出
-	
-	
-	Set_Buzzer_Frequency(260); // 设置 7kHz
-	HAL_Delay(100); // 延时 100ms
-	Set_Buzzer_Frequency(440); 
-	HAL_Delay(100);
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 启动 TIM4_CH3 PWM 输出
 
-	HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // 停止 PWM
+    Set_Buzzer_Frequency(260); // 设置 7kHz
+    vTaskDelay(100);           // 延时 100ms
+    Set_Buzzer_Frequency(440);
+    vTaskDelay(100);
+
+    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // 停止 PWM
+}
+
+void PC_Off(void)
+{
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 启动 TIM4_CH3 PWM 输出
+
+    Set_Buzzer_Frequency(494); // B4 - 西
+    vTaskDelay(167);           // 八分音符
+    Set_Buzzer_Frequency(0);
+    vTaskDelay(10);
+    Set_Buzzer_Frequency(494); // B4 - 西
+    vTaskDelay(167);           // 八分音符
+    Set_Buzzer_Frequency(0);
+    vTaskDelay(10);
+
+    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // 停止 PWM    
 }
 
 void Friction_Off(void)
 {
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 启动 TIM4_CH3 PWM 输出
-	
-    Set_Buzzer_Frequency(494);  // B4 - 西
-    HAL_Delay(167);             // 八分音符
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 启动 TIM4_CH3 PWM 输出
+
+    Set_Buzzer_Frequency(494); // B4 - 西
+    vTaskDelay(167);           // 八分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(10);
-    Set_Buzzer_Frequency(494);  // B4 - 西
-    HAL_Delay(167);             // 八分音符
+    vTaskDelay(10);
+    Set_Buzzer_Frequency(494); // B4 - 西
+    vTaskDelay(167);           // 八分音符
     Set_Buzzer_Frequency(0);
-    HAL_Delay(10);
-	
-	HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // 停止 PWM	
+    vTaskDelay(10);
+
+    HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3); // 停止 PWM
 }
