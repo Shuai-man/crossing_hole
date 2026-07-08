@@ -63,6 +63,21 @@ void DT7_ChassisControl(void)
     }
 }
 
+//自瞄测试,模拟右键触发逻辑
+void DT7_Auto_aim(void)
+{
+    if (remote_controller.gimbal_action == GIMBAL_AUTO_ATM_TEST_MODE)
+    {
+        remote_controller.auto_arm = 1;
+        pc_send_data.mode_want = STD_AUTO_AIM;
+    }
+    else
+    {
+        remote_controller.auto_arm = 0;
+        pc_send_data.mode_want = NOT_USE_AIM;
+    }
+}
+
 void DT7_Update(float delta_t)
 {
     bool sw_changed = 0;
@@ -92,7 +107,7 @@ void DT7_Update(float delta_t)
             {
                 setRobotState(CONTROL_MODE);
                 setChassisModeAction(NOT_CONTROL_MODE);
-                setGimbalAction(GIMBAL_AUTO_AIM_MODE);
+                setGimbalAction(GIMBAL_AUTO_ATM_TEST_MODE);
                 setShootAction(SHOOT_FIRE_MODE);
                 setSuperPower(POWER_TO_BATTERY);
                 setGimbalPosition(UP);
@@ -221,6 +236,7 @@ void DT7_Update(float delta_t)
         break;
     }
 
+    DT7_Auto_aim();
     dt7_remote.Previous_rc_Left_SW = dt7_remote.s[LEFT_SW];
     dt7_remote.Previous_rc_Right_SW = dt7_remote.s[RIGHT_SW];
 }

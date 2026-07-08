@@ -84,7 +84,7 @@ chassis\chassiscontroltask.o: ../Components/tools/inc/protocol.h
 chassis\chassiscontroltask.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\chassiscontroltask.o: ../Core/Inc/usart.h
 chassis\chassiscontroltask.o: ../boards/inc/bsp_referee.h
-chassis\chassiscontroltask.o: ../application/inc/Referee.h
 chassis\chassiscontroltask.o: ../application/inc/HeatControl.h
+chassis\chassiscontroltask.o: ../application/inc/Referee.h
 chassis\chassiscontroltask.o: ../Task/inc/RefereeTask.h
 chassis\chassiscontroltask.o: ../Task/inc/Offline_Task.h

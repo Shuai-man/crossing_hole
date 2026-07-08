@@ -62,12 +62,13 @@ float Gimbal_Pitch_Calculate(float set_point)
 */
 float Gimbal_Yaw_Calculate(float set_point)
 {
+    // 由前馈电流负责控制，pid只负责闭环修正位置
+    // 高速情况下纯pid控制有明显滞后问题，必须加前馈
 #if GIMBAL_SYSID
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, gimbal_controller.yaw_speed_pid.Ref);
     gimbal_controller.yaw_out = gimbal_controller.yaw_speed_pid.Output;
     return gimbal_controller.yaw_out;
 #else
-    // 由前馈电流负责控制，pid只负责闭环修正位置
     // 输出滤波的角度，角速度，角加速度
     TD_Calculate(&gimbal_controller.pos_yaw_td, set_point);
     // 计算前馈力矩
@@ -82,6 +83,7 @@ float Gimbal_Yaw_Calculate(float set_point)
     return gimbal_controller.yaw_out;
 #endif
 }
+
 // 限制角度在[-180,180]范围内
 float limit_angle(float in)
 {
@@ -221,12 +223,12 @@ float GimbalFrictionModel()
 
 /*-----------------系统辨识初始化------------------*/
 /*开启方式：
-*进入Debug，进入键鼠模式（就是只动云台）
-*把gimbal_sysid_done设置为0，开始运行系统辨识
-*输出结果为JBC三个参数，分别为转动惯量，阻尼系数，库伦摩擦系数
-*先测BC，再测J
-*测试时准备一根2m长的烧录线，防止被扯断
-*/
+ *进入Debug，进入键鼠模式（就是只动云台）
+ *把gimbal_sysid_done设置为0，开始运行系统辨识
+ *输出结果为JBC三个参数，分别为转动惯量，阻尼系数，库伦摩擦系数
+ *先测BC，再测J
+ *测试时准备一根2m长的烧录线，防止被扯断
+ */
 void Gimbal_SystemID_Init(void)
 {
     TD_Init(&gimbal_controller.yaw_sysid.td_omega, 10000.0f, 0.005f);

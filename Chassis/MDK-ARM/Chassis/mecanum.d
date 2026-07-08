@@ -83,7 +83,7 @@ chassis\mecanum.o: ../Components/tools/inc/protocol.h
 chassis\mecanum.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\mecanum.o: ../Core/Inc/usart.h
 chassis\mecanum.o: ../boards/inc/bsp_referee.h
-chassis\mecanum.o: ../application/inc/Referee.h
 chassis\mecanum.o: ../application/inc/HeatControl.h
+chassis\mecanum.o: ../application/inc/Referee.h
 chassis\mecanum.o: ../Task/inc/RefereeTask.h
 chassis\mecanum.o: ../Task/inc/Offline_Task.h

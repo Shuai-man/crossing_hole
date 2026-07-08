@@ -5,9 +5,7 @@ chassis\bsp_referee.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
 chassis\bsp_referee.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 chassis\bsp_referee.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 chassis\bsp_referee.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-chassis\bsp_referee.o: ../application/inc/Referee.h
-chassis\bsp_referee.o: ../Components/tools/inc/protocol.h
-chassis\bsp_referee.o: ../Algorithm/inc/algorithmOfCRC.h
+chassis\bsp_referee.o: ../config/robot_config.h
 chassis\bsp_referee.o: ../Core/Inc/usart.h
 chassis\bsp_referee.o: ../Core/Inc/main.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
@@ -43,12 +41,3 @@ chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-chassis\bsp_referee.o: ../Components/tools/inc/debug.h
-chassis\bsp_referee.o: ../Components/tools/inc/tools.h
-chassis\bsp_referee.o: ../boards/inc/bsp_dwt.h
-chassis\bsp_referee.o: ../boards/inc/bsp_referee.h
-chassis\bsp_referee.o: ../application/inc/HeatControl.h
-chassis\bsp_referee.o: ../application/inc/Referee.h
-chassis\bsp_referee.o: ../application/inc/GimbalReceive.h
-chassis\bsp_referee.o: ../application/inc/remote_control.h
-chassis\bsp_referee.o: ../config/robot_config.h

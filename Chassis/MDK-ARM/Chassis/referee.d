@@ -46,8 +46,8 @@ chassis\referee.o: ../Components/tools/inc/debug.h
 chassis\referee.o: ../Components/tools/inc/tools.h
 chassis\referee.o: ../boards/inc/bsp_dwt.h
 chassis\referee.o: ../boards/inc/bsp_referee.h
-chassis\referee.o: ../application/inc/Referee.h
 chassis\referee.o: ../config/robot_config.h
 chassis\referee.o: ../application/inc/HeatControl.h
+chassis\referee.o: ../application/inc/Referee.h
 chassis\referee.o: ../application/inc/GimbalReceive.h
 chassis\referee.o: ../application/inc/remote_control.h

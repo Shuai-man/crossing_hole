@@ -91,7 +91,7 @@ chassis\main.o: ../application/inc/Referee.h
 chassis\main.o: ../Components/tools/inc/protocol.h
 chassis\main.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\main.o: ../boards/inc/bsp_referee.h
-chassis\main.o: ../application/inc/Referee.h
 chassis\main.o: ../application/inc/HeatControl.h
+chassis\main.o: ../application/inc/Referee.h
 chassis\main.o: ../Task/inc/RefereeTask.h
 chassis\main.o: ../Task/inc/Offline_Task.h

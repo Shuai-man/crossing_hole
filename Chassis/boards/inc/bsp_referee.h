@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Referee.h"
 #include "robot_config.h"
 #include "usart.h"
 

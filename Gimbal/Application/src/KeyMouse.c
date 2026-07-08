@@ -321,7 +321,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
     // 打算单发和双发改成中键切换，不用按键切换，这样逻辑就不用那么复杂了
     if (remote_controller.dji_remote.mouse.mouseChangeOn_r)
     {
-        remote_controller.auto_arm =1;
+        remote_controller.auto_arm = 1;
         // 利用上升沿做初始化，防止重复赋值
         if (remote_controller.gimbal_action == GIMBAL_SMALL_BUFF_MODE)
         {
@@ -339,7 +339,8 @@ void KeyMouseUpdate(ChassisSolver *infantry)
     }
     else if (remote_controller.dji_remote.mouse.mouseChangeOff_r)
     {
-        remote_controller.auto_arm =0;
+        remote_controller.auto_arm = 0;
+        pc_send_data.mode_want = STD_AUTO_AIM;
         if (remote_controller.gimbal_action == GIMBAL_AUTO_AIM_MODE)
         {
             setGimbalAction(GIMBAL_ACT_MODE); // 打车没有按键退出，单独加判断

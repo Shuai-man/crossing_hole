@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "bsp_referee.h"
+#include "Referee.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

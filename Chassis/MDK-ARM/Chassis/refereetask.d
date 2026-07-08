@@ -54,14 +54,13 @@ chassis\refereetask.o: ../Components/tools/inc/tools.h
 chassis\refereetask.o: ../boards/inc/bsp_dwt.h
 chassis\refereetask.o: ../application/inc/remote_control.h
 chassis\refereetask.o: ../boards/inc/bsp_referee.h
+chassis\refereetask.o: ../config/robot_config.h
+chassis\refereetask.o: ../Core/Inc/usart.h
 chassis\refereetask.o: ../application/inc/Referee.h
 chassis\refereetask.o: ../Components/tools/inc/protocol.h
 chassis\refereetask.o: ../Algorithm/inc/algorithmOfCRC.h
-chassis\refereetask.o: ../Core/Inc/usart.h
-chassis\refereetask.o: ../boards/inc/bsp_referee.h
 chassis\refereetask.o: ../application/inc/HeatControl.h
 chassis\refereetask.o: ../application/inc/Referee.h
-chassis\refereetask.o: ../config/robot_config.h
 chassis\refereetask.o: ../application/inc/ChassisController.h
 chassis\refereetask.o: ../Algorithm/inc/arm_math.h
 chassis\refereetask.o: ../Drivers/CMSIS/Include/core_cm4.h

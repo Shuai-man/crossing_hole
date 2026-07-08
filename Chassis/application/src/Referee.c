@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
  * @file    referee.c
- * @author  Karolance Future
- * @version V1.0.0
- * @date    2022/03/21
- * @brief
+ * @author  shuai
+ * @version V2.0.0
+ * @date    2026/06/26
+ * @brief   Referee system serial protocol V2.0.0 implementation
  ******************************************************************************
  * @attention
  *
@@ -13,7 +13,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 #include "Referee.h"
-
 
 /* Private define ------------------------------------------------------------*/
 Referee_t referee_data;
@@ -35,7 +34,6 @@ void Referee_StructInit(void)
 
 	memset(&referee_data.Event_Data, 0, sizeof(referee_data.Event_Data));
 	memset(&referee_data.Supply_Projectile_Action, 0, sizeof(referee_data.Supply_Projectile_Action));
-	memset(&referee_data.Supply_Projectile_Booking, 0, sizeof(referee_data.Supply_Projectile_Booking));
 	memset(&referee_data.Referee_Warning, 0, sizeof(referee_data.Referee_Warning));
 	memset(&referee_data.Dart_Remaining_Time, 0, sizeof(referee_data.Dart_Remaining_Time));
 
@@ -47,13 +45,28 @@ void Referee_StructInit(void)
 	memset(&referee_data.Robot_Hurt, 0, sizeof(referee_data.Robot_Hurt));
 	memset(&referee_data.Shoot_Data, 0, sizeof(referee_data.Shoot_Data));
 	memset(&referee_data.Bullet_Remaining, 0, sizeof(referee_data.Bullet_Remaining));
-	// memset(&referee_data.RFID_Status, 0, sizeof(referee_data.RFID_Status));
-	// memset(&referee_data.Dart_Client_Cmd, 0, sizeof(referee_data.Dart_Client_Cmd));
+	memset(&referee_data.RFID_Status, 0, sizeof(referee_data.RFID_Status));
+	memset(&referee_data.Dart_Client_Cmd, 0, sizeof(referee_data.Dart_Client_Cmd));
+	memset(&referee_data.Ground_Robot_Position, 0, sizeof(referee_data.Ground_Robot_Position));
+	memset(&referee_data.Radar_Mark_Data, 0, sizeof(referee_data.Radar_Mark_Data));
+	memset(&referee_data.Sentry_Info, 0, sizeof(referee_data.Sentry_Info));
+	memset(&referee_data.Radar_Info, 0, sizeof(referee_data.Radar_Info));
+	memset(&referee_data.Enemy_Buff_Data, 0, sizeof(referee_data.Enemy_Buff_Data));
+	memset(&referee_data.Enemy_Position_Data, 0, sizeof(referee_data.Enemy_Position_Data));
+	memset(&referee_data.Enemy_HP_Data, 0, sizeof(referee_data.Enemy_HP_Data));
+	memset(&referee_data.Enemy_Projectile_Data, 0, sizeof(referee_data.Enemy_Projectile_Data));
+	memset(&referee_data.Enemy_Macro_State_Data, 0, sizeof(referee_data.Enemy_Macro_State_Data));
+	memset(&referee_data.Enemy_Key_Data, 0, sizeof(referee_data.Enemy_Key_Data));
+	memset(&referee_data.Custom_Client_Data, 0, sizeof(referee_data.Custom_Client_Data));
+	memset(&referee_data.Map_Data, 0, sizeof(referee_data.Map_Data));
+	memset(&referee_data.Custom_Info, 0, sizeof(referee_data.Custom_Info));
+	memset(&referee_data.Sentry_Cmd, 0, sizeof(referee_data.Sentry_Cmd));
+	memset(&referee_data.Radar_Cmd, 0, sizeof(referee_data.Radar_Cmd));
 
 	memset(&referee_data.Student_Interactive_Header_Data, 0, sizeof(referee_data.Student_Interactive_Header_Data));
 	// memset(&referee_data.Robot_Interactive_Data, 0, sizeof(referee_data.Robot_Interactive_Data));
 	memset(&referee_data.Robot_Command, 0, sizeof(referee_data.Robot_Command));
-	memset(&referee_data.Client_Map_Command, 0, sizeof(referee_data.Client_Map_Command));
+	memset(&referee_data.Map_Robot_Data, 0, sizeof(referee_data.Map_Robot_Data));
 }
 
 void Referee_UnpackFifoData()
@@ -163,7 +176,7 @@ void Referee_UnpackFifoData()
 		referee_data.decoder.receive_data_len = REFEREE_RECVBUF_SIZE - __HAL_DMA_GET_COUNTER(&hdma_uart4_rx) + referee_data.decoder.judgementFullCount * REFEREE_RECVBUF_SIZE; //  ȡ   е ǰ Ѿ    յĳ
 	}
 	if (referee_data.decoder.receive_data_len % REFEREE_RECVBUF_SIZE > (REFEREE_RECVBUF_SIZE / 3) &&
-		referee_data.decoder.receive_data_len % REFEREE_RECVBUF_SIZE < (2 * REFEREE_RECVBUF_SIZE / 3)) //  ֹjudgementFullCount                         ܻᵼ ° Ȧ
+			referee_data.decoder.receive_data_len % REFEREE_RECVBUF_SIZE < (2 * REFEREE_RECVBUF_SIZE / 3)) //  ֹjudgementFullCount                         ܻᵼ ° Ȧ
 	{
 		referee_data.decoder.decode_data_len -= REFEREE_RECVBUF_SIZE * referee_data.decoder.judgementFullCount;
 		referee_data.decoder.judgementFullCount = 0;
@@ -200,9 +213,6 @@ void Referee_SolveFifoData(uint8_t *frame)
 		//	case SUPPLY_PROJECTILE_ACTION_CMD_ID:
 		//		memcpy(&referee_data.Supply_Projectile_Action, frame + index, sizeof(ext_supply_projectile_action_t));
 		//		break;
-		//	case SUPPLY_PROJECTILE_BOOKING_CMD_ID:
-		//		memcpy(&referee_data.Supply_Projectile_Booking, frame + index, sizeof(ext_supply_projectile_booking_t));
-		//		break;
 		//	case REFEREE_WARNING_CMD_ID:
 		//		memcpy(&referee_data.Referee_Warning, frame + index, sizeof(ext_referee_warning_t));
 		//		break;
@@ -212,11 +222,14 @@ void Referee_SolveFifoData(uint8_t *frame)
 
 	case ROBOT_STATE_CMD_ID:
 		referee_data_updater.is_max_power_data_update = TRUE;
+		heat_controller.HeatMax = referee_data.Game_Robot_State.shooter_barrel_heat_limit;
+		heat_controller.HeatCool = referee_data.Game_Robot_State.shooter_barrel_cooling_value;
 		memcpy(&referee_data.Game_Robot_State, frame + index, sizeof(ext_game_robot_state_t));
 		break;
 	case POWER_HEAT_DATA_CMD_ID:
 		referee_data_updater.is_power_data_update = TRUE;
 		heat_controller.heat_count++;
+		heat_controller.CurHeat = referee_data.Power_Heat_Data.shooter_17mm_barrel_heat;
 		memcpy(&referee_data.Power_Heat_Data, frame + index, sizeof(ext_power_heat_data_t));
 		break;
 	case ROBOT_POS_CMD_ID:
@@ -238,26 +251,59 @@ void Referee_SolveFifoData(uint8_t *frame)
 	case BULLET_REMAINING_CMD_ID:
 		memcpy(&referee_data.Bullet_Remaining, frame + index, sizeof(ext_bullet_remaining_t));
 		break;
-		//	case ROBOT_RFID_STATE_CMD_ID:
-		//		memcpy(&referee_data.RFID_Status, frame + index, sizeof(ext_rfid_status_t));
-		//		break;
-		//	case DART_CLIENT_CMD_ID:
-		//		memcpy(&referee_data.Dart_Client_Cmd, frame + index, sizeof(ext_dart_client_cmd_t));
-		//		break;
+	case RFID_STATUS_CMD_ID:
+		memcpy(&referee_data.RFID_Status, frame + index, sizeof(ext_rfid_status_t));
+		break;
+	case DART_CLIENT_CMD_ID:
+		memcpy(&referee_data.Dart_Client_Cmd, frame + index, sizeof(ext_dart_client_cmd_t));
+		break;
+	case GROUND_ROBOT_POS_CMD_ID:
+		memcpy(&referee_data.Ground_Robot_Position, frame + index, sizeof(ground_robot_position_t));
+		break;
+	case RADAR_MARK_CMD_ID:
+		memcpy(&referee_data.Radar_Mark_Data, frame + index, sizeof(radar_mark_data_t));
+		break;
+	case SENTRY_INFO_CMD_ID:
+		memcpy(&referee_data.Sentry_Info, frame + index, sizeof(sentry_info_t));
+		break;
+	case RADAR_INFO_CMD_ID:
+		memcpy(&referee_data.Radar_Info, frame + index, sizeof(radar_info_t));
+		break;
+	case MAP_ROBOT_DATA_CMD_ID:
+		memcpy(&referee_data.Map_Robot_Data, frame + index, sizeof(map_robot_data_t));
+		break;
+	case ENEMY_POSITION_CMD_ID:
+		memcpy(&referee_data.Enemy_Position_Data, frame + index, sizeof(enemy_position_data_t));
+		break;
+	case ENEMY_HP_CMD_ID:
+		memcpy(&referee_data.Enemy_HP_Data, frame + index, sizeof(enemy_HP_data_t));
+		break;
+	case ENEMY_PROJECTILE_CMD_ID:
+		memcpy(&referee_data.Enemy_Projectile_Data, frame + index, sizeof(enemy_projectile_data_t));
+		break;
+	case ENEMY_MACRO_STATE_CMD_ID:
+		memcpy(&referee_data.Enemy_Macro_State_Data, frame + index, sizeof(enemy_macro_state_data_t));
+		break;
+	case ENEMY_BUFF_CMD_ID:
+		memcpy(&referee_data.Enemy_Buff_Data, frame + index, sizeof(enemy_buff_data_t));
+		break;
+	case ENEMY_KEY_CMD_ID:
+		memcpy(&referee_data.Enemy_Key_Data, frame + index, sizeof(enemy_key_data_t));
+		break;
 
 	case STUDENT_INTERACTIVE_DATA_CMD_ID:
 		memcpy(&referee_data.Robot_Interactive_Data, frame + index, sizeof(robot_interactive_data_t));
-		
-		if(referee_data.Robot_Interactive_Data.data_cmd_id == 0x0204)//雷达那边自定义的
+
+		if (referee_data.Robot_Interactive_Data.data_cmd_id == 0x0204) // 雷达那边自定义的
 		{
-			Radar_double_hurt_chance = referee_data.Robot_Interactive_Data.user_data;
+			Radar_double_hurt_chance = referee_data.Robot_Interactive_Data.user_data[0];
 		}
 		break;
 	case ROBOT_COMMAND_CMD_ID:
 		memcpy(&referee_data.Robot_Command, frame + index, sizeof(ext_robot_command_t));
 		break;
 		//	case CLIENT_MAP_COMMAND_CMD_ID:
-		//		memcpy(&referee_data.Client_Map_Command, frame + index, sizeof(ext_client_map_command_t));
+		//		memcpy(&referee_data.Map_Robot_Data, frame + index, sizeof(ext_client_map_command_t));
 		//		break;
 
 	default:
@@ -266,33 +312,33 @@ void Referee_SolveFifoData(uint8_t *frame)
 }
 
 /*==============================================================================
-			  ##### UI    ͼ λ  ƺ    #####
-  ==============================================================================
+				##### UI绘制    #####
+	==============================================================================
 */
 
 /**
- * @brief     ֱ
- * @param[in] Graph UIͼ     ݽṹ  ָ
- * @param[in] GraphName ͼ       Ϊ ͻ  ˵
- * @param[in] GraphOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] Width  ߿
- * @param[in] StartX   ʼ    X
- * @param[in] StartY   ʼ    Y
- * @param[in] EndX   ֹ    X
- * @param[in] EndY   ֹ    Y
+ * @brief   Referee system serial protocol V2.0.0 implementation     ֱ
+ * @param[in] Graph  图形结构体指针，指向要绘制的图形数据
+ * @param[in] GraphName  图形名称
+ * @param[in] GraphOperate  图形操作类型
+ * @param[in] Layer   图形图层， [0,9]
+ * @param[in] Color 图形颜色
+ * @param[in] Width  图形宽度，单位：像素
+ * @param[in] StartX   图形开始点 X坐标
+ * @param[in] StartY    图形开始点 Y坐标
+ * @param[in] EndX    图形结束点 X坐标
+ * @param[in] EndY    图形结束点 Y坐标
  */
 void UI_Draw_Line(graphic_data_struct_t *Graph,
-				  char GraphName[3],
-				  uint8_t GraphOperate,
-				  uint8_t Layer,
-				  uint8_t Color,
-				  uint16_t Width,
-				  uint16_t StartX,
-				  uint16_t StartY,
-				  uint16_t EndX,
-				  uint16_t EndY)
+									char GraphName[3],
+									uint8_t GraphOperate,
+									uint8_t Layer,
+									uint8_t Color,
+									uint16_t Width,
+									uint16_t StartX,
+									uint16_t StartY,
+									uint16_t EndX,
+									uint16_t EndY)
 {
 	Graph->graphic_name[0] = GraphName[0];
 	Graph->graphic_name[1] = GraphName[1];
@@ -309,28 +355,28 @@ void UI_Draw_Line(graphic_data_struct_t *Graph,
 }
 
 /**
- * @brief    ƾ
- * @param[in] Graph UIͼ     ݽṹ  ָ
- * @param[in] GraphName ͼ       Ϊ ͻ  ˵
- * @param[in] GraphOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] Width  ߿
- * @param[in] StartX   ʼ    X
- * @param[in] StartY   ʼ    Y
- * @param[in] EndX   ֹ    X
- * @param[in] EndY   ֹ    Y
+ * @brief   Referee system serial protocol V2.0.0 implementation    ƾ
+ * @param[in] Graph  图形结构体指针，指向要绘制的图形数据
+ * @param[in] GraphName  图形名称
+ * @param[in] GraphOperate  图形操作类型
+ * @param[in] Layer   图形图层， [0,9]
+ * @param[in] Color 图形颜色
+ * @param[in] Width  图形宽度，单位：像素
+ * @param[in] StartX   图形开始点 X坐标
+ * @param[in] StartY    图形开始点 Y坐标
+ * @param[in] EndX    图形结束点 X坐标
+ * @param[in] EndY    图形结束点 Y坐标
  */
 void UI_Draw_Rectangle(graphic_data_struct_t *Graph,
-					   char GraphName[3],
-					   uint8_t GraphOperate,
-					   uint8_t Layer,
-					   uint8_t Color,
-					   uint16_t Width,
-					   uint16_t StartX,
-					   uint16_t StartY,
-					   uint16_t EndX,
-					   uint16_t EndY)
+											 char GraphName[3],
+											 uint8_t GraphOperate,
+											 uint8_t Layer,
+											 uint8_t Color,
+											 uint16_t Width,
+											 uint16_t StartX,
+											 uint16_t StartY,
+											 uint16_t EndX,
+											 uint16_t EndY)
 {
 	Graph->graphic_name[0] = GraphName[0];
 	Graph->graphic_name[1] = GraphName[1];
@@ -347,26 +393,26 @@ void UI_Draw_Rectangle(graphic_data_struct_t *Graph,
 }
 
 /**
- * @brief     Բ
- * @param[in] Graph UIͼ     ݽṹ  ָ
- * @param[in] GraphName ͼ       Ϊ ͻ  ˵
- * @param[in] GraphOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] Width  ߿
- * @param[in] CenterX Բ      X
- * @param[in] CenterY Բ      Y
- * @param[in] Radius  뾶
+ * @brief   Referee system serial protocol V2.0.0 implementation     Բ
+ * @param[in] Graph  图形结构体指针，指向要绘制的图形数据
+ * @param[in] GraphName  图形名称
+ * @param[in] GraphOperate  图形操作类型
+ * @param[in] Layer   图形图层， [0,9]
+ * @param[in] Color 图形颜色
+ * @param[in] Width  图形宽度，单位：像素
+ * @param[in] CenterX  图形中心 X坐标
+ * @param[in] CenterY  图形中心 Y坐标
+ * @param[in] Radius  图形半径
  */
 void UI_Draw_Circle(graphic_data_struct_t *Graph,
-					char GraphName[3],
-					uint8_t GraphOperate,
-					uint8_t Layer,
-					uint8_t Color,
-					uint16_t Width,
-					uint16_t CenterX,
-					uint16_t CenterY,
-					uint16_t Radius)
+										char GraphName[3],
+										uint8_t GraphOperate,
+										uint8_t Layer,
+										uint8_t Color,
+										uint16_t Width,
+										uint16_t CenterX,
+										uint16_t CenterY,
+										uint16_t Radius)
 {
 	Graph->graphic_name[0] = GraphName[0];
 	Graph->graphic_name[1] = GraphName[1];
@@ -382,28 +428,28 @@ void UI_Draw_Circle(graphic_data_struct_t *Graph,
 }
 
 /**
- * @brief       Բ
- * @param[in] Graph UIͼ     ݽṹ  ָ
- * @param[in] GraphName ͼ       Ϊ ͻ  ˵
- * @param[in] GraphOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] Width  ߿
- * @param[in] CenterX Բ      X
- * @param[in] CenterY Բ      Y
- * @param[in] XHalfAxis X   ᳤
- * @param[in] YHalfAxis Y   ᳤
+ * @brief   Referee system serial protocol V2.0.0 implementation       Բ
+ * @param[in] Graph  图形结构体指针，指向要绘制的图形数据
+ * @param[in] GraphName  图形名称
+ * @param[in] GraphOperate  图形操作类型
+ * @param[in] Layer   图形图层， [0,9]
+ * @param[in] Color 图形颜色
+ * @param[in] Width  图形宽度，单位：像素
+ * @param[in] CenterX  图形中心 X坐标
+ * @param[in] CenterY  图形中心 Y坐标
+ * @param[in] XHalfAxis X坐标
+ * @param[in] YHalfAxis Y坐标
  */
 void UI_Draw_Ellipse(graphic_data_struct_t *Graph,
-					 char GraphName[3],
-					 uint8_t GraphOperate,
-					 uint8_t Layer,
-					 uint8_t Color,
-					 uint16_t Width,
-					 uint16_t CenterX,
-					 uint16_t CenterY,
-					 uint16_t XHalfAxis,
-					 uint16_t YHalfAxis)
+										 char GraphName[3],
+										 uint8_t GraphOperate,
+										 uint8_t Layer,
+										 uint8_t Color,
+										 uint16_t Width,
+										 uint16_t CenterX,
+										 uint16_t CenterY,
+										 uint16_t XHalfAxis,
+										 uint16_t YHalfAxis)
 {
 	Graph->graphic_name[0] = GraphName[0];
 	Graph->graphic_name[1] = GraphName[1];
@@ -420,32 +466,32 @@ void UI_Draw_Ellipse(graphic_data_struct_t *Graph,
 }
 
 /**
- * @brief     Բ
- * @param[in] Graph UIͼ     ݽṹ  ָ
- * @param[in] GraphName ͼ       Ϊ ͻ  ˵
- * @param[in] GraphOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] StartAngle   ʼ Ƕ  [0,360]
- * @param[in] EndAngle   ֹ Ƕ  [0,360]
- * @param[in] Width  ߿
- * @param[in] CenterX Բ      X
- * @param[in] CenterY Բ      Y
- * @param[in] XHalfAxis X   ᳤
- * @param[in] YHalfAxis Y   ᳤
+ * @brief   Referee system serial protocol V2.0.0 implementation     Բ
+ * @param[in] Graph  图形结构体指针，指向要绘制的图形数据
+ * @param[in] GraphName  图形名称
+ * @param[in] GraphOperate  图形操作类型
+ * @param[in] Layer   图形图层， [0,9]
+ * @param[in] Color 图形颜色
+ * @param[in] StartAngle   [0,360]
+ * @param[in] EndAngle   [0,360]
+ * @param[in] Width  图形宽度，单位：像素
+ * @param[in] CenterX  图形中心 X坐标
+ * @param[in] CenterY  图形中心 Y坐标
+ * @param[in] XHalfAxis 半轴 X坐标
+ * @param[in] YHalfAxis 半轴 Y坐标
  */
 void UI_Draw_Arc(graphic_data_struct_t *Graph,
-				 char GraphName[3],
-				 uint8_t GraphOperate,
-				 uint8_t Layer,
-				 uint8_t Color,
-				 uint16_t StartAngle,
-				 uint16_t EndAngle,
-				 uint16_t Width,
-				 uint16_t CenterX,
-				 uint16_t CenterY,
-				 uint16_t XHalfAxis,
-				 uint16_t YHalfAxis)
+								 char GraphName[3],
+								 uint8_t GraphOperate,
+								 uint8_t Layer,
+								 uint8_t Color,
+								 uint16_t StartAngle,
+								 uint16_t EndAngle,
+								 uint16_t Width,
+								 uint16_t CenterX,
+								 uint16_t CenterY,
+								 uint16_t XHalfAxis,
+								 uint16_t YHalfAxis)
 {
 	Graph->graphic_name[0] = GraphName[0];
 	Graph->graphic_name[1] = GraphName[1];
@@ -464,30 +510,30 @@ void UI_Draw_Arc(graphic_data_struct_t *Graph,
 }
 
 /**
- * @brief    Ƹ
- * @param[in] Graph UIͼ     ݽṹ  ָ
- * @param[in] GraphName ͼ       Ϊ ͻ  ˵
- * @param[in] GraphOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] NumberSize      С
- * @param[in] Significant   Чλ
- * @param[in] Width  ߿
- * @param[in] StartX   ʼ    X
- * @param[in] StartY   ʼ    Y
- * @param[in] FloatData
+ * @brief   Referee system serial protocol V2.0.0 implementation    Ƹ
+ * @param[in] Graph  图形结构体指针，指向要绘制的图形数据
+ * @param[in] GraphName  图形名称
+ * @param[in] GraphOperate  图形操作类型
+ * @param[in] Layer   图形图层， [0,9]
+ * @param[in] Color 图形颜色
+ * @param[in] NumberSize      数字大小
+ * @param[in] Significant   有效位
+ * @param[in] Width  图形宽度，单位：像素
+ * @param[in] StartX   图形起始点 X坐标
+ * @param[in] StartY   图形起始点 Y坐标
+ * @param[in] FloatData	浮点型数据
  */
 void UI_Draw_Float(graphic_data_struct_t *Graph,
-				   char GraphName[3],
-				   uint8_t GraphOperate,
-				   uint8_t Layer,
-				   uint8_t Color,
-				   uint16_t NumberSize,
-				   uint16_t Significant,
-				   uint16_t Width,
-				   uint16_t StartX,
-				   uint16_t StartY,
-				   float FloatData)
+									 char GraphName[3],
+									 uint8_t GraphOperate,
+									 uint8_t Layer,
+									 uint8_t Color,
+									 uint16_t NumberSize,
+									 uint16_t Significant,
+									 uint16_t Width,
+									 uint16_t StartX,
+									 uint16_t StartY,
+									 float FloatData)
 {
 	Graph->graphic_name[0] = GraphName[0];
 	Graph->graphic_name[1] = GraphName[1];
@@ -508,28 +554,28 @@ void UI_Draw_Float(graphic_data_struct_t *Graph,
 }
 
 /**
- * @brief
- * @param[in] Graph UIͼ     ݽṹ  ָ
- * @param[in] GraphName ͼ       Ϊ ͻ  ˵
- * @param[in] GraphOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] NumberSize      С
- * @param[in] Width  ߿
- * @param[in] StartX   ʼ    X
- * @param[in] StartY   ʼ    Y
- * @param[in] IntData
+ * @brief   Referee system serial protocol V2.0.0 implementation
+ * @param[in] Graph  图形结构体指针，指向要绘制的图形数据
+ * @param[in] GraphName  图形名称
+ * @param[in] GraphOperate  图形操作类型
+ * @param[in] Layer   图形图层， [0,9]
+ * @param[in] Color 图形颜色
+ * @param[in] NumberSize      数字大小
+ * @param[in] Width  图形宽度，单位：像素
+ * @param[in] StartX   图形起始点 X坐标
+ * @param[in] StartY   图形起始点 Y坐标
+ * @param[in] IntData	整型数据
  */
 void UI_Draw_Int(graphic_data_struct_t *Graph,
-				 char GraphName[3],
-				 uint8_t GraphOperate,
-				 uint8_t Layer,
-				 uint8_t Color,
-				 uint16_t NumberSize,
-				 uint16_t Width,
-				 uint16_t StartX,
-				 uint16_t StartY,
-				 int32_t IntData)
+								 char GraphName[3],
+								 uint8_t GraphOperate,
+								 uint8_t Layer,
+								 uint8_t Color,
+								 uint16_t NumberSize,
+								 uint16_t Width,
+								 uint16_t StartX,
+								 uint16_t StartY,
+								 int32_t IntData)
 {
 	Graph->graphic_name[0] = GraphName[0];
 	Graph->graphic_name[1] = GraphName[1];
@@ -548,30 +594,30 @@ void UI_Draw_Int(graphic_data_struct_t *Graph,
 }
 
 /**
- * @brief      ַ
- * @param[in] String UIͼ     ݽṹ  ָ
- * @param[in] StringName ͼ       Ϊ ͻ  ˵
- * @param[in] StringOperate UIͼ β      ӦUI_Graph_XXX  4 ֲ
- * @param[in] Layer   UIͼ  ͼ   [0,9]
- * @param[in] Color UIͼ    ɫ   ӦUI_Color_XXX  9    ɫ
- * @param[in] CharSize      С
- * @param[in] StringLength  ַ
- * @param[in] Width  ߿
- * @param[in] StartX   ʼ    X
- * @param[in] StartY   ʼ    Y
- * @param[in] StringData  ַ
+ * @brief   Referee system serial protocol V2.0.0 implementation      ַ
+ * @param[in] String  字符串结构体指针，指向要绘制的字符串数据
+ * @param[in] StringName 字符串名称
+ * @param[in] StringOperate 字符串操作类型
+ * @param[in] Layer   字符串图层， [0,9]
+ * @param[in] Color 字符串颜色
+ * @param[in] CharSize      字符大小，单位：像素
+ * @param[in] StringLength  字符串长度
+ * @param[in] Width  字符串宽度，单位：像素
+ * @param[in] StartX   字符串起始点 X坐标
+ * @param[in] StartY   字符串起始点 Y坐标
+ * @param[in] StringData  字符串数据
  */
 void UI_Draw_String(string_data_struct_t *String,
-					char StringName[3],
-					uint8_t StringOperate,
-					uint8_t Layer,
-					uint8_t Color,
-					uint16_t CharSize,
-					uint16_t StringLength,
-					uint16_t Width,
-					uint16_t StartX,
-					uint16_t StartY,
-					char *StringData)
+										char StringName[3],
+										uint8_t StringOperate,
+										uint8_t Layer,
+										uint8_t Color,
+										uint16_t CharSize,
+										uint16_t StringLength,
+										uint16_t Width,
+										uint16_t StartX,
+										uint16_t StartY,
+										char *StringData)
 {
 	String->string_name[0] = StringName[0];
 	String->string_name[1] = StringName[1];
@@ -591,12 +637,12 @@ void UI_Draw_String(string_data_struct_t *String,
 }
 
 /*==============================================================================
-			  ##### UI    ͼ     ͺ    #####
-  ==============================================================================
+				##### UI    ͼ     ͺ    #####
+	==============================================================================
 */
 
 /**
- * @brief     ͼ
+ * @brief   Referee system serial protocol V2.0.0 implementation     ͼ
  * @param[in] Counter 1,2,5,7
  * @param[in] Graphs   Counter  һ µ UI_Graphx ṹ  ͷָ
  * @param[in] RobotID
@@ -630,8 +676,8 @@ void UI_PushUp_Graphs(uint8_t Counter, void *Graphs, uint8_t RobotID)
 		Graph->Interactive_Header.data_cmd_id = UI_DataID_Draw5;
 	else if (Counter == 7)
 		Graph->Interactive_Header.data_cmd_id = UI_DataID_Draw7;
-	Graph->Interactive_Header.sender_ID = RobotID;		   //  ǰ      ID
-	Graph->Interactive_Header.receiver_ID = RobotID + 256; //  Ӧ      ID
+	Graph->Interactive_Header.sender_id = RobotID;				 //  ǰ      ID
+	Graph->Interactive_Header.receiver_id = RobotID + 256; //  Ӧ      ID
 
 	/*     frame_tail   CRC16 */
 	if (Counter == 1)
@@ -667,7 +713,7 @@ void UI_PushUp_Graphs(uint8_t Counter, void *Graphs, uint8_t RobotID)
 }
 
 /**
- * @brief      ַ
+ * @brief   Referee system serial protocol V2.0.0 implementation      ַ
  * @param[in] String
  * @param[in] RobotID
  */
@@ -684,8 +730,8 @@ void UI_PushUp_String(UI_String_t *String, uint8_t RobotID)
 
 	/*     student_interactive_header */
 	String->Interactive_Header.data_cmd_id = UI_DataID_DrawChar;
-	String->Interactive_Header.sender_ID = RobotID;			//  ǰ      ID
-	String->Interactive_Header.receiver_ID = RobotID + 256; //  Ӧ      ID
+	String->Interactive_Header.sender_id = RobotID;					//  ǰ      ID
+	String->Interactive_Header.receiver_id = RobotID + 256; //  Ӧ      ID
 
 	/*     frame_tail   CRC16 */
 	Append_CRC16_Check_Sum((uint8_t *)String, sizeof(UI_String_t));
@@ -695,7 +741,7 @@ void UI_PushUp_String(UI_String_t *String, uint8_t RobotID)
 }
 
 /**
- * @brief ɾ  ͼ
+ * @brief   Referee system serial protocol V2.0.0 implementation ɾ  ͼ
  * @param[in] Delete
  * @param[in] RobotID
  */
@@ -712,8 +758,8 @@ void UI_PushUp_Delete(UI_Delete_t *Delete, uint8_t RobotID)
 
 	/*     student_interactive_header */
 	Delete->Interactive_Header.data_cmd_id = UI_DataID_Delete;
-	Delete->Interactive_Header.sender_ID = RobotID;			//  ǰ      ID
-	Delete->Interactive_Header.receiver_ID = RobotID + 256; //  Ӧ      ID
+	Delete->Interactive_Header.sender_id = RobotID;					//  ǰ      ID
+	Delete->Interactive_Header.receiver_id = RobotID + 256; //  Ӧ      ID
 
 	/*     frame_tail   CRC16 */
 	Append_CRC16_Check_Sum((uint8_t *)Delete, sizeof(UI_Delete_t));

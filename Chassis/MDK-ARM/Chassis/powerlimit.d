@@ -83,7 +83,7 @@ chassis\powerlimit.o: ../Components/tools/inc/protocol.h
 chassis\powerlimit.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\powerlimit.o: ../Core/Inc/usart.h
 chassis\powerlimit.o: ../boards/inc/bsp_referee.h
-chassis\powerlimit.o: ../application/inc/Referee.h
 chassis\powerlimit.o: ../application/inc/HeatControl.h
+chassis\powerlimit.o: ../application/inc/Referee.h
 chassis\powerlimit.o: ../Task/inc/RefereeTask.h
 chassis\powerlimit.o: ../Task/inc/Offline_Task.h

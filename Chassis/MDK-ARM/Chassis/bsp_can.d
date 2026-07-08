@@ -79,8 +79,8 @@ chassis\bsp_can.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\bsp_can.o: ../Core/Inc/usart.h
 chassis\bsp_can.o: ../Components/tools/inc/debug.h
 chassis\bsp_can.o: ../boards/inc/bsp_referee.h
-chassis\bsp_can.o: ../application/inc/Referee.h
 chassis\bsp_can.o: ../application/inc/HeatControl.h
+chassis\bsp_can.o: ../application/inc/Referee.h
 chassis\bsp_can.o: ../application/inc/GimbalReceive.h
 chassis\bsp_can.o: ../application/inc/remote_control.h
 chassis\bsp_can.o: ../application/inc/NingCap.h

@@ -7,10 +7,6 @@
 #include "GimbalReceive.h"
 
 #define ONE_BULLET_HEAT 10
-#define REMANENT_OF_BULLETS 3.0f  //冷却优先初始50热量，不能给5，要不然打不出一发
-#define SHOOT_FREQUENCY 20 // 发射频率
-#define HeatControlThreshold 1.0f
-#define PredictControlThreshold 0.9f
 
 typedef struct HeatController
 {

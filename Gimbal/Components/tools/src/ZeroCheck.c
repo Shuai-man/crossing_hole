@@ -1,9 +1,9 @@
 #include "ZeroCheck.h"
 
 /**
- * @brief ¹ıÁã¼ì²â
- * @param[in] Zero ¹ıÁã¼ì²â½á¹¹Ìå
- * @param[in] value µ±Ç°¼ì²âÖµ
+ * @brief è¿‡é›¶æ£€æµ‹
+ * @param[in] Zero è¿‡é›¶æ£€æµ‹ç»“æ„ä½“
+ * @param[in] value å½“å‰æ£€æµ‹å€¼
  */
 float ZeroCheck(ZeroCheck_Typedef *Zero, float value, float CountCycle)
 {

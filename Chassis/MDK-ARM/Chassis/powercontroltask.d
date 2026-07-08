@@ -56,9 +56,9 @@ chassis\powercontroltask.o: ../Components/tools/inc/debug.h
 chassis\powercontroltask.o: ../Components/tools/inc/tools.h
 chassis\powercontroltask.o: ../boards/inc/bsp_dwt.h
 chassis\powercontroltask.o: ../boards/inc/bsp_referee.h
-chassis\powercontroltask.o: ../application/inc/Referee.h
 chassis\powercontroltask.o: ../config/robot_config.h
 chassis\powercontroltask.o: ../application/inc/HeatControl.h
+chassis\powercontroltask.o: ../application/inc/Referee.h
 chassis\powercontroltask.o: ../application/inc/GimbalReceive.h
 chassis\powercontroltask.o: ../application/inc/remote_control.h
 chassis\powercontroltask.o: ../application/inc/NingCap.h

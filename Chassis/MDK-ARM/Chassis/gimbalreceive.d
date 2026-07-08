@@ -83,7 +83,7 @@ chassis\gimbalreceive.o: ../Components/tools/inc/protocol.h
 chassis\gimbalreceive.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\gimbalreceive.o: ../Core/Inc/usart.h
 chassis\gimbalreceive.o: ../boards/inc/bsp_referee.h
-chassis\gimbalreceive.o: ../application/inc/Referee.h
 chassis\gimbalreceive.o: ../application/inc/HeatControl.h
+chassis\gimbalreceive.o: ../application/inc/Referee.h
 chassis\gimbalreceive.o: ../Task/inc/RefereeTask.h
 chassis\gimbalreceive.o: ../Task/inc/Offline_Task.h

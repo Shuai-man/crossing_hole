@@ -83,7 +83,7 @@ chassis\robot_config.o: ../Components/tools/inc/protocol.h
 chassis\robot_config.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\robot_config.o: ../Core/Inc/usart.h
 chassis\robot_config.o: ../boards/inc/bsp_referee.h
-chassis\robot_config.o: ../application/inc/Referee.h
 chassis\robot_config.o: ../application/inc/HeatControl.h
+chassis\robot_config.o: ../application/inc/Referee.h
 chassis\robot_config.o: ../Task/inc/RefereeTask.h
 chassis\robot_config.o: ../Task/inc/Offline_Task.h

@@ -60,14 +60,13 @@ chassis\freertos.o: ../Task/inc/RefereeTask.h
 chassis\freertos.o: ../application/inc/GimbalReceive.h
 chassis\freertos.o: ../application/inc/remote_control.h
 chassis\freertos.o: ../boards/inc/bsp_referee.h
+chassis\freertos.o: ../config/robot_config.h
+chassis\freertos.o: ../Core/Inc/usart.h
 chassis\freertos.o: ../application/inc/Referee.h
 chassis\freertos.o: ../Components/tools/inc/protocol.h
 chassis\freertos.o: ../Algorithm/inc/algorithmOfCRC.h
-chassis\freertos.o: ../Core/Inc/usart.h
-chassis\freertos.o: ../boards/inc/bsp_referee.h
 chassis\freertos.o: ../application/inc/HeatControl.h
 chassis\freertos.o: ../application/inc/Referee.h
-chassis\freertos.o: ../config/robot_config.h
 chassis\freertos.o: ../application/inc/ChassisController.h
 chassis\freertos.o: ../Algorithm/inc/arm_math.h
 chassis\freertos.o: ../Drivers/CMSIS/Include/core_cm4.h

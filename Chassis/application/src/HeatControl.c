@@ -1,15 +1,9 @@
 #include "HeatControl.h"
 
 HeatController heat_controller;
-//计算剩余发弹量
-
-
+//计算剩余发弹量，判断是否打弹
 void HeatUpdate(void)
 {
-    heat_controller.HeatMax = referee_data.Game_Robot_State.shooter_barrel_heat_limit; 
-		heat_controller.HeatCool = referee_data.Game_Robot_State.shooter_barrel_cooling_value ; //热量冷却,暂时没用
-    heat_controller.CurHeat = referee_data.Power_Heat_Data.shooter_id1_17mm_cooling_heat;  
-	
     if (heat_controller.heat_count != heat_controller.last_heat_count)//裁判系统更新
     {
         heat_controller.last_heat_count = heat_controller.heat_count;

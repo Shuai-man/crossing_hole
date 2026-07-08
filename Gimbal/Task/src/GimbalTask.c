@@ -81,28 +81,28 @@ void Gimbal_Act_Cal(void)
 {
     // pitch限制幅值
     limitPitchAngle();
-    // yaw计算
-
+    // 计算云台角度
     Gimbal_Yaw_Calculate(gimbal_controller.target_yaw_angle);
     Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
-
-    pc_send_data.mode_want = NOT_USE_AIM;
 }
 
-void Gimbal_Auto_aim_Cal(void) // 打车
+// 自瞄模式的云台控制
+void Gimbal_Auto_aim_Cal(void)
 {
-     // 改变发送的模式
-    // 设置目标角度
     if (pc_recv_data.detect_number == 0 || fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
     {
-        Gimbal_Act_Cal();
+        if (pc_recv_data.mode_select == 0x11)
+        {
+            gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
+            gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
+        }
+        Gimbal_Act_Cal(); // 无PC数据处理
     }
     else
     {
         Gimbal_PC_Cal();
     }
 }
-
 
 void Gimbal_SI_Cal()
 {
@@ -295,6 +295,9 @@ void Gimbal_Task(void *pvParameters)
             Gimbal_Auto_aim_Cal();
             break;
         case GIMBAL_BIG_BUFF_MODE:
+            Gimbal_Auto_aim_Cal();
+            break;
+        case GIMBAL_AUTO_ATM_TEST_MODE:
             Gimbal_Auto_aim_Cal();
             break;
         default:

@@ -5,7 +5,7 @@ uint8_t friction_off = 0;
 
 void Offline_task(void const *argument)
 {
-	vTaskDelay(5000);						// 待机器人初始化后开始检测
+	vTaskDelay(3000);						// 待机器人初始化后开始检测
 	Initialization_Completed(); // initialization finished buzzing
 	// 判断逻辑：没有新数据更新，判断为掉线
 

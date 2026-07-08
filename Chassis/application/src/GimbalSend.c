@@ -1,11 +1,13 @@
 #include "GimbalSend.h"
 
+#define ONE_BULLET_HEAT 10
+
 GimbalSendPack_1 gimbal_pack_send_1;
 GimbalSendPack_2 gimbal_pack_send_2;
 
 void GimbalSendPack()
 {
-	if(referee_data.Game_Robot_State.remain_HP==0)
+	if(referee_data.Game_Robot_State.current_HP==0)
 	{
 		gimbal_pack_send_1.alive_flag=0;
 	}
@@ -19,7 +21,7 @@ void GimbalSendPack()
   gimbal_pack_send_1.shoot_avaiable = heat_controller.available_shoot;
   if(heat_controller.shoot_flag)
   {
-    gimbal_pack_send_1.shoot_speed = referee_data.Shoot_Data.bullet_speed;
+    gimbal_pack_send_1.shoot_speed = referee_data.Shoot_Data.initial_speed;
   }
   else
   {

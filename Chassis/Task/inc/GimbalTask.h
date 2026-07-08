@@ -11,8 +11,6 @@
 #include "GM6020.h"
 #include "M2006.h"
 #include "bsp_can.h"
-
-#include "HeatControl.h"
 #include "GimbalSend.h"
 
 #include "SystemIdentification.h"

@@ -81,8 +81,8 @@ chassis\gimbaltask.o: ../Algorithm/inc/algorithmOfCRC.h
 chassis\gimbaltask.o: ../Core/Inc/usart.h
 chassis\gimbaltask.o: ../Components/tools/inc/debug.h
 chassis\gimbaltask.o: ../boards/inc/bsp_referee.h
-chassis\gimbaltask.o: ../application/inc/Referee.h
 chassis\gimbaltask.o: ../application/inc/HeatControl.h
+chassis\gimbaltask.o: ../application/inc/Referee.h
 chassis\gimbaltask.o: ../application/inc/GimbalReceive.h
 chassis\gimbaltask.o: ../application/inc/remote_control.h
 chassis\gimbaltask.o: ../application/inc/NingCap.h

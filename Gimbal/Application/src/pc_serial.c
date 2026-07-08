@@ -56,6 +56,10 @@ void SendtoPCPack(unsigned char *buff)
     pc_send_data.shoot_avaiable = chassis_pack_get_1.shoot_avaiable;
     pc_send_data.aim_request = remote_controller.auto_arm;
     // modewant在其他地方处理
+    if (pc_send_data.mode_want == NOT_USE_AIM)
+    {
+       pc_send_data.mode_want = STD_AUTO_AIM;//算法要求，默认发1
+    }
     pc_send_data.number_want = 0;
     pc_send_data.enemy_color = !chassis_pack_get_1.robot_color;
     pc_send_data.frame_tail = 0x0D;

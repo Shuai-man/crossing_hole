@@ -47,7 +47,6 @@ chassis\heatcontrol.o: ../Core/Inc/main.h
 chassis\heatcontrol.o: ../Components/tools/inc/debug.h
 chassis\heatcontrol.o: ../Components/tools/inc/tools.h
 chassis\heatcontrol.o: ../boards/inc/bsp_referee.h
-chassis\heatcontrol.o: ../application/inc/Referee.h
 chassis\heatcontrol.o: ../config/robot_config.h
 chassis\heatcontrol.o: ../application/inc/HeatControl.h
 chassis\heatcontrol.o: ../application/inc/GimbalReceive.h
