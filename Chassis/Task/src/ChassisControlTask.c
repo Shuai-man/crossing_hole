@@ -19,14 +19,8 @@ void ChassisControl_task(void const * argument)
 {
     portTickType xLastWakeTime;
 
-//    vTaskDelay(500);
-
-    infantry.delta_t = DWT_GetDeltaT(&infantry.last_cnt);
     InfantryInit(&infantry);
-
-    // 初始化时间差
-    infantry.delta_t = DWT_GetDeltaT(&infantry.last_cnt);
-    vTaskDelay(1);
+    vTaskDelay(500);
 
     while (1)
     {
@@ -47,9 +41,6 @@ void ChassisControl_task(void const * argument)
 
         /* 执行控制 */
         execute_control(&infantry.excute_info);	//把电流值发送给电机
-
-        /*  喂狗 */
-//        xEventGroupSetBits(xCreatedEventGroup, CHASIS_CONTROL_BIT); // 标志位置一
 
         /*  延时  */
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));

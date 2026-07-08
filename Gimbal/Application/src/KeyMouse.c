@@ -105,7 +105,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         }
     }
 
-    chassis_solver.speed_state = NORMAL_SPEED_STATE; // 普通速度
     // 按键检测
     uint16_t keyValue = remote_controller.dji_remote.keyValue;
     remote_controller.dji_remote.keyChangeOn = (remote_controller.dji_remote.last_keyValue ^ remote_controller.dji_remote.keyValue) & remote_controller.dji_remote.keyValue;
@@ -128,7 +127,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_V:
             break;
         case KEY_SHIFT:
-            chassis_solver.speed_state = HIGH_SPEED_STATE;
+            setSuperPower(POWER_TO_SuperPower);
             break;
         case KEY_CTRL:
             break;
@@ -234,6 +233,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_V:
             break;
         case KEY_SHIFT:
+            setSuperPower(POWER_TO_BATTERY);
             break;
         case KEY_CTRL:
             break;

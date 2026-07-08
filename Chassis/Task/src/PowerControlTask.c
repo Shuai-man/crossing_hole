@@ -4,23 +4,30 @@ uint32_t timtim;
 
 static void Check_Energy_State(void)
 {
-	if(referee_data.Buff_Musk.remaining_energy == 0x32)
+	if(referee_data.Buff_Musk.remaining_energy & 0x01)
 	{
-		infantry.energy_state = ENERGY_FULL;
-	}else if(referee_data.Buff_Musk.remaining_energy == 0x1E)
+		infantry.energy_state = ENERGY_125;//>125
+	}else if(referee_data.Buff_Musk.remaining_energy & 0x02)
 	{
-		infantry.energy_state = ENERGY_50;//30-50
-	}else if(referee_data.Buff_Musk.remaining_energy == 0x1C)
+		infantry.energy_state = ENERGY_100;//>100
+	}else if(referee_data.Buff_Musk.remaining_energy & 0x04)
 	{
-		infantry.energy_state = ENERGY_30;//15-30
-	}else if(referee_data.Buff_Musk.remaining_energy == 0x18)
+		infantry.energy_state = ENERGY_50;//>50
+	}else if(referee_data.Buff_Musk.remaining_energy & 0x08)
 	{
-		infantry.energy_state = ENERGY_15;//5-15
-	}else if(referee_data.Buff_Musk.remaining_energy == 0x10)
+		infantry.energy_state = ENERGY_30;//>30
+	}else if(referee_data.Buff_Musk.remaining_energy & 0x010)
 	{
-		infantry.energy_state = ENERGY_5;//0-5
-	}else{
-		infantry.energy_state = WEAK;//耗尽
+		infantry.energy_state = ENERGY_15;//>15
+	}else if (referee_data.Buff_Musk.remaining_energy & 0x020)
+	{
+		infantry.energy_state = ENERGY_5;//>5
+	}else if(referee_data.Buff_Musk.remaining_energy & 0x040)
+	{
+		infantry.energy_state = ENERGY_1;//>1
+	}else
+	{
+		infantry.energy_state = ENERGY_0;//耗尽
 	}
 }
 
@@ -31,7 +38,6 @@ void PowerControlTask(void const * argument)
 	static int i = 0;
 
 	CapControllerInit();
-	wireless_init();
 
 	float referee_power;
 
@@ -41,12 +47,12 @@ void PowerControlTask(void const * argument)
 
 		// TODO:首先进行异常处理，万一不能收到裁判系统数据或者裁判系统数据离线
 		Check_Energy_State();
-		if(infantry.energy_state == WEAK)
+		if(infantry.energy_state == ENERGY_0)
 		{
-			referee_power = LIMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 170, 40);
+			referee_power = LIMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 100, 40);
 		}else
 		{
-			referee_power = LIMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 170, 40);
+			referee_power = LIMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 100, 40);
 		}
 
 	  if (remote_controller.super_power_state == POWER_TO_SuperPower)
@@ -71,10 +77,6 @@ void PowerControlTask(void const * argument)
 			Interval = DWT_GetDeltaT(&timtim);
 			CanSend(SUPER_POWER_CAN, (uint8_t *)(&cap_send_data), SEND_TO_SUPER_POWER_CAN_ID, 8);
 			
-			#if ROBOT == NIUNIU 
-			SendWirelessPack();
-			CanSend(WIRELESS_CAN, (uint8_t *)(&wireless_send_data), SEND_TO_WIRELESS_CAN_ID, 8);
-			#endif
 		}
 		
 		i++;

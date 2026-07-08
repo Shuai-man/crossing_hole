@@ -52,7 +52,6 @@
 "chassis\ningcap.o"
 "chassis\mecanum.o"
 "chassis\referee.o"
-"chassis\wireless.o"
 "chassis\heatcontrol.o"
 "chassis\offline_task.o"
 "chassis\refereetask.o"

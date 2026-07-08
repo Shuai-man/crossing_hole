@@ -92,12 +92,14 @@ typedef enum
 } chassis_direction_e;
 
 typedef enum Energy_State{
-	ENERGY_FULL,
+	ENERGY_125,
+	ENERGY_100,
 	ENERGY_50,
 	ENERGY_30,
 	ENERGY_15,
 	ENERGY_5,
-	WEAK,
+  ENERGY_1,
+	ENERGY_0,
 } Energy_State;
 
 typedef struct Infantry

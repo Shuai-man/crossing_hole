@@ -1325,11 +1325,6 @@
               <FilePath>..\application\src\Referee.c</FilePath>
             </File>
             <File>
-              <FileName>wireless.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\src\wireless.c</FilePath>
-            </File>
-            <File>
               <FileName>HeatControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\src\HeatControl.c</FilePath>

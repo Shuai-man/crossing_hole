@@ -24,11 +24,6 @@
 #define MOUSE_PITCH_SENSITIVITY 0.01f*180.0f/400.0f //t*角度/速度峰值
 #define MOUSE_SCROLL_SENSITIVITY 0.001f
 
-enum SPEED_STATE_e
-{
-    NORMAL_SPEED_STATE = 0,
-    HIGH_SPEED_STATE
-};
 
 /*底盘状态枚举体*/
 enum CHASSIS_STATE_e
@@ -63,8 +58,6 @@ typedef struct ChassisSolver
     float delta_t;
 
     uint8_t chassis_state; // 底盘状态标志位
-
-    enum SPEED_STATE_e speed_state;
 	
 	//小陀螺方向变化
 	short Rotate_Counter;

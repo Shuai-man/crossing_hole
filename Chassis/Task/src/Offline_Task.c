@@ -28,6 +28,6 @@ void Offline_task(void const *argument)
         // 超电板
         LossDetect(&global_debugger.super_power_debugger);
 
-        vTaskDelay(pdMS_TO_TICKS(1000)); // 所有数据都应该超过5HZ
+        vTaskDelay(pdMS_TO_TICKS(10)); // 所有数据都应该超过5HZ
     }
 }

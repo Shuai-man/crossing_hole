@@ -45,7 +45,7 @@ void Gimbal_msgs_Update1(void)
   {
     setRobotState(OFFLINE_MODE);
     setChassisAction(NOT_CONTROL_MODE);
-    setGimbalAction(GIMBAL_POWERDOWN);
+    setGimbalAction(GIMBAL_POWER_DOWN);
     setSuperPower(POWER_TO_BATTERY);
     setGimbalPosition(POWER_DOWN);  
     infantry.target_yaw_v_percent = 0.0f;

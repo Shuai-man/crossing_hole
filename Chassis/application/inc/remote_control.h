@@ -38,12 +38,12 @@ enum PowerControlState // 功率控制状态
 
 enum GIMBAL_ACTION
 {
-    GIMBAL_POWERDOWN, // 云台掉电模式
+    GIMBAL_POWER_DOWN, // 云台掉电模式
     GIMBAL_ACT_MODE,
     GIMBAL_AUTO_AIM_MODE,
-    GIMBAL_TEST_MODE,
     GIMBAL_SMALL_BUFF_MODE, // 打符模式
     GIMBAL_BIG_BUFF_MODE,   // 大符
+    GIMBAL_AUTO_ATM_TEST_MODE, // 自瞄测试模式
 };
 
 enum CHASSIS_FORMAT
