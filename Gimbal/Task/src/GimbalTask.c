@@ -61,9 +61,9 @@ void Gimbal_PC_Cal(void)
     // PITCH
     gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
     limitPitchAngle(); // pitch限制幅值
-    gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
-                                     GIMBAL_PITCH_B * cos(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
-                                     GIMBAL_PITCH_C * sign(gimbal_controller.pos_pitch_td.dx);
+    gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(pc_recv_data.pitch_setpoint * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_B * cos(pc_recv_data.pitch_setpoint * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_C * sign(pc_recv_data.pitch_omega_setpoint);
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.target_pitch_angle);
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, pc_recv_data.pitch_omega_setpoint);
     gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp;
