@@ -74,7 +74,7 @@ void DT7_Auto_aim(void)
     else
     {
         remote_controller.auto_arm = 0;
-        pc_send_data.mode_want = NOT_USE_AIM;
+        pc_send_data.mode_want = STD_AUTO_AIM;//算法要求，默认发1
     }
 }
 

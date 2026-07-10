@@ -21,7 +21,7 @@ typedef struct GimbalReceivePack1
   uint16_t gimbal_mode : 3;
   
   uint16_t is_pc_on : 1;
-  uint16_t autoaim_id : 4; // 自瞄ID//这里还能少几位
+  uint16_t aim_mode : 4; // 自瞄模式
 	uint16_t gimbal_position : 1; //头部模式
   uint16_t super_power : 1;
 	uint16_t through_hole_flag : 1; //过洞缓速限制功率

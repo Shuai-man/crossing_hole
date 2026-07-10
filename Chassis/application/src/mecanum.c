@@ -56,18 +56,11 @@ void mecanum_follow_control()
     infantry.set_y_v = infantry.target_y_v * infantry.cos_dir + infantry.target_x_v * infantry.sin_dir;
 
     // 转向计算，角度环 + 前馈
-
-    if (gimbal_receiver_pack1.autoaim_id == 2 || gimbal_receiver_pack1.autoaim_id == 4)
-    {
-        infantry.set_yaw_v = 0;
-    }
-    else
-    {
-        infantry.turn_speed_pid.Ref = GIMBAL_MOTOR_SIGN * PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
-        infantry.target_pid_yaw_v = PID_Calculate(&infantry.turn_speed_pid, infantry.yaw_v, infantry.turn_speed_pid.Ref);
-        //		infantry.target_pid_yaw_v = GIMBAL_MOTOR_SIGN *PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
-        infantry.set_yaw_v = infantry.target_pid_yaw_v + infantry.target_yaw_v;
-    }
+		infantry.turn_speed_pid.Ref = GIMBAL_MOTOR_SIGN * PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
+		infantry.target_pid_yaw_v = PID_Calculate(&infantry.turn_speed_pid, infantry.yaw_v, infantry.turn_speed_pid.Ref);
+		//		infantry.target_pid_yaw_v = GIMBAL_MOTOR_SIGN *PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
+		infantry.set_yaw_v = infantry.target_pid_yaw_v + infantry.target_yaw_v;
+    
 
     // 逆运动学解算
     mecanum_inv_kinematics();

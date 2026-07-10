@@ -13,7 +13,7 @@ void Pack_InfantryMode()
   chassis_send_pack1.gimbal_mode = remote_controller.gimbal_action;
   chassis_send_pack1.super_power = remote_controller.super_power_state;
   chassis_send_pack1.is_pc_on = global_debugger.pc_receive_debugger.state;
-  chassis_send_pack1.autoaim_id = pc_recv_data.detect_number;
+  chassis_send_pack1.aim_mode = pc_send_data.mode_want;
 	chassis_send_pack1.gimbal_position = remote_controller.gimbal_position;
   chassis_send_pack1.yaw_pose = gimbal_controller.DM_Yaw_Motor.P_Receive;
   chassis_send_pack1.robot_speed_x = (int8_t)(chassis_solver.chassis_speed_x * 100.0f);

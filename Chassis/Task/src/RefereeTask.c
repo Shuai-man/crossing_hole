@@ -31,8 +31,8 @@ void Refereetask(void const * argument)
 
 	uint8_t is_pc_offline = 0;
 
-	static char chassis_state[5][8] = {"OFFLINE ", "NOT_FOLL", "FOLLOW  ", "ROTATE  ", "ROTATE  "};
-	static char gimbal_state[7][8] =  {"OFFLINE ", "ACT     ", "AUTOAIM ", "TEST    ", "SI      ", "SMA_BUFF", "BIG_BUFF"};
+	static char chassis_state[4][8] = {"DOWN    ", "NOT_FOLL", "FOLLOW  ", "ROTATE  "};
+	static char gimbal_state[5][8] =  {"DOWN    ", "ACT     ", "AUTOAIM ", "SMA_BUFF", "BIG_BUFF"};
 
 	uint16_t UI_PushUp_Counter_500;
 	uint16_t UI_PushUp_Counter_60;
@@ -41,7 +41,6 @@ void Refereetask(void const * argument)
 	
 	while (1) //进入异常
 	{
-//			HAL_UART_Receive_DMA(&huart4, rx_buffer, sizeof(rx_buffer));
 		xLastWakeTime = xTaskGetTickCount();
 		Referee_UnpackFifoData();
 
@@ -50,10 +49,11 @@ void Refereetask(void const * argument)
 		UI_PushUp_Counter_60 = UI_PushUp_Counter % 60;	 // 600毫秒
 		UI_PushUp_Counter_20 = UI_PushUp_Counter % 20;	 // 200毫秒
 		UI_PushUp_Counter_10 = UI_PushUp_Counter % 10;	 // 100毫秒 
-		/*****************************************************更新频率为5秒*****************************************************************/
+		/************************************************UI创建，更新频率为5秒*****************************************************************/
 		//坐标系原点在
-		if (UI_PushUp_Counter_500 == 13) // 锟斤拷锟斤拷锟斤拷锟斤拷
+		if (UI_PushUp_Counter_500 == 13) // 车道线
 		{
+			//todo 随着pitch角度变化车道线的位置
 #if ROBOT == CHEN_JING_YUAN
 			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[0], "lft", UI_Graph_Add, LAYER1, UI_Color_Green, 3, 210, 0, 640, 600);
 			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[1], "rgt", UI_Graph_Add, LAYER1, UI_Color_Green, 3, 1660, 0, 1278, 600);
@@ -67,7 +67,7 @@ void Refereetask(void const * argument)
 		else if(UI_PushUp_Counter_500 == 131)
 		{
 			//辅瞄模式
-			UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Add, LAYER2, UI_Color_Orange, 20, 6, 3, 1280, 700, "NO_AIM      ");
+			UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Add, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "NO_AIM      ");
 			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
 		}
 		else if (UI_PushUp_Counter_500 == 103)
@@ -81,15 +81,15 @@ void Refereetask(void const * argument)
 			//PC是否在线
 			is_pc_offline = !gimbal_receiver_pack1.is_pc_on;
 			if (!is_pc_offline)
-				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 14, 3, 60, 650, "PC      :ON");
+				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 6, 3, 60, 650, "PC:ON ");
 			else
-				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Add, LAYER2, UI_Color_Orange, 17, 14, 3, 60, 650, "PC      :OFF");
+				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Add, LAYER2, UI_Color_Orange, 17, 6, 3, 60, 650, "PC:OFF");
 			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
 		}
 		else if (UI_PushUp_Counter_500 == 211) 
 		{
 			//底盘模式
-			UI_Draw_String(&referee_data.UI_String.String, "cha", UI_Graph_Add, LAYER2, UI_Color_Green, 30, 8, 3, 120, 700, chassis_state[remote_controller.control_mode_action]);
+			UI_Draw_String(&referee_data.UI_String.String, "cha", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 8, 3, 120, 700, chassis_state[remote_controller.control_mode_action]);
 			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
 		}
 		else if (UI_PushUp_Counter_500 == 251) 
@@ -143,23 +143,20 @@ void Refereetask(void const * argument)
 			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
 		}
 
-		/*****************************************************更新频率为600毫秒*****************************************************************/
-		// 锟斤拷锟斤拷锟斤拷台锟斤拷锟斤拷状态UI
+		/************************************************UI实时更改，更新频率为600毫秒*****************************************************************/
 		else if (UI_PushUp_Counter_60 == 10)
 		{
 			UI_Draw_String(&referee_data.UI_String.String, "gim", UI_Graph_Change, LAYER2, UI_Color_Orange, 17, 8, 3, 120, 750, gimbal_state[remote_controller.gimbal_action]);
 			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
 		}
 		
-
-		// 锟斤拷锟狡碉拷锟教匡拷锟斤拷状态UI
 		else if (UI_PushUp_Counter_60 == 30)
 		{
 			UI_Draw_String(&referee_data.UI_String.String, "cha", UI_Graph_Change, LAYER2, UI_Color_Orange, 17, 8, 3, 120, 700, chassis_state[remote_controller.control_mode_action]);
 			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
 		}
 
-		// UI锟斤拷锟斤拷(2Hz)
+
 		else if (UI_PushUp_Counter_60 == 40)
 		{
 
@@ -173,7 +170,7 @@ void Refereetask(void const * argument)
 				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Change, LAYER2, UI_Color_Orange, 17, 7, 3, 60, 650, "PC :OFF");
 			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
 		}
-		// 更新频率为200毫秒---------------//
+		// 更新频率为200ms---------------//
 		else if (UI_PushUp_Counter_20 == 1)
 		{
 			drawCapBar(referee_data.UI_Graph1.Graphic, UI_Graph_Change);
@@ -186,11 +183,12 @@ void Refereetask(void const * argument)
 			UI_Draw_Float(&referee_data.UI_Graph5.Graphic[0], "spd", UI_Graph_Change, LAYER3, UI_Color_Orange, 15, 2, 3, 1200, 40, infantry.friction_speed);
 			UI_PushUp_Graphs(5, &referee_data.UI_Graph5, referee_data.Game_Robot_State.robot_id);
 		}
-		//更新频率为100毫秒---------------//
+		//更新频率为100ms---------------//
 		else if(UI_PushUp_Counter_10 == 5)
 		{
 			if(gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)//小陀螺旋转
 			{
+				//没看到
 				UI_Draw_String(&referee_data.UI_String.String, "rta", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 10, 3, CHASSIS_POS_UI_START_X, CHASSIS_POS_UI_START_Y - CHASSIS_POS_WIDTH / 2 - 200, "CV_ROTA:ON");
 			}
 			else{
@@ -200,23 +198,19 @@ void Refereetask(void const * argument)
 		}
 		else if(UI_PushUp_Counter_10 == 7)
 		{
-			if(gimbal_receiver_pack1.autoaim_id == 0)//
+			if(gimbal_receiver_pack1.aim_mode == 0)//
 			{
 				//不使用辅瞄
 				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "NO_AIM      ");
-			}else if(gimbal_receiver_pack1.autoaim_id == 1)
+			}else if(gimbal_receiver_pack1.aim_mode == 1)	
 			{
 				//普通辅瞄
 				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "STANDARD AIM");	
-			}else if(gimbal_receiver_pack1.autoaim_id == 2)
+			}else if(gimbal_receiver_pack1.aim_mode == 2)
 			{
 				//小符
 				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "SMALL BUFF  ");	
-			}else if(gimbal_receiver_pack1.autoaim_id == 3)
-			{
-				//定点小陀螺
-				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "STATIC_AIM  ");
-			}else if(gimbal_receiver_pack1.autoaim_id == 4)
+			}else if(gimbal_receiver_pack1.aim_mode == 3)
 			{
 				//大符
 				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "BIG BUFF    ");

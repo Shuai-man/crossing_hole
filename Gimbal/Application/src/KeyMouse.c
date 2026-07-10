@@ -24,9 +24,9 @@ void KeyMouse_Init(void)
 {
     // 初始化微分器
     // 底盘速度，低敏
-    speed_smoother_init(&chassis_solver.speed_x_smoother, 0.10f, 0.6f, 2.0f);
-    speed_smoother_init(&chassis_solver.speed_y_smoother, 0.10f, 0.6f, 2.0f);
-    speed_smoother_init(&chassis_solver.speed_w_smoother, 0.10f, 0.6f, 2.0f);
+    speed_smoother_init(&chassis_solver.speed_x_smoother, 0.10f, 0.6f, 5.0f);
+    speed_smoother_init(&chassis_solver.speed_y_smoother, 0.10f, 0.6f, 5.0f);
+    speed_smoother_init(&chassis_solver.speed_w_smoother, 0.10f, 0.6f, 5.0f);
 
     // 鼠标速度，高敏
     TD_Init(&chassis_solver.mouse_x_td, 50000, 0.005);

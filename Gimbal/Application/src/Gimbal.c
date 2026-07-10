@@ -1,4 +1,4 @@
-﻿#include "Gimbal.h"
+#include "Gimbal.h"
 #include "bsp_dwt.h"
 
 GimbalController gimbal_controller;
@@ -18,8 +18,8 @@ void GimbalPidInit(void)
 {
 
     // Pitch
-    PID_Init(&gimbal_controller.pitch_angle_pid, 5000.0f, 0, 0.0f, 1000.0f, 500, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
-    PID_Init(&gimbal_controller.pitch_speed_pid, 5000, 4000, 0.0f, 60.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit);
+    PID_Init(&gimbal_controller.pitch_angle_pid, 5000.0f, 0, 0.0f, 600.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
+    PID_Init(&gimbal_controller.pitch_speed_pid, 5000.0f, 4000.0f, 0.0f, 60.0f, 0.0f, 0, 0, 0, 0.0018f, 0, 1, Integral_Limit);
     // td结构体: r:加速度因子, h0:滤波系数，单位s
     TD_Init(&gimbal_controller.pos_pitch_td, 800, 0.005);
 
@@ -42,11 +42,20 @@ void GimbalPidInit(void)
 // todo 把重力补偿加上
 float Gimbal_Pitch_Calculate(float set_point)
 {
+#if GIMBAL_PITCH_SYSID
+    gimbal_controller.pitch_out = set_point * gimbal_controller.pitch_angle_pid.Kp;
+    return gimbal_controller.pitch_out;
+
+#else
     TD_Calculate(&gimbal_controller.pos_pitch_td, set_point);
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.pos_pitch_td.x);
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, gimbal_controller.pos_pitch_td.dx);
-    gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output;
+    gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_B * cos(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_C * sign(gimbal_controller.pos_pitch_td.dx);
+    gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp;
     return gimbal_controller.pitch_out;
+#endif
 }
 
 /*MPC 轨迹:  θ_target(t), ω_target(t), α_target(t)
@@ -106,7 +115,7 @@ void GimbalClear(void)
 
     gimbal_controller.target_pitch_angle = gimbal_controller.gyro_pitch_angle;
     gimbal_controller.pitch_out = 0;
-    gimbal_controller.comp_pitch_current = 0;
+    gimbal_controller.gravity_comp = 0;
 
     // yaw
     PID_Clear(&gimbal_controller.yaw_angle_pid);
@@ -168,7 +177,7 @@ void updateGyro()
     gimbal_controller.gyro_pitch_angle = GIMBAL_PITCH_GYRO_SIGN * INS.Pitch;
     // pitch角速度
     speed = GIMBAL_PITCH_GYRO_SIGN * INS.Gyro[0] / PI * 180.0f;
-    iir(&gimbal_controller.gyro_pitch_speed, speed, 0.3);
+    iir(&gimbal_controller.gyro_pitch_speed, speed, 0.2);
 
     // yaw角度
     gimbal_controller.gyro_yaw_angle = GIMBAL_YAW_GYRO_SIGN * INS.YawTotalAngle;
@@ -185,24 +194,7 @@ volatile float pitch_comp[5] = {-0.024386f, -0.328869f, -0.138744f, 30.807712f, 
 float GimbalPitchComp()
 {
     // 记得每调一台车都需要重新更新参数
-    float x[4];
-
-    // 解析静止时的非线性函数，只能大致补偿，然后靠PID的I使最终无静差
-    // 低于一定角度或高于一定角度，根据测量结果，输出应大致不变
-    x[3] = LIMIT_MAX_MIN(gimbal_controller.gyro_pitch_angle, 8, -12);
-    x[2] = x[3] * x[3];
-    x[1] = x[2] * x[3];
-    x[0] = x[1] * x[3];
-
-    float sum = pitch_comp[4];
-    for (int i = 0; i < 4; i++)
-    {
-        sum += x[i] * pitch_comp[i];
-    }
-    iir(&gimbal_controller.comp_pitch_current, sum * GIMBAL_PITCH_COMP_COEF, 0.7f);
-    return gimbal_controller.comp_pitch_current;
-    // iir(&gimbal_controller.comp_pitch_current, GIMBAL_PITCH_COMP * arm_cos_f32(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) * GIMBAL_PITCH_COMP_COEF, 0.7);
-    // return gimbal_controller.comp_pitch_current;
+    return 0;
 }
 
 /**
