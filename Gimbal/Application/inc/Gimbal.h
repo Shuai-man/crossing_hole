@@ -44,20 +44,25 @@
 #define GIMBAL_YAW_C 315.488129f//220.0f // 库伦摩擦系数，与结构有关
 
 //YAW轴 系统辨识开关（0=关闭, 1=开启）
-#define GIMBAL_SYSID 0
+#define GIMBAL_YAW_SYSID 0
 // 系统辨识步骤选择（配合 GIMBAL_SYSID=1 使用）
 #define GIMBAL_SYSID_STEP_BC 1  // 第一步：稳态速度测试 -> 辨识 B (阻尼) 和 C (库仑摩擦)
 #define GIMBAL_SYSID_STEP_J  2  // 第二步：恒加速测试 -> 辨识 J (转动惯量)，需先用第一步得到 B,C
-#define GIMBAL_SYSID_STEP GIMBAL_SYSID_STEP_BC  // 默认执行第一步
+#define GIMBAL_SYSID_STEP GIMBAL_SYSID_STEP_J  // 默认执行第一步
 
-//Pitch轴 系统辨识开关（0=关闭, 1=开启）
-#define GIMBAL_PITCH_SYSID 0
+//Pitch轴 重补测试开关（0=关闭, 1=开启）
+#define GIMBAL_PITCH_COMP 0
 /* 重力补偿 */
-#define GIMBAL_PITCH_A 529.9058f
-#define GIMBAL_PITCH_B 1764.462f
-#define GIMBAL_PITCH_C 150.68168f
+#define GIMBAL_PITCH_A 529.9058f//重力矩系数1
+#define GIMBAL_PITCH_B 1764.462f//重力矩系数2
+#define GIMBAL_PITCH_C 150.68168f//摩擦力
 #define GIMBAL_PITCH_COMP_MAX 1900.0f
 #define GIMBAL_PITCH_COMP_MIN 1500.0f
+
+/*PITCH系统辨识*/
+#define GIMBAL_PITCH_SYSID 0
+#define GIMBAL_PITCH_CB 13.6324844f//阻力系数
+#define GIMBAL_PITCH_J 3.0f//转动惯量
 
 // 摩擦力模型调参
 #define BORDER_FRICTION_SPEED 6.0f    // 临界计算摩擦力速度，大于此速度将是全摩擦力补偿
@@ -75,10 +80,10 @@ typedef enum
 typedef struct Gimbal_SI
 {
   float sysid_timer;
-  RLS rls_yaw;
-  SI_t si_yaw;
+  RLS rls_sysid;
+  SI_t si_sysid;
   TD_t td_omega;
-  uint8_t gimbal_sysid_done;
+  uint8_t sysid_done;
   float J;
   float B;
   float C;
@@ -109,6 +114,7 @@ typedef struct GimbalController
   PID_t pitch_angle_pid; // 角度环
 
   float gravity_comp; // 重力补偿
+  float ff_tff_pitch; // 前馈扭矩
   float target_pitch_angle; // 设定的角度值
 
   float pitch_out;
@@ -145,6 +151,7 @@ typedef struct GimbalController
 
   /*----------系统辨识-----------------*/
   Gimbal_SI yaw_sysid;
+  Gimbal_SI pitch_sysid;
 
 } GimbalController;
 

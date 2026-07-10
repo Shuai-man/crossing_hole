@@ -64,9 +64,11 @@ void Gimbal_PC_Cal(void)
     gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(pc_recv_data.pitch_setpoint * ANGLE_TO_RAD_COEF) +
                                      GIMBAL_PITCH_B * cos(pc_recv_data.pitch_setpoint * ANGLE_TO_RAD_COEF) +
                                      GIMBAL_PITCH_C * sign(pc_recv_data.pitch_omega_setpoint);
+    gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * pc_recv_data.pitch_acc_setpoint + // 惯量 × 加速度，主要输出项
+                                     GIMBAL_PITCH_CB * pc_recv_data.pitch_omega_setpoint;  // 阻尼 × 速度
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.target_pitch_angle);
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, pc_recv_data.pitch_omega_setpoint);
-    gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp;
+    gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp + gimbal_controller.ff_tff_pitch;
 
     // YAW
     gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
@@ -277,8 +279,8 @@ void Gimbal_Task(void *pvParameters)
         Gimbal_ErrorAngle();
         Gimbal_Return(&gimbal_controller, &remote_controller);
 
-#if GIMBAL_SYSID
-        if (!gimbal_controller.yaw_sysid.gimbal_sysid_done)
+#if GIMBAL_YAW_SYSID || GIMBAL_PITCH_SYSID
+        if (!gimbal_controller.yaw_sysid.sysid_done || !gimbal_controller.pitch_sysid.sysid_done)
         {
             Gimbal_SystemID_Run();
         }

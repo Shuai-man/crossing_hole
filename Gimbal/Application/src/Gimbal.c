@@ -42,10 +42,13 @@ void GimbalPidInit(void)
 // todo 把重力补偿加上
 float Gimbal_Pitch_Calculate(float set_point)
 {
-#if GIMBAL_PITCH_SYSID
+#if GIMBAL_PITCH_COMP
     gimbal_controller.pitch_out = set_point * gimbal_controller.pitch_angle_pid.Kp;
     return gimbal_controller.pitch_out;
-
+#elif GIMBAL_PITCH_SYSID
+    PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, gimbal_controller.pitch_speed_pid.Ref);
+    gimbal_controller.pitch_out = gimbal_controller.pitch_speed_pid.Output;
+    return gimbal_controller.pitch_out;
 #else
     TD_Calculate(&gimbal_controller.pos_pitch_td, set_point);
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.pos_pitch_td.x);
@@ -53,7 +56,10 @@ float Gimbal_Pitch_Calculate(float set_point)
     gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
                                      GIMBAL_PITCH_B * cos(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
                                      GIMBAL_PITCH_C * sign(gimbal_controller.pos_pitch_td.dx);
-    gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp;
+    gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * gimbal_controller.pos_pitch_td.ddx +     // 惯量 × 加速度，主要输出项
+                                     GIMBAL_PITCH_CB * gimbal_controller.pos_pitch_td.dx ;     // 阻尼 × 速度
+                                     
+     gimbal_controller.pitch_out = gimbal_controller.ff_tff_pitch + gimbal_controller.gravity_comp + gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output ;
     return gimbal_controller.pitch_out;
 #endif
 }
@@ -73,7 +79,7 @@ float Gimbal_Yaw_Calculate(float set_point)
 {
     // 由前馈电流负责控制，pid只负责闭环修正位置
     // 高速情况下纯pid控制有明显滞后问题，必须加前馈
-#if GIMBAL_SYSID
+#if GIMBAL_YAW_SYSID
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, gimbal_controller.yaw_speed_pid.Ref);
     gimbal_controller.yaw_out = gimbal_controller.yaw_speed_pid.Output;
     return gimbal_controller.yaw_out;
@@ -187,17 +193,6 @@ void updateGyro()
 }
 
 /**
- * @brief 由于重力补偿的作用，云台需要施加一个非线性力抵消重力影响，该力需要根据实际来进行测定
- */
-volatile float pitch_comp[5] = {-0.024386f, -0.328869f, -0.138744f, 30.807712f, 1750.2f};
-
-float GimbalPitchComp()
-{
-    // 记得每调一台车都需要重新更新参数
-    return 0;
-}
-
-/**
  * @brief 云台摩擦力模型，只使用库伦摩擦力，因粘性摩擦力在辨识中表现不明显，故忽略
  * @param[in] void
  */
@@ -225,21 +220,26 @@ void Gimbal_SystemID_Init(void)
 {
     TD_Init(&gimbal_controller.yaw_sysid.td_omega, 10000.0f, 0.005f);
     gimbal_controller.yaw_sysid.sysid_timer = 0.0f;
+    gimbal_controller.yaw_sysid.sysid_done = 1;
 
-    gimbal_controller.yaw_sysid.gimbal_sysid_done = 1;
+    TD_Init(&gimbal_controller.pitch_sysid.td_omega, 10000.0f, 0.005f);
+    gimbal_controller.pitch_sysid.sysid_timer = 0.0f;
+    gimbal_controller.pitch_sysid.sysid_done = 1;
 
 #if GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_BC
-    RLS_Init(&gimbal_controller.yaw_sysid.rls_yaw, 2, 1, 0.99f);
+    RLS_Init(&gimbal_controller.yaw_sysid.rls_sysid, 2, 1, 0.99f);
+    RLS_Init(&gimbal_controller.pitch_sysid.rls_sysid, 1, 1, 0.99f);
 #elif GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_J
-    RLS_Init(&gimbal_controller.yaw_sysid.rls_yaw, 1, 1, 0.99f);
+    RLS_Init(&gimbal_controller.yaw_sysid.rls_sysid, 1, 1, 0.99f);
+    RLS_Init(&gimbal_controller.pitch_sysid.rls_sysid, 1, 1, 0.99f);
 #endif
 }
 
 void Gimbal_SystemID_Run(void)
 {
-#if GIMBAL_SYSID
+#if GIMBAL_YAW_SYSID
 
-    if (gimbal_controller.yaw_sysid.gimbal_sysid_done)
+    if (gimbal_controller.yaw_sysid.sysid_done)
         return;
 
     float dt = gimbal_controller.delta_t;
@@ -287,10 +287,10 @@ void Gimbal_SystemID_Run(void)
             float torque_avg = torque_sum / (float)sample_count;
             float omega_avg = omega_sum / (float)sample_count;
             float sign_w = (omega_avg > 0.01f) ? 1.0f : ((omega_avg < -0.01f) ? -1.0f : 0.0f);
-            gimbal_controller.yaw_sysid.rls_yaw.H_data[0] = omega_avg;
-            gimbal_controller.yaw_sysid.rls_yaw.H_data[1] = sign_w;
-            gimbal_controller.yaw_sysid.rls_yaw.y_data[0] = torque_avg;
-            RLS_Update(&gimbal_controller.yaw_sysid.rls_yaw);
+            gimbal_controller.yaw_sysid.rls_sysid.H_data[0] = omega_avg;
+            gimbal_controller.yaw_sysid.rls_sysid.H_data[1] = sign_w;
+            gimbal_controller.yaw_sysid.rls_sysid.y_data[0] = torque_avg;
+            RLS_Update(&gimbal_controller.yaw_sysid.rls_sysid);
         }
         step_timer = 0.0f;
         total_angle = 0.0f;
@@ -301,10 +301,10 @@ void Gimbal_SystemID_Run(void)
         TD_Clear(&gimbal_controller.yaw_sysid.td_omega, gimbal_controller.gyro_yaw_speed);
         if (step_idx >= NUM_PTS)
         {
-            gimbal_controller.yaw_sysid.gimbal_sysid_done = 1;
+            gimbal_controller.yaw_sysid.sysid_done = 1;
             gimbal_controller.yaw_speed_pid.Ref = 0;
-            gimbal_controller.yaw_sysid.B = gimbal_controller.yaw_sysid.rls_yaw.x_data[0];
-            gimbal_controller.yaw_sysid.C = gimbal_controller.yaw_sysid.rls_yaw.x_data[1];
+            gimbal_controller.yaw_sysid.B = gimbal_controller.yaw_sysid.rls_sysid.x_data[0];
+            gimbal_controller.yaw_sysid.C = gimbal_controller.yaw_sysid.rls_sysid.x_data[1];
         }
     }
 
@@ -353,10 +353,161 @@ void Gimbal_SystemID_Run(void)
 
             gimbal_controller.yaw_sysid.J = (torque_avg - GIMBAL_YAW_B * omega_avg - GIMBAL_YAW_C) / alpha_avg;
         }
-        gimbal_controller.yaw_sysid.gimbal_sysid_done = 1;
+        gimbal_controller.yaw_sysid.sysid_done = 1;
         gimbal_controller.yaw_speed_pid.Ref = 0;
     }
 #endif
+
+#endif
+
+#if GIMBAL_PITCH_SYSID
+
+    if (gimbal_controller.pitch_sysid.sysid_done)
+        return;
+
+    float dt = gimbal_controller.delta_t;
+    if (dt > 0.01f)
+        dt = 0.002f;
+    gimbal_controller.pitch_sysid.sysid_timer += dt;
+
+// ========== 系统辨识模式 ==========
+#define PITCH_SYSID_MODE_B 0                // 原功能：恒定速度辨识粘滞阻尼 B
+#define PITCH_SYSID_MODE_J 1                // 新增：变加速度辨识转动惯量 J
+#define PITCH_SYSID_MODE PITCH_SYSID_MODE_J // 改这一行切换模式
+// ---------- 配置参数 ----------
+#define PITCH_VEL_UP_DPS 70.0f  // 正向（上升）速度指令
+#define PITCH_VEL_DOWN_DPS 2.0f // 反向（下降）速度指令，可微调
+#define ACCEL_PITCH 120.0f      // 加速度
+#define PITCH_SAFE_MIN_DEG -16.5f
+#define PITCH_SAFE_MAX_DEG 30.0f
+#define PITCH_REVERSE_MARGIN 1.0f
+#define PITCH_SCAN_CYCLES 3    // 完成 3 个来回后停止
+#define PITCH_SETTLE_TIME 0.1f // 换向稳定时间 (秒)
+
+    static float vel_target = PITCH_VEL_UP_DPS;
+    static int half_cycle_count = 0;
+    static float settle_timer = 0.0f; // 距离上次换向的时间
+#if PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
+    static float vel_ramp = 0.0f;          // 斜坡速度
+    static float ramp_accel = ACCEL_PITCH; // 当前加速度方向
+#endif
+    // 1. 根据实际角度自动换向，并选择对应的速度幅值
+    float theta_deg = gimbal_controller.gyro_pitch_angle; // 度
+
+#if PITCH_SYSID_MODE == PITCH_SYSID_MODE_B
+    // ---------- 原恒定速度 + 边界换向 ----------
+    if (theta_deg > (PITCH_SAFE_MAX_DEG - PITCH_REVERSE_MARGIN) && vel_target > 0)
+    {
+        vel_target = -PITCH_VEL_DOWN_DPS;
+        half_cycle_count++;
+        settle_timer = 0.0f;
+    }
+    else if (theta_deg < (PITCH_SAFE_MIN_DEG + PITCH_REVERSE_MARGIN) && vel_target < 0)
+    {
+        vel_target = PITCH_VEL_UP_DPS;
+        half_cycle_count++;
+        settle_timer = 0.0f;
+    }
+    if (theta_deg >= PITCH_SAFE_MAX_DEG)
+    {
+        vel_target = -PITCH_VEL_DOWN_DPS;
+        settle_timer = 0.0f;
+    }
+    else if (theta_deg <= PITCH_SAFE_MIN_DEG)
+    {
+        vel_target = PITCH_VEL_UP_DPS;
+        settle_timer = 0.0f;
+    }
+    gimbal_controller.pitch_speed_pid.Ref = vel_target;
+
+#elif PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
+    // ---------- 定加速度速度斜坡 ----------
+    // 碰到边界提前反转加速度
+    if (theta_deg > (PITCH_SAFE_MAX_DEG - PITCH_REVERSE_MARGIN) && ramp_accel > 0)
+    {
+        ramp_accel = -ACCEL_PITCH;
+        half_cycle_count++;
+    }
+    else if (theta_deg < (PITCH_SAFE_MIN_DEG + PITCH_REVERSE_MARGIN) && ramp_accel < 0)
+    {
+        ramp_accel = ACCEL_PITCH;
+        half_cycle_count++;
+    }
+    // 绝对边界强制保护
+    if (theta_deg >= PITCH_SAFE_MAX_DEG)
+    {
+        ramp_accel = -ACCEL_PITCH;
+    }
+    else if (theta_deg <= PITCH_SAFE_MIN_DEG)
+    {
+        ramp_accel = ACCEL_PITCH;
+    }
+
+    // 速度指令按恒定加速度变化
+    vel_ramp += ramp_accel * dt;
+    // 限制最大速度，避免过快
+    if (vel_ramp > PITCH_VEL_UP_DPS)
+        vel_ramp = PITCH_VEL_UP_DPS;
+    if (vel_ramp < -PITCH_VEL_UP_DPS)
+        vel_ramp = -PITCH_VEL_UP_DPS;
+    gimbal_controller.pitch_speed_pid.Ref = vel_ramp;
+#endif
+    // 2. 读取实际运动数据
+    float omega_raw = gimbal_controller.gyro_pitch_speed; // °/s
+    float torque_raw = GIMBAL_PITCH_MOTOR_SIGN * gimbal_controller.DM_Pitch_Motor.t_ff_Receive;
+    float omega_smooth = TD_Calculate(&gimbal_controller.pitch_sysid.td_omega, omega_raw);
+#if PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
+    float alpha_smooth = gimbal_controller.pitch_sysid.td_omega.dx; // °/s²
+#endif
+    // 3. 单位转换
+    float theta_rad = theta_deg * ANGLE_TO_RAD_COEF;
+    float omega_rad = omega_smooth * ANGLE_TO_RAD_COEF;
+
+    // 4. 补偿重力矩和已知库仑摩擦
+    float G = GIMBAL_PITCH_A * sin(theta_rad) + GIMBAL_PITCH_B * cos(theta_rad);
+    float C_sign = (omega_raw > 0.01f) ? GIMBAL_PITCH_C : ((omega_raw < -0.01f) ? -GIMBAL_PITCH_C : 0.0f);
+#if PITCH_SYSID_MODE == PITCH_SYSID_MODE_B
+    float T_comp = torque_raw - G - C_sign;
+#elif PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
+    float T_comp = torque_raw - G - C_sign - GIMBAL_PITCH_CB * omega_smooth;
+#endif
+    // 5. 稳定计时器累加，只有超过稳定时间且速度足够才进行RLS更新
+#if PITCH_SYSID_MODE == PITCH_SYSID_MODE_B
+    settle_timer += dt;
+
+    gimbal_controller.pitch_sysid.rls_sysid.H_data[0] = omega_raw;
+    gimbal_controller.pitch_sysid.rls_sysid.y_data[0] = T_comp;
+    RLS_Update(&gimbal_controller.pitch_sysid.rls_sysid);
+
+#elif PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
+    // 加速度足够大时更新（避免噪声），不需要稳定等待
+    if (fabsf(omega_raw) > 5.0f)
+    {
+        gimbal_controller.pitch_sysid.rls_sysid.H_data[0] = alpha_smooth;
+        gimbal_controller.pitch_sysid.rls_sysid.y_data[0] = T_comp;
+        RLS_Update(&gimbal_controller.pitch_sysid.rls_sysid);
+    }
+
+#endif
+
+    // 6. 完成指定周期后停止
+    if (half_cycle_count >= PITCH_SCAN_CYCLES * 2)
+    {
+        gimbal_controller.pitch_sysid.sysid_done = 1;
+        gimbal_controller.pitch_speed_pid.Ref = 0.0f;
+#if PITCH_SYSID_MODE == PITCH_SYSID_MODE_B
+        gimbal_controller.pitch_sysid.B = gimbal_controller.pitch_sysid.rls_sysid.x_data[0];
+#elif PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
+        gimbal_controller.pitch_sysid.J = gimbal_controller.pitch_sysid.rls_sysid.x_data[0];
+#endif
+    }
+
+    // 7. 紧急保护
+    if (theta_deg < PITCH_SAFE_MIN_DEG || theta_deg > PITCH_SAFE_MAX_DEG)
+    {
+        gimbal_controller.pitch_speed_pid.Ref = 0.0f;
+        gimbal_controller.pitch_sysid.sysid_done = 1;
+    }
 
 #endif
 }
