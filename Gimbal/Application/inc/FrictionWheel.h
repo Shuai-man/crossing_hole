@@ -10,6 +10,7 @@
 #define RIGHT_FRICTION_WHEEL 1
 
 #define SPEED_RATIO 1520 //速度对应到摩擦轮电流值
+#define SHOOT_DELAY 0.05f //从指令发出到摩擦轮掉速的时间延迟 ，单位：秒
 
 #define BULLET_17MM_15MS_SPEED_L 24500
 #define BULLET_17MM_18MS_SPEED_L 27300

@@ -21,7 +21,7 @@ void GimbalPidInit(void)
     PID_Init(&gimbal_controller.pitch_angle_pid, 5000.0f, 0, 0.0f, 600.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
     PID_Init(&gimbal_controller.pitch_speed_pid, 5000.0f, 4000.0f, 0.0f, 60.0f, 0.0f, 0, 0, 0, 0.0018f, 0, 1, Integral_Limit);
     // td结构体: r:加速度因子, h0:滤波系数，单位s
-    TD_Init(&gimbal_controller.pos_pitch_td, 800, 0.005);
+    TD_Init(&gimbal_controller.pos_pitch_td, 1000, 0.005);
 
     // Yaw
     PID_Init(&gimbal_controller.yaw_angle_pid, 5000.0, 0, 0, 1000.0f, 0, 0.0f, 0, 0, 0.0, 0.02f, 1, DerivativeFilter);
@@ -53,13 +53,13 @@ float Gimbal_Pitch_Calculate(float set_point)
     TD_Calculate(&gimbal_controller.pos_pitch_td, set_point);
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.pos_pitch_td.x);
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, gimbal_controller.pos_pitch_td.dx);
-    gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
-                                     GIMBAL_PITCH_B * cos(gimbal_controller.pos_pitch_td.x * ANGLE_TO_RAD_COEF) +
-                                     GIMBAL_PITCH_C * sign(gimbal_controller.pos_pitch_td.dx);
-    gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * gimbal_controller.pos_pitch_td.ddx +     // 惯量 × 加速度，主要输出项
-                                     GIMBAL_PITCH_CB * gimbal_controller.pos_pitch_td.dx ;     // 阻尼 × 速度
-                                     
-     gimbal_controller.pitch_out = gimbal_controller.ff_tff_pitch + gimbal_controller.gravity_comp + gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output ;
+    gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_B * cos(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_C * sign(gimbal_controller.gyro_pitch_speed);
+    gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * gimbal_controller.pos_pitch_td.ddx + // 惯量 × 加速度，主要输出项
+                                     GIMBAL_PITCH_CB * gimbal_controller.pos_pitch_td.dx;  // 阻尼 × 速度
+
+    gimbal_controller.pitch_out = gimbal_controller.ff_tff_pitch + gimbal_controller.gravity_comp + gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output;
     return gimbal_controller.pitch_out;
 #endif
 }
@@ -122,6 +122,7 @@ void GimbalClear(void)
     gimbal_controller.target_pitch_angle = gimbal_controller.gyro_pitch_angle;
     gimbal_controller.pitch_out = 0;
     gimbal_controller.gravity_comp = 0;
+    gimbal_controller.ff_tff_pitch = 0;
 
     // yaw
     PID_Clear(&gimbal_controller.yaw_angle_pid);
@@ -216,8 +217,11 @@ float GimbalFrictionModel()
  *先测BC，再测J
  *测试时准备一根2m长的烧录线，防止被扯断
  */
+StepFunction speed_step;
+SquareWave speed_square;
 void Gimbal_SystemID_Init(void)
 {
+#if GIMBAL_SYSID
     TD_Init(&gimbal_controller.yaw_sysid.td_omega, 10000.0f, 0.005f);
     gimbal_controller.yaw_sysid.sysid_timer = 0.0f;
     gimbal_controller.yaw_sysid.sysid_done = 1;
@@ -229,22 +233,25 @@ void Gimbal_SystemID_Init(void)
 #if GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_BC
     RLS_Init(&gimbal_controller.yaw_sysid.rls_sysid, 2, 1, 0.99f);
     RLS_Init(&gimbal_controller.pitch_sysid.rls_sysid, 1, 1, 0.99f);
+    SquareWaveInit(&speed_square, 120.0f, 2.0f, 0.0f, 100.0f);
 #elif GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_J
     RLS_Init(&gimbal_controller.yaw_sysid.rls_sysid, 1, 1, 0.99f);
     RLS_Init(&gimbal_controller.pitch_sysid.rls_sysid, 1, 1, 0.99f);
+    StepInit(&speed_step, 0.0f, 120.0f, 0.0f);
+#endif
 #endif
 }
 
 void Gimbal_SystemID_Run(void)
 {
-#if GIMBAL_YAW_SYSID
-
-    if (gimbal_controller.yaw_sysid.sysid_done)
-        return;
 
     float dt = gimbal_controller.delta_t;
     if (dt > 0.01f)
         dt = 0.002f;
+
+#if GIMBAL_SYSID == GIMBAL_YAW_SYSID        
+    if (gimbal_controller.yaw_sysid.sysid_done)
+        return;
     gimbal_controller.yaw_sysid.sysid_timer += dt;
 
     // ---------- Step 1: 稳态速度测试 -> 辨识 B, C ----------
@@ -358,9 +365,8 @@ void Gimbal_SystemID_Run(void)
     }
 #endif
 
-#endif
 
-#if GIMBAL_PITCH_SYSID
+#elif GIMBAL_SYSID == GIMBAL_PITCH_SYSID
 
     if (gimbal_controller.pitch_sysid.sysid_done)
         return;
@@ -373,20 +379,18 @@ void Gimbal_SystemID_Run(void)
 // ========== 系统辨识模式 ==========
 #define PITCH_SYSID_MODE_B 0                // 原功能：恒定速度辨识粘滞阻尼 B
 #define PITCH_SYSID_MODE_J 1                // 新增：变加速度辨识转动惯量 J
-#define PITCH_SYSID_MODE PITCH_SYSID_MODE_J // 改这一行切换模式
+#define PITCH_SYSID_MODE PITCH_SYSID_MODE_B // 改这一行切换模式
 // ---------- 配置参数 ----------
-#define PITCH_VEL_UP_DPS 70.0f  // 正向（上升）速度指令
+#define PITCH_VEL_UP_DPS 120.0f // 正向（上升）速度指令
 #define PITCH_VEL_DOWN_DPS 2.0f // 反向（下降）速度指令，可微调
-#define ACCEL_PITCH 120.0f      // 加速度
 #define PITCH_SAFE_MIN_DEG -16.5f
 #define PITCH_SAFE_MAX_DEG 30.0f
 #define PITCH_REVERSE_MARGIN 1.0f
-#define PITCH_SCAN_CYCLES 3    // 完成 3 个来回后停止
-#define PITCH_SETTLE_TIME 0.1f // 换向稳定时间 (秒)
+#define PITCH_SCAN_CYCLES 3 // 完成 3 个来回后停止
 
     static float vel_target = PITCH_VEL_UP_DPS;
     static int half_cycle_count = 0;
-    static float settle_timer = 0.0f; // 距离上次换向的时间
+
 #if PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
     static float vel_ramp = 0.0f;          // 斜坡速度
     static float ramp_accel = ACCEL_PITCH; // 当前加速度方向
@@ -400,23 +404,11 @@ void Gimbal_SystemID_Run(void)
     {
         vel_target = -PITCH_VEL_DOWN_DPS;
         half_cycle_count++;
-        settle_timer = 0.0f;
     }
     else if (theta_deg < (PITCH_SAFE_MIN_DEG + PITCH_REVERSE_MARGIN) && vel_target < 0)
     {
         vel_target = PITCH_VEL_UP_DPS;
         half_cycle_count++;
-        settle_timer = 0.0f;
-    }
-    if (theta_deg >= PITCH_SAFE_MAX_DEG)
-    {
-        vel_target = -PITCH_VEL_DOWN_DPS;
-        settle_timer = 0.0f;
-    }
-    else if (theta_deg <= PITCH_SAFE_MIN_DEG)
-    {
-        vel_target = PITCH_VEL_UP_DPS;
-        settle_timer = 0.0f;
     }
     gimbal_controller.pitch_speed_pid.Ref = vel_target;
 
@@ -425,43 +417,24 @@ void Gimbal_SystemID_Run(void)
     // 碰到边界提前反转加速度
     if (theta_deg > (PITCH_SAFE_MAX_DEG - PITCH_REVERSE_MARGIN) && ramp_accel > 0)
     {
-        ramp_accel = -ACCEL_PITCH;
-        half_cycle_count++;
-    }
-    else if (theta_deg < (PITCH_SAFE_MIN_DEG + PITCH_REVERSE_MARGIN) && ramp_accel < 0)
-    {
-        ramp_accel = ACCEL_PITCH;
-        half_cycle_count++;
-    }
-    // 绝对边界强制保护
-    if (theta_deg >= PITCH_SAFE_MAX_DEG)
-    {
-        ramp_accel = -ACCEL_PITCH;
-    }
-    else if (theta_deg <= PITCH_SAFE_MIN_DEG)
-    {
-        ramp_accel = ACCEL_PITCH;
+        half_cycle_count = 6;
     }
 
     // 速度指令按恒定加速度变化
-    vel_ramp += ramp_accel * dt;
+    vel_ramp += StepRun(&speed_step, dt);
     // 限制最大速度，避免过快
-    if (vel_ramp > PITCH_VEL_UP_DPS)
-        vel_ramp = PITCH_VEL_UP_DPS;
-    if (vel_ramp < -PITCH_VEL_UP_DPS)
-        vel_ramp = -PITCH_VEL_UP_DPS;
+    vel_ramp = LIMIT_MAX_MIN(vel_ramp, PITCH_VEL_UP_DPS, -PITCH_VEL_UP_DPS);
     gimbal_controller.pitch_speed_pid.Ref = vel_ramp;
 #endif
     // 2. 读取实际运动数据
     float omega_raw = gimbal_controller.gyro_pitch_speed; // °/s
     float torque_raw = GIMBAL_PITCH_MOTOR_SIGN * gimbal_controller.DM_Pitch_Motor.t_ff_Receive;
-    float omega_smooth = TD_Calculate(&gimbal_controller.pitch_sysid.td_omega, omega_raw);
 #if PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
-    float alpha_smooth = gimbal_controller.pitch_sysid.td_omega.dx; // °/s²
+    TD_Calculate(&gimbal_controller.pitch_sysid.td_omega, omega_raw); // 计算加速度
+    float alpha_smooth = gimbal_controller.pitch_sysid.td_omega.dx;   // °/s²
 #endif
     // 3. 单位转换
     float theta_rad = theta_deg * ANGLE_TO_RAD_COEF;
-    float omega_rad = omega_smooth * ANGLE_TO_RAD_COEF;
 
     // 4. 补偿重力矩和已知库仑摩擦
     float G = GIMBAL_PITCH_A * sin(theta_rad) + GIMBAL_PITCH_B * cos(theta_rad);
@@ -473,14 +446,15 @@ void Gimbal_SystemID_Run(void)
 #endif
     // 5. 稳定计时器累加，只有超过稳定时间且速度足够才进行RLS更新
 #if PITCH_SYSID_MODE == PITCH_SYSID_MODE_B
-    settle_timer += dt;
-
-    gimbal_controller.pitch_sysid.rls_sysid.H_data[0] = omega_raw;
-    gimbal_controller.pitch_sysid.rls_sysid.y_data[0] = T_comp;
-    RLS_Update(&gimbal_controller.pitch_sysid.rls_sysid);
+    if (fabsf(omega_raw) > 0.5f)
+    {
+        gimbal_controller.pitch_sysid.rls_sysid.H_data[0] = omega_raw;
+        gimbal_controller.pitch_sysid.rls_sysid.y_data[0] = T_comp;
+        RLS_Update(&gimbal_controller.pitch_sysid.rls_sysid);
+    }
 
 #elif PITCH_SYSID_MODE == PITCH_SYSID_MODE_J
-    // 加速度足够大时更新（避免噪声），不需要稳定等待
+    // 速度足够大时更新（避免噪声）
     if (fabsf(omega_raw) > 5.0f)
     {
         gimbal_controller.pitch_sysid.rls_sysid.H_data[0] = alpha_smooth;
@@ -489,7 +463,6 @@ void Gimbal_SystemID_Run(void)
     }
 
 #endif
-
     // 6. 完成指定周期后停止
     if (half_cycle_count >= PITCH_SCAN_CYCLES * 2)
     {
@@ -510,4 +483,5 @@ void Gimbal_SystemID_Run(void)
     }
 
 #endif
+
 }

@@ -9,6 +9,7 @@
 
 #include "SignalGenerator.h"
 
+//斜坡-步进函数
 void StepInit(StepFunction *step, float initial_value, float step_amplitude, float start_time)
 {
     step->start_time = start_time;
@@ -29,9 +30,11 @@ float StepRun(StepFunction *step, float delta_t)
     }
 }
 
-void SquareWaveInit(SquareWave *square_wave, float amplitude, float start_time, uint16_t T)
+//方波函数
+void SquareWaveInit(SquareWave *square_wave, float amplitude_UP,float amplitude_DOWN, float start_time, uint16_t T)
 {
-    square_wave->amplitude = amplitude;
+    square_wave->amplitude_UP = amplitude_UP;
+    square_wave->amplitude_DOWN = amplitude_DOWN;
     square_wave->start_time = start_time;
     square_wave->T = T;
     square_wave->time = 0;
@@ -47,22 +50,22 @@ float SquareWaveRun(SquareWave *square_wave, float delta_t)
         return 0.0f; // 在开始时间之前输出为 0
     }
 
-    float elapsed_time = square_wave->time - square_wave->start_time;
-    uint16_t half_period = square_wave->T / 2;
-
+    float elapsed_time = square_wave->time - square_wave->start_time;//s
+    uint16_t half_period = square_wave->T / 2;//ms
     // 根据时间计算方波状态
-    if ((uint16_t)(elapsed_time * 1000) % square_wave->T < half_period)
+    if ((uint16_t)(elapsed_time * 1000) % square_wave->T < half_period)//ms
     {
-        square_wave->state = 1; // 高电平
+        square_wave->state = square_wave->amplitude_UP; // 高电平
     }
     else
     {
-        square_wave->state = 0; // 低电平
+        square_wave->state = square_wave->amplitude_DOWN; // 低电平
     }
 
-    return square_wave->state ? square_wave->amplitude : 0;
+    return square_wave->state;
 }
 
+//正弦函数
 void SinInit(SinFunction *sin_function, float amplitude, float start_time, uint16_t T)
 {
     sin_function->amplitude = amplitude;
@@ -90,6 +93,8 @@ float SinRun(SinFunction *sin_function, float delta_t)
     return sin_function->amplitude * arm_sin_f32(angle);
 }
 
+
+//锯齿波函数
 void SawToothInit(SawToothWave *saw_tooth_wave, float amplitude, float start_time, uint16_t T, float initial_value)
 {
     saw_tooth_wave->T = T;

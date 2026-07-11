@@ -25,14 +25,15 @@ float StepRun(StepFunction *step, float delta_t);
 /* 方波函数 */
 typedef struct
 {
-    float amplitude;      // 方波幅值
+    float amplitude_UP;      // 方波幅值
+    float amplitude_DOWN;    // 方波幅值
     float start_time;     // 方波开始时间
     uint16_t T;           // 方波周期（单位：ms）
     float time;           // 当前时间
     uint8_t state;        // 方波状态（0: 低电平, 1: 高电平）
 } SquareWave;
 
-void SquareWaveInit(SquareWave *square_wave, float amplitude, float start_time, uint16_t T);
+void SquareWaveInit(SquareWave *square_wave, float amplitude_UP,float amplitude_DOWN, float start_time, uint16_t T);
 float SquareWaveRun(SquareWave *square_wave, float delta_t);
 
 /* 正弦波函数 */

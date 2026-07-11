@@ -54,10 +54,9 @@ void Refereetask(void const * argument)
 		if (UI_PushUp_Counter_500 == 13) // 车道线
 		{
 			//todo 随着pitch角度变化车道线的位置
-#if ROBOT == CHEN_JING_YUAN
-			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[0], "lft", UI_Graph_Add, LAYER1, UI_Color_Green, 3, 210, 0, 640, 600);
-			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[1], "rgt", UI_Graph_Add, LAYER1, UI_Color_Green, 3, 1660, 0, 1278, 600);
-#endif		
+
+			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[0], "lft", UI_Graph_Add, LAYER1, UI_Color_Green, 3, 480, 100, 864, 600);
+			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[1], "rgt", UI_Graph_Add, LAYER1, UI_Color_Green,  3, 1460, 100, 990, 600);
 			UI_PushUp_Graphs(2, &referee_data.UI_Graph2, referee_data.Game_Robot_State.robot_id);
 		}
 		else if(UI_PushUp_Counter_500 == 53)

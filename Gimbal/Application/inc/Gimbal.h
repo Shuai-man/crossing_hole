@@ -20,12 +20,12 @@
 
 // pitch
 #define GIMBAL_PITCH_GYRO_SIGN 1.0f // pitch符号，向上为正
-#define GIMBAL_PITCH_BIAS 0.0f       // pitch最低角度(imu测得) - 实际最低角度(机械处测得)
+#define GIMBAL_PITCH_BIAS 0.0f      // pitch最低角度(imu测得) - 实际最低角度(机械处测得)
 
 #define GIMBAL_PITCH_MOTOR_SIGN -1.0f // 云台PITCH电机方向，向上为正
 
 // 云台角度限位
-#define GIMBAL_ANGLE_MAX 30.0f//实测最大40度
+#define GIMBAL_ANGLE_MAX 30.0f // 实测最大40度
 #define GIMBAL_ANGLE_MIN -10.0f
 
 // Pitch角度机械零点
@@ -40,29 +40,30 @@
 #define GIMBAL_YAW_GYRO_SIGN 1.0f   // 用来标记gyro的方向，逆时针为正
 // 系统辨识参数
 #define GIMBAL_YAW_J 3.08758259f // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
-#define GIMBAL_YAW_B 1.21354508f//2.4f  // 阻尼系数，与速度有关
-#define GIMBAL_YAW_C 315.488129f//220.0f // 库伦摩擦系数，与结构有关
+#define GIMBAL_YAW_B 1.21354508f // 2.4f  // 阻尼系数，与速度有关
+#define GIMBAL_YAW_C 315.488129f // 220.0f // 库伦摩擦系数，与结构有关
 
-//YAW轴 系统辨识开关（0=关闭, 1=开启）
-#define GIMBAL_YAW_SYSID 0
+#define GIMBAL_SYSID GIMBAL_YAW_SYSID
+// YAW轴 系统辨识
+#define GIMBAL_YAW_SYSID 1
 // 系统辨识步骤选择（配合 GIMBAL_SYSID=1 使用）
-#define GIMBAL_SYSID_STEP_BC 1  // 第一步：稳态速度测试 -> 辨识 B (阻尼) 和 C (库仑摩擦)
-#define GIMBAL_SYSID_STEP_J  2  // 第二步：恒加速测试 -> 辨识 J (转动惯量)，需先用第一步得到 B,C
-#define GIMBAL_SYSID_STEP GIMBAL_SYSID_STEP_J  // 默认执行第一步
+#define GIMBAL_SYSID_STEP_BC 1                // 第一步：稳态速度测试 -> 辨识 B (阻尼) 和 C (库仑摩擦)
+#define GIMBAL_SYSID_STEP_J 2                 // 第二步：恒加速测试 -> 辨识 J (转动惯量)，需先用第一步得到 B,C
+#define GIMBAL_SYSID_STEP GIMBAL_SYSID_STEP_J // 默认执行第一步
 
-//Pitch轴 重补测试开关（0=关闭, 1=开启）
+// Pitch轴 重补测试开关（0=关闭, 1=开启）
 #define GIMBAL_PITCH_COMP 0
 /* 重力补偿 */
-#define GIMBAL_PITCH_A 529.9058f//重力矩系数1
-#define GIMBAL_PITCH_B 1764.462f//重力矩系数2
-#define GIMBAL_PITCH_C 150.68168f//摩擦力
+#define GIMBAL_PITCH_A 606.6655f  // 重力矩系数1
+#define GIMBAL_PITCH_B 1723.191f  // 重力矩系数2
+#define GIMBAL_PITCH_C 153.83098f // 摩擦力
 #define GIMBAL_PITCH_COMP_MAX 1900.0f
 #define GIMBAL_PITCH_COMP_MIN 1500.0f
 
 /*PITCH系统辨识*/
-#define GIMBAL_PITCH_SYSID 0
-#define GIMBAL_PITCH_CB 13.6324844f//阻力系数
-#define GIMBAL_PITCH_J 3.0f//转动惯量
+#define GIMBAL_PITCH_SYSID 2
+#define GIMBAL_PITCH_CB 13.6324844f // 阻力系数
+#define GIMBAL_PITCH_J 2.0f         // 转动惯量
 
 // 摩擦力模型调参
 #define BORDER_FRICTION_SPEED 6.0f    // 临界计算摩擦力速度，大于此速度将是全摩擦力补偿
@@ -113,8 +114,8 @@ typedef struct GimbalController
   PID_t pitch_speed_pid; // 速度环
   PID_t pitch_angle_pid; // 角度环
 
-  float gravity_comp; // 重力补偿
-  float ff_tff_pitch; // 前馈扭矩
+  float gravity_comp;       // 重力补偿
+  float ff_tff_pitch;       // 前馈扭矩
   float target_pitch_angle; // 设定的角度值
 
   float pitch_out;
