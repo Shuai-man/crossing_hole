@@ -257,9 +257,9 @@ void Gimbal_Task(void *pvParameters)
     // 云台PID初始化
     GimbalMotorInit();
     GimbalPidInit();
-    /* 系统辨识以及测试 */
-    Gimbal_SystemID_Init();
-    // 拨弹电机PID初始化
+      /* 系统辨识以及测试 */
+     GimbalSystemID_Init(&gimbal_controller);
+      // 拨弹电机PID初始化
     Toggle_Init();
     // 丝杆电机初始化
     LiftPidInit();
@@ -279,12 +279,12 @@ void Gimbal_Task(void *pvParameters)
         Gimbal_ErrorAngle();
         Gimbal_Return(&gimbal_controller, &remote_controller);
 
-#if GIMBAL_YAW_SYSID || GIMBAL_PITCH_SYSID
+#if GIMBAL_SYSID
         if (!gimbal_controller.yaw_sysid.sysid_done || !gimbal_controller.pitch_sysid.sysid_done)
         {
-            Gimbal_SystemID_Run();
-        }
-#endif
+             GimbalSystemID_Run();
+          }
+  #endif
         switch (remote_controller.gimbal_action)
         {
         case GIMBAL_POWER_DOWN: // 掉电模式

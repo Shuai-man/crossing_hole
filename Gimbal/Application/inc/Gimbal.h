@@ -18,6 +18,8 @@
 #include "RLS_Identification.h"
 #include "SystemIdentification.h"
 
+#include "GimbalSystemID.h"
+
 // pitch
 #define GIMBAL_PITCH_GYRO_SIGN 1.0f // pitch符号，向上为正
 #define GIMBAL_PITCH_BIAS 0.0f      // pitch最低角度(imu测得) - 实际最低角度(机械处测得)
@@ -52,7 +54,7 @@
 #define GIMBAL_SYSID_STEP GIMBAL_SYSID_STEP_J // 默认执行第一步
 
 // Pitch轴 重补测试开关（0=关闭, 1=开启）
-#define GIMBAL_PITCH_COMP 0
+#define GIMBAL_PITCH_COMP 3
 /* 重力补偿 */
 #define GIMBAL_PITCH_A 606.6655f  // 重力矩系数1
 #define GIMBAL_PITCH_B 1723.191f  // 重力矩系数2
@@ -162,10 +164,6 @@ void GimbalPidInit(void);
 void GimbalClear(void);
 void updateGyro(void);
 void Gimbal_ErrorAngle(void);
-
-// 系统辨识
-void Gimbal_SystemID_Init(void);
-void Gimbal_SystemID_Run(void);
 
 // pitch
 void limitPitchAngle(void);

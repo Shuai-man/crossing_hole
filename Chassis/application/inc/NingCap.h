@@ -42,14 +42,14 @@ typedef struct SuperCapRecvData
     uint16_t cap_vol; // 剩余电压
     int16_t chassis_power;
     uint16_t referee_power;
-    uint16_t V_buckin;
+    uint16_t reverse;//保留位
 } SuperCapRecvData;
 
 typedef struct SuperCapSendData
 {
     uint16_t buffer_energy; // 缓冲能量
     uint16_t P_ref;         // 参考给定电压
-    uint16_t __;
+    uint16_t cap_start; 		//超电开关
     uint16_t ___;
 } SuperCapSendData;
 #pragma pack(pop) // 不进行字节对齐

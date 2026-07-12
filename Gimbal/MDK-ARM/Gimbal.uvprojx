@@ -985,6 +985,11 @@
               <FileType>1</FileType>
               <FilePath>..\Application\src\BMI088Middleware.c</FilePath>
             </File>
+            <File>
+              <FileName>GimbalSystemID.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\src\GimbalSystemID.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

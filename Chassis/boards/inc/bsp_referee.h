@@ -9,18 +9,19 @@
 
 #include "robot_config.h"
 #include "usart.h"
+#include "fifo.h"
+#include "protocol.h"
 
-
-#define REFEREE_RECVBUF_SIZE 4096
-#define REFEREE_SENDBUF_SIZE 128
+#define REFEREE_FIFO_BUF_LENGTH     1024
+#define REFEREE_USART_RX_BUF_LENGHT 512
 
 //#endif
 
 /*  数据定义  */
-extern uint8_t Refereebuffer[REFEREE_RECVBUF_SIZE];
-extern uint8_t SendToReferee_Buff[REFEREE_SENDBUF_SIZE];
+extern fifo_s_t Referee_FIFO;
 
-
-void REFEREE_SendBytes(uint8_t *data, uint8_t len);
+extern uint8_t Referee_FIFO_Buffer[REFEREE_FIFO_BUF_LENGTH];
+extern uint8_t Referee_Buffer[2][REFEREE_USART_RX_BUF_LENGHT];
+void Referee_Receive(void);
 
 #endif // !_REFEREE_H

@@ -2,9 +2,8 @@
 #define _HEAT_CONTROL_H
 
 #include "bsp_dwt.h"
-
 #include "Referee.h"
-#include "GimbalReceive.h"
+#include "debug.h"
 
 #define ONE_BULLET_HEAT 10
 

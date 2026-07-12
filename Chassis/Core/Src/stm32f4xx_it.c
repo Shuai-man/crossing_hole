@@ -22,8 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
-#include "Referee.h"
+#include "bsp_referee.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,6 +61,7 @@ extern CAN_HandleTypeDef hcan2;
 extern DMA_HandleTypeDef hdma_uart4_rx;
 extern DMA_HandleTypeDef hdma_uart4_tx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
+extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim6;
 
@@ -173,12 +173,7 @@ void DebugMon_Handler(void)
 void DMA1_Stream2_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream2_IRQn 0 */
-
-	if(__HAL_DMA_GET_FLAG(&hdma_uart4_rx, DMA_FLAG_TCIF2_6)!=RESET)
-	{
-		referee_data.decoder.judgementFullCount++;
-		__HAL_DMA_CLEAR_FLAG(&hdma_uart4_rx,DMA_FLAG_DMEIF2_6);
-	}
+	
   /* USER CODE END DMA1_Stream2_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_uart4_rx);
   /* USER CODE BEGIN DMA1_Stream2_IRQn 1 */
@@ -268,6 +263,20 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles UART4 global interrupt.
+  */
+void UART4_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART4_IRQn 0 */
+	Referee_Receive();
+  /* USER CODE END UART4_IRQn 0 */
+  HAL_UART_IRQHandler(&huart4);
+  /* USER CODE BEGIN UART4_IRQn 1 */
+
+  /* USER CODE END UART4_IRQn 1 */
 }
 
 /**

@@ -93,5 +93,6 @@ gimbal\offline_task.o: ../Algorithm/inc/TD.h
 gimbal\offline_task.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\offline_task.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\offline_task.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\offline_task.o: ../Application/inc/GimbalSystemID.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_led.h

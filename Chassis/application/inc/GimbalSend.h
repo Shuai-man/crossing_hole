@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "Referee.h"
+#include "HeatControl.h"
 
 #pragma pack(push, 1)
 

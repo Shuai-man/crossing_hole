@@ -95,6 +95,7 @@ gimbal\gimbaltask.o: ../Algorithm/inc/TD.h
 gimbal\gimbaltask.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\gimbaltask.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\gimbaltask.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\gimbaltask.o: ../Application/inc/GimbalSystemID.h
 gimbal\gimbaltask.o: ../Application/inc/FrictionWheel.h
 gimbal\gimbaltask.o: ../Components/motor/inc/M3508.h
 gimbal\gimbaltask.o: ../Config/can_config.h

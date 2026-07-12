@@ -100,5 +100,6 @@ gimbal\bsp_can.o: ../Algorithm/inc/TD.h
 gimbal\bsp_can.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\bsp_can.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\bsp_can.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\bsp_can.o: ../Application/inc/GimbalSystemID.h
 gimbal\bsp_can.o: ../Application/inc/ToggleBullet.h
 gimbal\bsp_can.o: ../Application/inc/encoder.h

@@ -95,6 +95,7 @@ gimbal\keymouse.o: ../Algorithm/inc/TD.h
 gimbal\keymouse.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\keymouse.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\keymouse.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\keymouse.o: ../Application/inc/GimbalSystemID.h
 gimbal\keymouse.o: ../Application/inc/DT7_Controller.h
 gimbal\keymouse.o: ../Application/inc/KeyMouse.h
 gimbal\keymouse.o: ../Application/inc/VTM_Controller.h

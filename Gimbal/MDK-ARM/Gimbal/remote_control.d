@@ -94,3 +94,4 @@ gimbal\remote_control.o: ../Algorithm/inc/TD.h
 gimbal\remote_control.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\remote_control.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\remote_control.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\remote_control.o: ../Application/inc/GimbalSystemID.h

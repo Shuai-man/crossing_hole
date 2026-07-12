@@ -1,6 +1,6 @@
 #include "crc32.h"
 
-// CRCĞ£Ñé32Î»¼ÆËã
+// CRCæ ¡éªŒ32ä½è®¡ç®—
 uint32_t crc32_core(uint32_t *ptr, uint32_t len)
 {
   uint32_t xbit = 0;

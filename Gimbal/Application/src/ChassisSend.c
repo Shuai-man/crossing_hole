@@ -19,11 +19,11 @@ void Pack_InfantryMode()
   chassis_send_pack1.robot_speed_x = (int8_t)(chassis_solver.chassis_speed_x * 100.0f);
   chassis_send_pack1.robot_speed_y = (int8_t)(chassis_solver.chassis_speed_y * 100.0f);
   chassis_send_pack1.robot_speed_w = (int8_t)(chassis_solver.chassis_speed_w * 100.0f);
+  chassis_send_pack1.set_friction_speed = friction_wheels.friction_speed *10.0f;
 }
 
 void Pack_Chassis2(void)
 {
-//  chassis_send_pack2.yaw_motor_angle = gimbalMotors.gimbal_motors[YAW].Yaw_msg;
-//  chassis_send_pack2.gimbal_pitch = (int16_t)(gimbal_controller.gyro_pitch_angle * 100.0f);
+ chassis_send_pack2.gimbal_pitch = (int16_t)(gimbal_controller.gyro_pitch_angle * 100.0f);
 //  chassis_send_pack2.gimbal_yaw_speed = (int16_t)(gimbal_controller.gyro_yaw_speed * 100.0f);
 }

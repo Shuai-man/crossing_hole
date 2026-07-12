@@ -95,6 +95,7 @@ gimbal\freertos.o: ../Algorithm/inc/TD.h
 gimbal\freertos.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\freertos.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\freertos.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\freertos.o: ../Application/inc/GimbalSystemID.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_led.h
 gimbal\freertos.o: ../Task/inc/GimbalTask.h

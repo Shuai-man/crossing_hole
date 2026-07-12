@@ -96,6 +96,7 @@ gimbal\actiontask.o: ../Algorithm/inc/TD.h
 gimbal\actiontask.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\actiontask.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\actiontask.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\actiontask.o: ../Application/inc/GimbalSystemID.h
 gimbal\actiontask.o: ../Application/inc/DT7_Controller.h
 gimbal\actiontask.o: ../Application/inc/KeyMouse.h
 gimbal\actiontask.o: ../Application/inc/VTM_Controller.h

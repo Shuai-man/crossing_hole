@@ -93,5 +93,6 @@ gimbal\lifting_control.o: ../Algorithm/inc/TD.h
 gimbal\lifting_control.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\lifting_control.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\lifting_control.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\lifting_control.o: ../Application/inc/GimbalSystemID.h
 gimbal\lifting_control.o: ../Application/inc/tof.h
 gimbal\lifting_control.o: ../Components/motor/inc/M2006.h

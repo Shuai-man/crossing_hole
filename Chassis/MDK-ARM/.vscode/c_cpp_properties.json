@@ -19,6 +19,7 @@
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM4F",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Task\\inc",
+                "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Judge\\Inc",
                 "D:\\keil\\ARM\\ARMCC\\include",
                 "D:\\keil\\ARM\\ARMCC\\include\\rw",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\MDK-ARM",
@@ -32,6 +33,7 @@
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Algorithm\\src",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Components\\tools\\src",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Components\\motor\\src",
+                "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Judge\\Src",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Chassis\\Middlewares\\ST\\ARM\\DSP\\Lib"
             ],
             "defines": [

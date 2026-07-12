@@ -24,6 +24,7 @@ chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
 chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
 chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
 chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h
+chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_crc.h
 chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
@@ -49,6 +50,7 @@ chassis\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 chassis\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 chassis\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 chassis\main.o: ../Core/Inc/can.h
+chassis\main.o: ../Core/Inc/crc.h
 chassis\main.o: ../Core/Inc/dma.h
 chassis\main.o: ../Core/Inc/i2c.h
 chassis\main.o: ../Core/Inc/usart.h
@@ -87,11 +89,11 @@ chassis\main.o: ../Algorithm/inc/accel.h
 chassis\main.o: ../application/inc/omni.h
 chassis\main.o: ../application/inc/steer.h
 chassis\main.o: ../Task/inc/PowerControlTask.h
-chassis\main.o: ../application/inc/Referee.h
-chassis\main.o: ../Components/tools/inc/protocol.h
-chassis\main.o: ../Algorithm/inc/algorithmOfCRC.h
-chassis\main.o: ../boards/inc/bsp_referee.h
-chassis\main.o: ../application/inc/HeatControl.h
-chassis\main.o: ../application/inc/Referee.h
+chassis\main.o: ../Judge/Inc/Referee.h
+chassis\main.o: ../Judge/Inc/protocol.h
+chassis\main.o: ../Judge/Inc/fifo.h
 chassis\main.o: ../Task/inc/RefereeTask.h
+chassis\main.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
+chassis\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+chassis\main.o: ../boards/inc/bsp_referee.h
 chassis\main.o: ../Task/inc/Offline_Task.h

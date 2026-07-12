@@ -95,6 +95,7 @@ gimbal\pc_serial.o: ../Algorithm/inc/TD.h
 gimbal\pc_serial.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\pc_serial.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\pc_serial.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\pc_serial.o: ../Application/inc/GimbalSystemID.h
 gimbal\pc_serial.o: ../Algorithm/FastMath/arm_atan2_f32.h
 gimbal\pc_serial.o: ../USB_DEVICE/App/usbd_cdc_if.h
 gimbal\pc_serial.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h

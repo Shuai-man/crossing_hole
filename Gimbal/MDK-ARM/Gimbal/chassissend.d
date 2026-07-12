@@ -95,6 +95,7 @@ gimbal\chassissend.o: ../Algorithm/inc/TD.h
 gimbal\chassissend.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\chassissend.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\chassissend.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\chassissend.o: ../Application/inc/GimbalSystemID.h
 gimbal\chassissend.o: ../Application/inc/KeyMouse.h
 gimbal\chassissend.o: ../Application/inc/DT7_Controller.h
 gimbal\chassissend.o: ../Application/inc/KeyMouse.h

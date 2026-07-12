@@ -1,4 +1,67 @@
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\keil\ARM\ARMCC\Bin'
 Build target 'Chassis'
-"Chassis\Chassis.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:02
+Note: source file '..\Judge\Src\Referee.c' - object file renamed from 'Chassis\Referee.o' to 'Chassis\referee_1.o'.compiling bsp_referee.c...
+..\boards\src\bsp_referee.c(14): error:  #20: identifier "REFEREE_FIFO_BUF_LENGTH" is undefined
+  uint8_t Referee_FIFO_Buffer[REFEREE_FIFO_BUF_LENGTH];
+..\boards\src\bsp_referee.c(16): error:  #20: identifier "unpack_data_t" is undefined
+  unpack_data_t Referee_Unpack_OBJ; //protocol解析包结构体
+..\boards\src\bsp_referee.c(18): error:  #20: identifier "REFEREE_USART_RX_BUF_LENGHT" is undefined
+  uint8_t Referee_Buffer[2][REFEREE_USART_RX_BUF_LENGHT]; //裁判系统串口双缓冲区
+..\boards\src\bsp_referee.c(38): error:  #20: identifier "Referee_UART" is undefined
+  	
+ET_BIT(Referee_UART.Instance->CR3, USART_CR3_DMAR);
+..\boards\src\bsp_referee.c(91): error:  #20: identifier "hdma_usart4_rx" is undefined
+  		if ((hdma_usart4_rx.Instance->CR & DMA_SxCR_CT) == RESET)
+..\boards\src\bsp_referee.c: 0 warnings, 5 errors
+compiling stm32f4xx_it.c...
+../Core/Src/stm32f4xx_it.c(180): error:  #20: identifier "referee_data" is undefined
+  		referee_data.decoder.judgementFullCount++;
+../Core/Src/stm32f4xx_it.c: 0 warnings, 1 error
+compiling main.c...
+../Core/Src/main.c(112): error:  #20: identifier "Refereebuffer" is undefined
+  	HAL_UART_Receive_DMA(&huart4, Refereebuffer, sizeof(Refereebuffer));
+../Core/Src/main.c: 0 warnings, 1 error
+compiling GimbalReceive.c...
+compiling robot_config.c...
+compiling ChassisController.c...
+compiling freertos.c...
+compiling bsp_can.c...
+compiling GimbalSend.c...
+..\application\src\GimbalSend.c(10): error:  #20: identifier "referee_data" is undefined
+  	if(referee_data.Game_Robot_State.current_HP==0)
+..\application\src\GimbalSend.c(18): error:  #20: identifier "referee_data" is undefined
+    gimbal_pack_send_1.robot_color = referee_data.Game_Robot_State.robot_id < 10 ? 1 : 0;
+..\application\src\GimbalSend.c(21): error:  #20: identifier "heat_controller" is undefined
+    gimbal_pack_send_1.shoot_avaiable = heat_controller.available_shoot;
+..\application\src\GimbalSend.c: 0 warnings, 3 errors
+compiling Referee.c...
+compiling RefereeTask.c...
+..\Task\src\RefereeTask.c(136): warning:  #177-D: variable "flow_angle"  was declared but never referenced
+  	static int flow_angle = 0;
+..\Task\src\RefereeTask.c(137): warning:  #177-D: variable "v_cap"  was declared but never referenced
+  	static int v_cap = 0;
+..\Task\src\RefereeTask.c: 2 warnings, 0 errors
+compiling PowerControlTask.c...
+..\Task\src\PowerControlTask.c(8): error:  #20: identifier "referee_data" is undefined
+  	if(referee_data.Buff_Musk.remaining_energy & 0x01)
+..\Task\src\PowerControlTask.c(53): error:  #20: identifier "referee_data" is undefined
+  			referee_power = 
+IMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 100, 45);
+..\Task\src\PowerControlTask.c(56): error:  #20: identifier "referee_data" is undefined
+  			referee_power = 
+IMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 100, 45);
+..\Task\src\PowerControlTask.c(61): error:  #20: identifier "referee_data" is undefined
+  			NingCapControl(referee_data.Power_Heat_Data.buffer_energy, referee_power, referee_power + 60.0f);
+..\Task\src\PowerControlTask.c(66): error:  #20: identifier "referee_data" is undefined
+  			NingCapControl(referee_data.Power_Heat_Data.buffer_energy, referee_power, referee_power);//一般进入这
+..\Task\src\PowerControlTask.c: 0 warnings, 5 errors
+compiling ChassisControlTask.c...
+compiling PowerLimit.c...
+compiling mecanum.c...
+compiling GimbalTask.c...
+..\Task\src\GimbalTask.c(27): warning:  #223-D: function "HeatUpdate" declared implicitly
+          HeatUpdate();
+..\Task\src\GimbalTask.c: 1 warning, 0 errors
+"Chassis\Chassis.axf" - 15 Error(s), 3 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:19

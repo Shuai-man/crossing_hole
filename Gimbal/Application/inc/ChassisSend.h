@@ -19,8 +19,7 @@
 
 typedef struct ChassisSendPack2 //bocchi58: 图传UI额外补丁
 {
-//  int16_t yaw_motor_angle; // yaw轴电机角度
-//  int16_t gimbal_pitch;    // 云台pitch角度
+ int16_t gimbal_pitch;    // 云台pitch角度
 //  int16_t gimbal_yaw_speed;
 
 //	uint16_t super_power : 1;	
@@ -30,7 +29,7 @@ typedef struct ChassisSendPack2 //bocchi58: 图传UI额外补丁
 //	uint8_t if_shoot;
 //	uint8_t shoot_aim_mode;
 //	uint8_t wireless_start_flag;	
-	uint8_t reverse[8]; 
+	uint8_t reverse[7]; 
 } ChassisSendPack2;
 
 typedef struct ChassisSendPack1
@@ -52,7 +51,7 @@ typedef struct ChassisSendPack1
   int8_t robot_speed_y; // * 10描述
   int8_t robot_speed_w;
 	
-	uint8_t reverse ;
+	uint8_t set_friction_speed;
 	
 } ChassisSendPack1;
 

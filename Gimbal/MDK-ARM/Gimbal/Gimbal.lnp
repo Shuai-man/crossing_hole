@@ -93,6 +93,7 @@
 "gimbal\keymouse.o"
 "gimbal\bmi088driver.o"
 "gimbal\bmi088middleware.o"
+"gimbal\gimbalsystemid.o"
 "gimbal\offline_task.o"
 "gimbal\actiontask.o"
 "gimbal\chassistask.o"

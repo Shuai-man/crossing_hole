@@ -96,6 +96,7 @@ gimbal\chassistask.o: ../Algorithm/inc/TD.h
 gimbal\chassistask.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\chassistask.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\chassistask.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\chassistask.o: ../Application/inc/GimbalSystemID.h
 gimbal\chassistask.o: ../Application/inc/DT7_Controller.h
 gimbal\chassistask.o: ../Application/inc/KeyMouse.h
 gimbal\chassistask.o: ../Application/inc/VTM_Controller.h

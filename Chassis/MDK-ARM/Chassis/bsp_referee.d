@@ -31,6 +31,7 @@ chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h
+chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_crc.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
@@ -41,3 +42,8 @@ chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+chassis\bsp_referee.o: ../Judge/Inc/fifo.h
+chassis\bsp_referee.o: ../Judge/Inc/protocol.h
+chassis\bsp_referee.o: ../Components/tools/inc/debug.h
+chassis\bsp_referee.o: ../Components/tools/inc/tools.h
+chassis\bsp_referee.o: ../boards/inc/bsp_dwt.h

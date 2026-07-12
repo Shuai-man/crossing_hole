@@ -27,6 +27,9 @@ void Offline_task(void const *argument)
         }
         // 超电板
         LossDetect(&global_debugger.super_power_debugger);
+				
+				//裁判系统
+				LossDetect(&global_debugger.referee_debugger);
 
         vTaskDelay(pdMS_TO_TICKS(10)); // 所有数据都应该超过5HZ
     }

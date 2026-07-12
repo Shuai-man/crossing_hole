@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "can.h"
+#include "crc.h"
 #include "dma.h"
 #include "i2c.h"
 #include "usart.h"
@@ -99,6 +100,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C2_Init();
   MX_UART4_Init();
+  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 	
 	can_filter_init();
@@ -107,7 +109,6 @@ int main(void)
 	initRemoteControl(DJI_REMOTE_CONTROL);
 	setRobotType();
 	
-	HAL_UART_Receive_DMA(&huart4, Refereebuffer, sizeof(Refereebuffer));
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */

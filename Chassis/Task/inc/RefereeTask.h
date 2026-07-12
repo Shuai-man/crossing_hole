@@ -1,59 +1,42 @@
-#ifndef __REFEREE_TASK_H
-#define __REFEREE_TASK_H
+#ifndef __REFEREETASK_H
+#define __REFEREETASK_H
 
-#include "FreeRTOSConfig.h"
-#include "FreeRTOS.h"
-#include "task.h"
-
-#include "math.h"
-
-#include "stdint.h"
-#include "GimbalReceive.h"
-
-#include "bsp_referee.h"
+//INCLUDE部分
+#include "fifo.h"
+#include "usart.h"
+#include "string.h"
+#include "stdbool.h"
 #include "Referee.h"
-
-#include "algorithmOfCRC.h"
-
-
-#include "ChassisController.h"
-#include "PowerControlTask.h"
+#include "cmsis_os.h"
+#include "protocol.h"
+#include "bsp_referee.h"
 
 
-#define IMAGE_CENTER_X 1920 / 2 // ͼ��X����
-#define IMAGE_CENTER_Y 1080 / 2 // ͼ��Y����
+#define Max(a,b) ((a) > (b) ? (a) : (b))
+#define Robot_ID_Current Robot_Status.robot_id
 
-#define CAP_BAR_LENGTH 250 // ����UI����
-#define CAP_BAR_WIDTH 20   // ����UI�߶�
+void Ref_Init(void);
+void Refereetask(void const *argument);
 
-#define CAP_BAR_UI_START_X IMAGE_CENTER_X - CAP_BAR_LENGTH / 2 + CAP_BAR_WIDTH / 2 // ��ʼ����X
-#define CAP_BAR_UI_START_Y 20                                                      // ��ʼ����Y
+void Sightglass_static_show(void);
+void Sightglass1_static_show(void);
+void Sightglass2_static_show(void);
 
-#define CHASSIS_POS_LENGTH 100 // ����UI����
-#define CHASSIS_POS_WIDTH 100   // ����UI�߶�
+void Show_ZERO_static(void);
+void Show_FIRE_static(void);
+void Show_FALL_static(void);
+void Show_BUMP_static(void);
+void Show_SPIN_static(void);
+void Show_CHANGE_static(void);
 
-#define CHASSIS_POS_UI_START_X 1650 // ��ʼ����X
-#define CHASSIS_POS_UI_START_Y 700 // ��ʼ����Y       
+void Sightglass_flash_show(void);
+void Sightglass1_flash_show(void);
 
-#define GIM_CHASSIS_ANGLE_LINE_LEN 150
-#define LAYER1 1 //graph
-#define LAYER2 2 //string
-#define LAYER3 3 //other
+//EXTERN部分
+extern int Rest_UI_Flag;
+extern bool ref_ready_flag;
 
-//��ͬ�����̸���ģʽ��ͬ��һЩ���й̶�ͷ�ķ��򣬼���һ��ƫ������UI����̨����
-#if ROBOT == NIUNIU
-#define UI_FRONT_BIAS 8160
-#elif ROBOT == CHEN_JING_YUAN
-#define UI_FRONT_BIAS 0
-#elif ROBOT == NIU_MO_SON
-#define UI_FRONT_BIAS 0
-#elif ROBOT == QI_TIAN_DA_SHENG
-#define UI_FRONT_BIAS 0
-#endif
-
-extern float UI_FRONT_ERR,UI_FRONT_SIN,UI_FRONT_COS;
-extern uint8_t Radar_double_hurt_chance;
-
-void Refereetask(void const * argument);
+extern TaskHandle_t RefereeTask_Handle;
+extern unpack_data_t Referee_Unpack_OBJ;
 
 #endif

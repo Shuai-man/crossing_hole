@@ -95,3 +95,4 @@ gimbal\gimbal.o: ../Algorithm/inc/TD.h
 gimbal\gimbal.o: ../Algorithm/inc/RLS_Identification.h
 gimbal\gimbal.o: ../Algorithm/inc/SystemIdentification.h
 gimbal\gimbal.o: ../Algorithm/inc/SignalGenerator.h
+gimbal\gimbal.o: ../Application/inc/GimbalSystemID.h

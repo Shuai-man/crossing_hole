@@ -1,222 +1,205 @@
-
 #include "RefereeTask.h"
-//裁判系统UI绘制
 
-//float UI_FRONT_ERR,UI_FRONT_SIN,UI_FRONT_COS;
-/**超电条
- * @brief 
- * @param[in] void
- */
-void drawCapBar(graphic_data_struct_t *Graphic, uint8_t GraphOperate)
+int Rest_UI_Flag;
+bool ref_ready_flag; // 当前线程初始化完成标志
+
+/*******************************************************************************************************
+Ref任务初始化
+********************************************************************************************************/
+void Ref_Init(void)
 {
-	uint8_t COLOR;
+	Referee_StructInit();
+	fifo_s_init(&Referee_FIFO, Referee_FIFO_Buffer, REFEREE_FIFO_BUF_LENGTH);
+	Referee_UARTInit(Referee_Buffer[0], Referee_Buffer[1], REFEREE_USART_RX_BUF_LENGHT);
 
-	if (cap_controller.cap_vol_state == CAP_VOL_HIGH)
-		COLOR = UI_Color_Green;
-	else if (cap_controller.cap_vol_state == CAP_VOL_MID)
-		COLOR = UI_Color_Yellow;
-	else
-		COLOR = UI_Color_Orange;
-
-	UI_Draw_Line(Graphic, "bar", GraphOperate, LAYER1, COLOR, CAP_BAR_WIDTH, CAP_BAR_UI_START_X, CAP_BAR_UI_START_Y, CAP_BAR_UI_START_X + (uint16_t)(cap_controller.cap_energy_pecent * CAP_BAR_LENGTH), CAP_BAR_UI_START_Y);
+	osDelay(100);
 }
-float DT;
-//uint32_t T;
-	uint16_t UI_PushUp_Counter = 261;
 
-void Refereetask(void const * argument)
+/*******************************************************************************************************
+Ref任务
+********************************************************************************************************/
+void Refereetask(void const *argument)
 {
-	portTickType xLastWakeTime;
-
-
-	uint8_t is_pc_offline = 0;
-
-	static char chassis_state[4][8] = {"DOWN    ", "NOT_FOLL", "FOLLOW  ", "ROTATE  "};
-	static char gimbal_state[5][8] =  {"DOWN    ", "ACT     ", "AUTOAIM ", "SMA_BUFF", "BIG_BUFF"};
-
-	uint16_t UI_PushUp_Counter_500;
-	uint16_t UI_PushUp_Counter_60;
-	uint16_t UI_PushUp_Counter_20;
-	uint16_t UI_PushUp_Counter_10;
-	
-	while (1) //进入异常
+	Ref_Init();
+	while (1)
 	{
-		xLastWakeTime = xTaskGetTickCount();
-		Referee_UnpackFifoData();
+		static int UI_PushUp_Counter = 0;
+		Referee_UnpackFifoData(&Referee_Unpack_OBJ, &Referee_FIFO);
+
+		if (UI_PushUp_Counter < 1000)
+		{
+			if (UI_PushUp_Counter % 11 == 0)
+				Sightglass_static_show();
+			if (UI_PushUp_Counter % 13 == 0)
+				Sightglass1_static_show();
+			if (UI_PushUp_Counter % 7 == 0)
+				Sightglass2_static_show();
+			if (UI_PushUp_Counter % 17 == 0)
+				Show_FIRE_static();
+			if (UI_PushUp_Counter % 19 == 0)
+				Show_BUMP_static();
+			if (UI_PushUp_Counter % 31 == 0)
+				Show_SPIN_static();
+			if (UI_PushUp_Counter % 23 == 0)
+				Show_FALL_static();
+			if (UI_PushUp_Counter % 29 == 0)
+				Show_CHANGE_static();
+			if (UI_PushUp_Counter % 37 == 0)
+				Show_ZERO_static();
+		}
+		else
+		{
+			if (UI_PushUp_Counter % 5 == 0)
+				Sightglass_flash_show();
+			if (UI_PushUp_Counter % 13 == 0)
+				Sightglass1_flash_show();
+		}
+
+		if (UI_PushUp_Counter > 30000)
+			UI_PushUp_Counter = 0;
 
 		UI_PushUp_Counter++;
-		UI_PushUp_Counter_500 = UI_PushUp_Counter % 500; // 5000毫秒
-		UI_PushUp_Counter_60 = UI_PushUp_Counter % 60;	 // 600毫秒
-		UI_PushUp_Counter_20 = UI_PushUp_Counter % 20;	 // 200毫秒
-		UI_PushUp_Counter_10 = UI_PushUp_Counter % 10;	 // 100毫秒 
-		/************************************************UI创建，更新频率为5秒*****************************************************************/
-		//坐标系原点在
-		if (UI_PushUp_Counter_500 == 13) // 车道线
-		{
-			//todo 随着pitch角度变化车道线的位置
-
-			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[0], "lft", UI_Graph_Add, LAYER1, UI_Color_Green, 3, 480, 100, 864, 600);
-			UI_Draw_Line(&referee_data.UI_Graph2.Graphic[1], "rgt", UI_Graph_Add, LAYER1, UI_Color_Green,  3, 1460, 100, 990, 600);
-			UI_PushUp_Graphs(2, &referee_data.UI_Graph2, referee_data.Game_Robot_State.robot_id);
-		}
-		else if(UI_PushUp_Counter_500 == 53)
-		{
-
-		}
-		else if(UI_PushUp_Counter_500 == 131)
-		{
-			//辅瞄模式
-			UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Add, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "NO_AIM      ");
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		else if (UI_PushUp_Counter_500 == 103)
-		{
-			//云台运动状态
-			UI_Draw_String(&referee_data.UI_String.String, "GIM", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 4, 3, 60, 750, "GIM: ");
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		else if (UI_PushUp_Counter_500 == 149) 
-		{
-			//PC是否在线
-			is_pc_offline = !gimbal_receiver_pack1.is_pc_on;
-			if (!is_pc_offline)
-				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 6, 3, 60, 650, "PC:ON ");
-			else
-				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Add, LAYER2, UI_Color_Orange, 17, 6, 3, 60, 650, "PC:OFF");
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		else if (UI_PushUp_Counter_500 == 211) 
-		{
-			//底盘模式
-			UI_Draw_String(&referee_data.UI_String.String, "cha", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 8, 3, 120, 700, chassis_state[remote_controller.control_mode_action]);
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		else if (UI_PushUp_Counter_500 == 251) 
-		{
-			//云台模式
-			UI_Draw_String(&referee_data.UI_String.String, "gim", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 8, 3, 120, 750, gimbal_state[remote_controller.gimbal_action]);
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		else if (UI_PushUp_Counter_500 == 283) 
-		{
-			//ID
-		}
-		else if (UI_PushUp_Counter_500 == 317) 
-		{
-			//超电电压值
-			UI_Draw_String(&referee_data.UI_String.String, "CAP", UI_Graph_Add, LAYER2, UI_Color_Green, 25, 11, 3, 860, 70, "CAP:     V");
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		else if(UI_PushUp_Counter_500 == 347)
-		{
-			UI_Draw_String(&referee_data.UI_String.String, "SPD", UI_Graph_Add, LAYER2, UI_Color_Green, 15, 10, 3, 1200, 70, "FRI_SPEED:");
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-
-		else if (UI_PushUp_Counter_500 == 353)
-		{
-			//显示摩擦轮转速
-			UI_Draw_Float(&referee_data.UI_Graph5.Graphic[0], "spd", UI_Graph_Add, LAYER3, UI_Color_Orange, 15, 2, 3, 1200, 40, infantry.friction_speed);
-			UI_PushUp_Graphs(5, &referee_data.UI_Graph5, referee_data.Game_Robot_State.robot_id);
-		}
-		else if (UI_PushUp_Counter_500 == 377) 
-		{
-
-		}
-		else if (UI_PushUp_Counter_500 == 389)
-		{
-			//超电进度条
-			UI_Draw_Rectangle(&referee_data.UI_Graph2.Graphic[0], "cap", UI_Graph_Add, LAYER1, UI_Color_White, 5, CAP_BAR_UI_START_X, CAP_BAR_UI_START_Y + CAP_BAR_WIDTH / 2, CAP_BAR_UI_START_X + CAP_BAR_LENGTH, CAP_BAR_UI_START_Y - CAP_BAR_WIDTH / 2);
-
-			drawCapBar(&referee_data.UI_Graph2.Graphic[1], UI_Graph_Add);
-
-			UI_PushUp_Graphs(2, &referee_data.UI_Graph2, referee_data.Game_Robot_State.robot_id);
-		}
-		else if (UI_PushUp_Counter_500 == 431)
-		{
-
-		}
-		else if (UI_PushUp_Counter_500 == 467)
-		{
-			UI_Draw_String(&referee_data.UI_String.String, "CHA", UI_Graph_Add, LAYER2, UI_Color_Green, 17, 4, 3, 60, 700, "CHA:");
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-
-		/************************************************UI实时更改，更新频率为600毫秒*****************************************************************/
-		else if (UI_PushUp_Counter_60 == 10)
-		{
-			UI_Draw_String(&referee_data.UI_String.String, "gim", UI_Graph_Change, LAYER2, UI_Color_Orange, 17, 8, 3, 120, 750, gimbal_state[remote_controller.gimbal_action]);
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		
-		else if (UI_PushUp_Counter_60 == 30)
-		{
-			UI_Draw_String(&referee_data.UI_String.String, "cha", UI_Graph_Change, LAYER2, UI_Color_Orange, 17, 8, 3, 120, 700, chassis_state[remote_controller.control_mode_action]);
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-
-
-		else if (UI_PushUp_Counter_60 == 40)
-		{
-
-		}
-		else if (UI_PushUp_Counter_60 == 59)
-		{
-			is_pc_offline = !gimbal_receiver_pack1.is_pc_on;
-			if (!is_pc_offline)
-				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Change, LAYER2, UI_Color_Green, 17, 7, 3, 60, 650, "PC :ON  ");
-			else
-				UI_Draw_String(&referee_data.UI_String.String, "pc ", UI_Graph_Change, LAYER2, UI_Color_Orange, 17, 7, 3, 60, 650, "PC :OFF");
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		// 更新频率为200ms---------------//
-		else if (UI_PushUp_Counter_20 == 1)
-		{
-			drawCapBar(referee_data.UI_Graph1.Graphic, UI_Graph_Change);
-
-			UI_PushUp_Graphs(1, &referee_data.UI_Graph1, referee_data.Game_Robot_State.robot_id);
-		}
-		else if(UI_PushUp_Counter_20 == 7)
-		{
-			//显示摩擦轮转速
-			UI_Draw_Float(&referee_data.UI_Graph5.Graphic[0], "spd", UI_Graph_Change, LAYER3, UI_Color_Orange, 15, 2, 3, 1200, 40, infantry.friction_speed);
-			UI_PushUp_Graphs(5, &referee_data.UI_Graph5, referee_data.Game_Robot_State.robot_id);
-		}
-		//更新频率为100ms---------------//
-		else if(UI_PushUp_Counter_10 == 5)
-		{
-			if(gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)//小陀螺旋转
-			{
-				//没看到
-				UI_Draw_String(&referee_data.UI_String.String, "rta", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 10, 3, CHASSIS_POS_UI_START_X, CHASSIS_POS_UI_START_Y - CHASSIS_POS_WIDTH / 2 - 200, "CV_ROTA:ON");
-			}
-			else{
-				UI_Draw_String(&referee_data.UI_String.String, "rta", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 10, 3, CHASSIS_POS_UI_START_X, CHASSIS_POS_UI_START_Y - CHASSIS_POS_WIDTH / 2 - 200, "          ");
-			}
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		else if(UI_PushUp_Counter_10 == 7)
-		{
-			if(gimbal_receiver_pack1.aim_mode == 0)//
-			{
-				//不使用辅瞄
-				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "NO_AIM      ");
-			}else if(gimbal_receiver_pack1.aim_mode == 1)	
-			{
-				//普通辅瞄
-				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "STANDARD AIM");	
-			}else if(gimbal_receiver_pack1.aim_mode == 2)
-			{
-				//小符
-				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "SMALL BUFF  ");	
-			}else if(gimbal_receiver_pack1.aim_mode == 3)
-			{
-				//大符
-				UI_Draw_String(&referee_data.UI_String.String, "aim", UI_Graph_Change, LAYER2, UI_Color_Orange, 20, 12, 3, 1280, 700, "BIG BUFF    ");
-			}
-			UI_PushUp_String(&referee_data.UI_String, referee_data.Game_Robot_State.robot_id);
-		}
-		
-		vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10));
+		osDelay(10);
 	}
+}
+
+void Sightglass_static_show(void)
+{
+	UI_Draw_Rectangle(&UI_Graph7.Graphic[0], "11", UI_Graph_Add, 1, UI_Color_Green, 6, 1490, 754, 1639, 810);
+	UI_Draw_Rectangle(&UI_Graph7.Graphic[1], "12", UI_Graph_Add, 1, UI_Color_Green, 6, 1490, 654, 1639, 710);
+	UI_Draw_Rectangle(&UI_Graph7.Graphic[2], "13", UI_Graph_Add, 1, UI_Color_Green, 6, 1490, 554, 1639, 610);
+	UI_Draw_Rectangle(&UI_Graph7.Graphic[3], "14", UI_Graph_Add, 1, UI_Color_Green, 6, 1490, 454, 1639, 510);
+	UI_Draw_Rectangle(&UI_Graph7.Graphic[4], "15", UI_Graph_Add, 1, UI_Color_Green, 6, 1490, 354, 1711, 410);
+
+	UI_Draw_Arc(&UI_Graph7.Graphic[5], "21", UI_Graph_Add, 1, UI_Color_Orange, 330, 30, 5, 960, 540, 100, 100);
+
+	UI_Draw_Rectangle(&UI_Graph7.Graphic[6], "22", UI_Graph_Add, 1, UI_Color_Green, 30, 750, 800, 1170, 800);
+
+	UI_PushUp_Graphs(7, &UI_Graph7, Robot_ID_Current);
+}
+
+void Sightglass1_static_show(void)
+{
+	UI_Draw_Int(&UI_Graph7.Graphic[0], "16", UI_Graph_Add, 0, UI_Color_Green, 24, 6, 640, 700, 99);
+	UI_Draw_Int(&UI_Graph7.Graphic[1], "17", UI_Graph_Add, 0, UI_Color_Green, 24, 6, 640, 660, 99);
+	UI_Draw_Int(&UI_Graph7.Graphic[6], "25", UI_Graph_Add, 0, UI_Color_Green, 24, 6, 640, 620, 99);
+	UI_Draw_Float(&UI_Graph7.Graphic[2], "18", UI_Graph_Add, 0, UI_Color_Green, 24, 1, 6, 1210, 700, 99.9);
+	UI_Draw_Float(&UI_Graph7.Graphic[3], "19", UI_Graph_Add, 0, UI_Color_Green, 24, 1, 6, 1210, 660, 99.9);
+	UI_Draw_Float(&UI_Graph7.Graphic[4], "20", UI_Graph_Add, 0, UI_Color_Green, 24, 1, 6, 1210, 620, 99.9);
+
+	UI_Draw_Rectangle(&UI_Graph7.Graphic[5], "24", UI_Graph_Add, 1, UI_Color_Pink, 6, 660 + 90, 340, 1260 - 90, 740);
+
+	UI_PushUp_Graphs(7, &UI_Graph7, Robot_ID_Current);
+}
+
+void Sightglass2_static_show(void)
+{
+	UI_Draw_Circle(&UI_Graph1.Graphic[0], "23", UI_Graph_Add, 0, UI_Color_Green, 2, 960, 430, 34);
+	UI_PushUp_Graphs(1, &UI_Graph1, Robot_ID_Current);
+}
+
+void Show_ZERO_static(void)
+{
+	memset(UI_String.String.stringdata, ' ', 30);
+	UI_Draw_String(&UI_String.String, "000", UI_Graph_Add, 2, UI_Color_Cyan, 100, 4, 5, 50, 750, "ZERO");
+	UI_PushUp_String(&UI_String, Robot_ID_Current);
+}
+
+void Show_FALL_static(void)
+{
+	memset(UI_String.String.stringdata, ' ', 30);
+	UI_Draw_String(&UI_String.String, "001", UI_Graph_Add, 2, UI_Color_Pink, 36, 4, 5, 1500, 800, "FALL");
+	UI_PushUp_String(&UI_String, Robot_ID_Current);
+}
+
+void Show_FIRE_static(void)
+{
+	memset(UI_String.String.stringdata, ' ', 30);
+	UI_Draw_String(&UI_String.String, "002", UI_Graph_Add, 2, UI_Color_Pink, 36, 4, 5, 1500, 700, "FIRE");
+	UI_PushUp_String(&UI_String, Robot_ID_Current);
+}
+
+void Show_BUMP_static(void)
+{
+	memset(UI_String.String.stringdata, ' ', 30);
+	UI_Draw_String(&UI_String.String, "003", UI_Graph_Add, 2, UI_Color_Pink, 36, 4, 5, 1500, 600, "BUMP");
+	UI_PushUp_String(&UI_String, Robot_ID_Current);
+}
+
+void Show_SPIN_static(void)
+{
+	memset(UI_String.String.stringdata, ' ', 30);
+	UI_Draw_String(&UI_String.String, "004", UI_Graph_Add, 2, UI_Color_Pink, 36, 4, 5, 1500, 500, "SPIN");
+	UI_PushUp_String(&UI_String, Robot_ID_Current);
+}
+
+void Show_CHANGE_static(void)
+{
+	memset(UI_String.String.stringdata, ' ', 30);
+	UI_Draw_String(&UI_String.String, "005", UI_Graph_Add, 2, UI_Color_Pink, 36, 6, 5, 1500, 400, "CHANGE");
+	UI_PushUp_String(&UI_String, Robot_ID_Current);
+}
+
+void Sightglass_flash_show(void)
+{
+	//	static int flow_angle = 0;
+	//	static int v_cap = 0;
+
+	//	if(Flag.fall_flag) UI_Draw_Rectangle(&UI_Graph7.Graphic[0], "11", UI_Graph_Change, 1, UI_Color_Green, 6 , 1490 , 754 , 1639 , 810);
+	//	else UI_Draw_Rectangle(&UI_Graph7.Graphic[0], "11", UI_Graph_Change, 1, UI_Color_Green, 0 , 1490 , 754 , 1639 , 810);
+	//	if(Up_Cboard_Info.Friction_Status) UI_Draw_Rectangle(&UI_Graph7.Graphic[1], "12", UI_Graph_Change, 1, UI_Color_Green, 6 , 1490 , 654 , 1639 , 710);
+	//	else UI_Draw_Rectangle(&UI_Graph7.Graphic[1], "12", UI_Graph_Change, 1, UI_Color_Green, 0 , 1490 , 654 , 1639 , 710);
+	//	if(Flag.bump_flag) UI_Draw_Rectangle(&UI_Graph7.Graphic[2], "13", UI_Graph_Change, 1, UI_Color_Green, 6 , 1490 , 554 , 1639 , 610);
+	//	else UI_Draw_Rectangle(&UI_Graph7.Graphic[2], "13", UI_Graph_Change, 1, UI_Color_Green, 0 , 1490 , 554 , 1639 , 610);
+	//	if(Flag.spinning_flag) UI_Draw_Rectangle(&UI_Graph7.Graphic[3], "14", UI_Graph_Change, 1, UI_Color_Green, 6 , 1490 , 454 , 1639 , 510);
+	//	else UI_Draw_Rectangle(&UI_Graph7.Graphic[3], "14", UI_Graph_Change, 1, UI_Color_Green, 0 , 1490 , 454 , 1639 , 510);
+	//	if(Flag.change_flag) UI_Draw_Rectangle(&UI_Graph7.Graphic[4], "15", UI_Graph_Change, 1, UI_Color_Green, 6 , 1490 , 354 , 1711 , 410);
+	//	else UI_Draw_Rectangle(&UI_Graph7.Graphic[4], "15", UI_Graph_Change, 1, UI_Color_Green, 0 , 1490 , 354 , 1711 , 410);
+	//
+	//	flow_angle = (int)(Find_Min_RADIAN(Body.abs_yaw,ZERO_HEAD_YAW)*57.2957805f);
+	//	if(flow_angle<0) flow_angle = (180+flow_angle)+180;
+	//	flow_angle = 360 - flow_angle;
+	//	UI_Draw_Arc(&UI_Graph7.Graphic[5],"21",UI_Graph_Change,1,UI_Color_Orange,Whole_Circle_ANGLE(flow_angle-30),Whole_Circle_ANGLE(flow_angle+30),5,960,540,100,100);
+	//
+	//	v_cap = pm_od.v_out - 1500;
+	//
+	//	if(v_cap<=0) v_cap = 0;
+	//
+	//	if(v_cap>=100)
+	//	{
+	//		UI_Draw_Rectangle(&UI_Graph7.Graphic[6], "22", UI_Graph_Change, 1, UI_Color_Green, 30 , 750 , 800 , 1170-(int)(420*((550 - v_cap)/550.0f)) , 800);
+	//	}
+	//	else
+	//	{
+	//		UI_Draw_Rectangle(&UI_Graph7.Graphic[6], "22", UI_Graph_Change, 1, UI_Color_Yellow, 30 , 750 , 800 , 1170-(int)(420*((550 - v_cap)/550.0f)) , 800);
+	//	}
+	//
+	//
+	//	UI_PushUp_Graphs(7, &UI_Graph7, Robot_ID_Current);
+}
+
+void Sightglass1_flash_show(void)
+{
+	//	UI_Draw_Int  (&UI_Graph7.Graphic[0], "16", UI_Graph_Change, 0, UI_Color_Green, 24 , 6  , 640 , 700 , Up_Cboard_Info.Friction_Speed);
+	//	UI_Draw_Int  (&UI_Graph7.Graphic[1], "17", UI_Graph_Change, 0, UI_Color_Green, 24 , 6  , 640 , 660 , Up_Cboard_Info.Number_Of_Bullets);
+	//
+	//
+	//	if     (Remote_Select == DT7   ) UI_Draw_Int  (&UI_Graph7.Graphic[6], "25", UI_Graph_Change, 0, UI_Color_Green, 24 , 6  , 640 , 620 , 1);
+	//	else if(Remote_Select == VT_03 ) UI_Draw_Int  (&UI_Graph7.Graphic[6], "25", UI_Graph_Change, 0, UI_Color_Green, 24 , 6  , 640 , 620 , 2);
+	//	else if(Remote_Select == UNLINK) UI_Draw_Int  (&UI_Graph7.Graphic[6], "25", UI_Graph_Change, 0, UI_Color_Green, 24 , 6  , 640 , 620 , 0);
+	//
+	//	UI_Draw_Float(&UI_Graph7.Graphic[2], "18", UI_Graph_Change, 0, UI_Color_Green, 24 , 1  , 6    , 1210 , 700 , Goal_Setting.Target_L0);
+	//	UI_Draw_Float(&UI_Graph7.Graphic[3], "19", UI_Graph_Change, 0, UI_Color_Green, 24 , 1  , 6    , 1210 , 660 , Goal_Setting.MAX_Dx);
+	//	UI_Draw_Float(&UI_Graph7.Graphic[4], "20", UI_Graph_Change, 0, UI_Color_Green, 24 , 1  , 6    , 1210 , 620 , Goal_Setting.MAX_Dyaw);
+	//
+	//	if(Up_Cboard_Info.Auto_Aim_Flag)
+	//	{
+	//		UI_Draw_Rectangle(&UI_Graph7.Graphic[5], "24", UI_Graph_Change, 1, UI_Color_Green, 6 , 660+90 , 340 , 1260-90 , 740);
+	//	}
+	//	else
+	//	{
+	//		UI_Draw_Rectangle(&UI_Graph7.Graphic[5], "24", UI_Graph_Change, 1,  UI_Color_Pink, 6 , 660+90 , 340 , 1260-90 , 740);
+	//	}
+	//
+	//	UI_PushUp_Graphs(7, &UI_Graph7, Robot_ID_Current);
 }
