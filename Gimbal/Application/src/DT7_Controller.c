@@ -32,16 +32,13 @@ void DT7_ChassisControl(void)
     // 左右y
     if (abs(dt7_remote.ch[RIGHT_CH_LR] - CH_MIDDLE) > 50) // 过零检测
     {
-
         chassis_solver.chassis_speed_y = (float)(dt7_remote.ch[RIGHT_CH_LR] - CH_MIDDLE) / CH_RANGE;
     }
     else // 松手保护
     {
-
         chassis_solver.chassis_speed_y = 0;
     }
     // 旋转w
-
     if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，直接发yaw速度
     {                                              // 键鼠模式也需要这个
         if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50)
@@ -63,7 +60,7 @@ void DT7_ChassisControl(void)
     }
 }
 
-//自瞄测试,模拟右键触发逻辑
+// 自瞄测试,模拟右键触发逻辑
 void DT7_Auto_aim(void)
 {
     if (remote_controller.gimbal_action == GIMBAL_AUTO_ATM_TEST_MODE)
@@ -74,7 +71,7 @@ void DT7_Auto_aim(void)
     else
     {
         remote_controller.auto_arm = 0;
-        pc_send_data.mode_want = STD_AUTO_AIM;//算法要求，默认发1
+        pc_send_data.mode_want = STD_AUTO_AIM; // 算法要求，默认发1
     }
 }
 

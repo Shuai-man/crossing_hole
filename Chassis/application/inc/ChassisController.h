@@ -38,15 +38,7 @@ extern float UI_FRONT_ERR,UI_FRONT_SIN,UI_FRONT_COS;
 #define RAD_TO_ANGLE_COEF 57.295779513f
 #define ANGLE_TO_RAD_COEF 0.0174532925f
 
-#if ROBOT == NIUNIU
-#define UI_FRONT_BIAS 8160
-#elif ROBOT == CHEN_JING_YUAN
 #define UI_FRONT_BIAS 0
-#elif ROBOT == NIU_MO_SON
-#define UI_FRONT_BIAS 0
-#elif ROBOT == QI_TIAN_DA_SHENG
-#define UI_FRONT_BIAS 0
-#endif
 
 typedef struct Vector // 向量
 {

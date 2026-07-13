@@ -3,11 +3,6 @@
 int8_t send_to_chassis_data_1[8]; // 模式
 int8_t send_to_chassis_data_2[8]; // pitch,yaw
 
-// void Chassis_Follow(void)
-// {
-//     chassis_solver.chassis_speed_w = -(gimbal_controller.target_yaw_angle - gimbal_controller.gyro_yaw_angle)*2.0f;
-// }
-
 /**
  * @brief 处理速度数据，将底盘期望速度发送给底盘stm32
  * @param[in] void

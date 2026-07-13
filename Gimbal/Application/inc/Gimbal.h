@@ -31,10 +31,18 @@
 #define GIMBAL_ANGLE_MIN -10.0f
 
 // Pitch角度机械零点
-#define GIMBAL_PITCH_ZERO 215.172729f
+#if ROBOT_SELECT == OLD
+#define GIMBAL_PITCH_ZERO 215.172729f 
+#elif ROBOT_SELECT ==NEW
+#define GIMBAL_PITCH_ZERO 207.674561f
+#endif
 
 // 云台底盘的yaw轴零点都需要更改
-#define GIMBAL_ANGLE_ZERO 9.51965332f
+#if ROBOT_SELECT == OLD
+#define GIMBAL_ANGLE_ZERO 9.51965332f 
+#elif ROBOT_SELECT ==NEW
+#define GIMBAL_ANGLE_ZERO 105.309448f
+#endif
 
 // yaw
 // 作为云台控制的yaw角度需要以逆时针为正(角度增加)
@@ -45,7 +53,7 @@
 #define GIMBAL_YAW_B 1.21354508f // 2.4f  // 阻尼系数，与速度有关
 #define GIMBAL_YAW_C 315.488129f // 220.0f // 库伦摩擦系数，与结构有关
 
-#define GIMBAL_SYSID GIMBAL_YAW_SYSID
+#define GIMBAL_SYSID 0
 // YAW轴 系统辨识
 #define GIMBAL_YAW_SYSID 1
 // 系统辨识步骤选择（配合 GIMBAL_SYSID=1 使用）

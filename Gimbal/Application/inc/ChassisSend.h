@@ -41,9 +41,8 @@ typedef struct ChassisSendPack1
 	
   uint16_t is_pc_on : 1; 	
   uint16_t aim_mode : 4; // 自瞄模式
-	uint16_t gimbal_position : 1; //头部模式
-  uint16_t super_power : 1;	
-	uint16_t through_hole_flag : 1; //过洞缓速限制功率  	
+	uint16_t gimbal_position : 2; //头部模式
+  uint16_t super_power : 1;	 	
 	
 	uint16_t yaw_pose; // 云台yaw轴机械角度
  

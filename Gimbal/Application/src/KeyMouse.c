@@ -197,7 +197,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             break;
         case KEY_R:
             setGimbalAction(GIMBAL_ACT_MODE);
-						pc_send_data.mode_want = NOT_USE_AIM;
+            pc_send_data.mode_want = NOT_USE_AIM;
             break;
         case KEY_F:
             friction_wheels.friction_speed += 0.1f;
@@ -206,12 +206,12 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             friction_wheels.friction_speed -= 0.1f;
             break;
         case KEY_Z:
-						setGimbalAction(GIMBAL_BIG_BUFF_MODE);
-						pc_send_data.mode_want = BIG_BUFF;
+            setGimbalAction(GIMBAL_BIG_BUFF_MODE);
+            pc_send_data.mode_want = BIG_BUFF;
             break;
         case KEY_X:
             setGimbalAction(GIMBAL_SMALL_BUFF_MODE);
-						pc_send_data.mode_want = SMALL_BUFF;
+            pc_send_data.mode_want = SMALL_BUFF;
             break;
         case KEY_C:
             break;
@@ -328,11 +328,9 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         // 利用上升沿做初始化，防止重复赋值
         if (remote_controller.gimbal_action == GIMBAL_SMALL_BUFF_MODE)
         {
-            
         }
         else if (remote_controller.gimbal_action == GIMBAL_BIG_BUFF_MODE)
         {
-
         }
         else
         {
@@ -343,11 +341,11 @@ void KeyMouseUpdate(ChassisSolver *infantry)
     else if (remote_controller.dji_remote.mouse.mouseChangeOff_r)
     {
         remote_controller.auto_arm = 0;
-        
+
         if (remote_controller.gimbal_action == GIMBAL_AUTO_AIM_MODE)
         {
-          setGimbalAction(GIMBAL_ACT_MODE); // 打车没有按键退出，单独加判断
-					pc_send_data.mode_want = NOT_USE_AIM;
+            setGimbalAction(GIMBAL_ACT_MODE); // 打车没有按键退出，单独加判断
+            pc_send_data.mode_want = NOT_USE_AIM;
         }
     }
 }

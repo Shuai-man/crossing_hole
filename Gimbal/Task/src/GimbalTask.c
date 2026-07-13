@@ -96,16 +96,23 @@ void Gimbal_Auto_aim_Cal(void)
 {
     if (pc_recv_data.detect_number == 0 || fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
     {
-        if (pc_recv_data.mode_select == 0x11)
+        //位置控制
+        if (pc_recv_data.mode_select == 0x11 && remote_controller.auto_arm ==1)
         {
             gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
             gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
         }
         Gimbal_Act_Cal(); // 无PC数据处理
     }
+    else if (remote_controller.auto_arm ==1)
+    {
+        //前馈控制
+        Gimbal_PC_Cal();
+    }
     else
     {
-        Gimbal_PC_Cal();
+        //手动控制
+        Gimbal_Act_Cal();
     }
 }
 

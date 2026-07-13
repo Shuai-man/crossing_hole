@@ -2,13 +2,11 @@
 #define _ROBOT_CONFIG_H
 
 /*  机器人宏定义列举 */
-#define NIU_MO_SON 0       // 舵轮
-#define CHEN_JING_YUAN 1   // 2025 7.7  新麦轮
-#define NIUNIU 2           // 2025.5.6  新全向
-#define QI_TIAN_DA_SHENG 3 // 2024.7.23 老全向
+#define OLD 0
+#define NEW 1
 
-#define ROBOT  CHEN_JING_YUAN
-//#define ROBOT  NIUNIU
+#define ROBOT OLD
+
 
 typedef enum CHASSIS_TYPE
 { 
@@ -30,10 +28,12 @@ typedef enum YAW_MOTOR_TYPE
 
 
 //机械拆头后需要重新标零点，否则可能前后左右反过来
-#if ROBOT == CHEN_JING_YUAN
+#if ROBOT == OLD
 #define GIMBAL_FOLLOW_ZERO 9.51965332f  // 底盘跟随角度零点
-#define GIMBAL_MOTOR_SIGN -1    // 云台电机方向，以逆时针为正
+#elif ROBOT == NEW
+#define GIMBAL_FOLLOW_ZERO 105.309448f
 #endif
-void setRobotType(void);
 
+#define GIMBAL_MOTOR_SIGN -1    // 云台电机方向，以逆时针为正
+void setRobotType(void);
 #endif

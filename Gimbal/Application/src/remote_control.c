@@ -26,7 +26,7 @@ void setGameModeAction(enum GAME_MODE action)
         // 初始化游戏模式
         switch (remote_controller.game_mode)
         {
-        case OFF_MODE:
+        case POWER_DOWN_MODE:
             Change_Init();
             break;
         case TEST_MODE:

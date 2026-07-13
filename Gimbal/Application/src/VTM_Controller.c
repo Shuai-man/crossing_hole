@@ -1,4 +1,5 @@
 #include "VTM_Controller.h"
+VTM_Controller_t vtm_controller;
 
 void VTM_Init(void)
 {
@@ -6,6 +7,12 @@ void VTM_Init(void)
 	vtm_remote.sw[Left_up] = 0;
 	vtm_remote.sw[Right_up] = 0;
 	vtm_remote.sw[Pause] = 0;
+	VTM_State_Clear();
+}
+void VTM_State_Clear(void)
+{
+	vtm_controller.lift_flag = 0;
+	vtm_controller.last_right_up = 0;
 }
 
 void VTM_Fire(void)
@@ -27,6 +34,7 @@ void VTM_Fire(void)
 		else
 		{
 			setShootAction(SHOOT_POWER_DOWN_MODE);
+			remote_controller.fire_flag=0;
 		}	
 	}
 	else if(remote_controller.control_type == KEY_MOUSE)
@@ -62,18 +70,34 @@ void VTM_Chassis_Ctrl(void)
 			chassis_solver.chassis_speed_x = 0;
 	}	
 	// 左右移动
-	chassis_solver.chassis_speed_y = 0; 
-	// 自动旋转
-	if ((vtm_remote.wheel < (CH_MIDDLE - 50)) || (vtm_remote.wheel > (CH_MIDDLE + 50))) // 阈值
+	if(remote_controller.shoot_action == SHOOT_FIRE_MODE)
+	{
+			chassis_solver.chassis_speed_y = 0;
+	}
+	else if ((vtm_remote.ch[RIGHT_LR] - CH_MIDDLE) > 50 || (vtm_remote.ch[RIGHT_LR] - CH_MIDDLE) < -50)
+	{
+			chassis_solver.chassis_speed_y = 1.0f*(vtm_remote.ch[RIGHT_LR] - CH_MIDDLE) / CH_RANGE;
+	}
+	else
+	{
+			chassis_solver.chassis_speed_y = 0;
+	}	
+	// 旋转
+	if (remote_controller.gimbal_position == DOWN)
+	{
+		setChassisModeAction(FOLLOW_GIMBAL);
+		chassis_solver.chassis_speed_w = -(float)(vtm_remote.ch[LEFT_LR] - CH_MIDDLE) / CH_RANGE;
+	}
+	else if ((vtm_remote.wheel < (CH_MIDDLE - 50)) || (vtm_remote.wheel > (CH_MIDDLE + 50))) // 阈值
 	{
 		setChassisModeAction(CV_ROTATE);
 		if(vtm_remote.wheel > CH_MIDDLE)
 		{
-			chassis_solver.chassis_speed_w = -1.0f;
+			chassis_solver.chassis_speed_w = -0.5f;
 		}
 		else
 		{
-			chassis_solver.chassis_speed_w = 1.0f;
+			chassis_solver.chassis_speed_w = 0.5f;
 		}	
 	}
 	else
@@ -83,6 +107,22 @@ void VTM_Chassis_Ctrl(void)
 	}				
 }
 
+void VTM_Lift(void)
+{
+	if(vtm_remote.custom_btn_right==1 && vtm_controller.last_right_up==0)
+	{
+		vtm_controller.lift_flag = !vtm_controller.lift_flag;
+	}
+	vtm_controller.last_right_up = vtm_remote.custom_btn_right;
+	if(vtm_controller.lift_flag)
+	{
+		setGimbalPosition(DOWN);
+	}
+	else
+	{//默认抬头
+		setGimbalPosition(UP);
+	}
+}
 
 void VTM_Update(float delta_t)
 {	
@@ -107,6 +147,7 @@ void VTM_Update(float delta_t)
 			{
 				setGameModeAction(GAME_MODE);				
 				VTM_Fire();
+				VTM_Lift();
 				VTM_Gimbal_Ctrl(delta_t);
 				VTM_Chassis_Ctrl();
 			}

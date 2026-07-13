@@ -20,36 +20,11 @@
 
 
 // M3508电机
-#if ROBOT == CHEN_JING_YUAN
-
-
 #define M3508_R 0.0
 #define M3508_B 0.0
 #define M3508_K 0.3  	//0.3N/A
 #define M3508_P0 0.0 
 
-#elif ROBOT == NIU_MO_SON
-#define M3508_R 0.0
-#define M3508_B 0.0
-#define M3508_K 0.0
-#define M3508_P0 0.0 // 后续加上6020的一起
-
-#elif ROBOT == NIUNIU
-
-
-
-#define M3508_R 0.0
-#define M3508_B 0.0
-#define M3508_K 0.3
-#define M3508_P0 1.8/4 
-
-#elif ROBOT == QI_TIAN_DA_SHENG
-#define M3508_R 0.0  //i_2
-#define M3508_B 0.0  //w_2
-#define M3508_K 0.0  //w_i
-#define M3508_P0 0.0	//p_0,一个轮子的功率
-
-#endif
 
 typedef enum Power_Arrange
 {

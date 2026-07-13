@@ -40,7 +40,7 @@
 
 // 编码器
 #define ENCODER_ID 0x01
-#define ENCODER_LOSS_TIME	0.0055f //s
+#define ENCODER_LOSS_TIME	0.04f //s
 #define ENCODER_CAN &hcan1
 
 // 底盘通信

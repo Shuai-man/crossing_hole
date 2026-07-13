@@ -32,9 +32,10 @@ enum CONTROL_TYPE
  */
 enum GAME_MODE
 {
-    OFF_MODE = 0,  // 0,下电模式
-    TEST_MODE = 1, // 测试模式
-    GAME_MODE = 2, // 比赛模式
+    OFF_MODE = 0,        // 0,掉线模式
+    POWER_DOWN_MODE = 1, // 1,掉电模式
+    TEST_MODE = 2,       // 测试模式
+    GAME_MODE = 3,       // 比赛模式
 };
 
 /*
@@ -52,7 +53,7 @@ enum ROBOT_STATE
 // 模式与底盘状态接模式对应
 enum CHASSIS_MODE_ACTION
 {
-    NOT_CONTROL_MODE,
+    NOT_CONTROL_MODE,  // 掉电模式
     NOT_FOLLOW_GIMBAL, // 仅底盘运动模式
     FOLLOW_GIMBAL,     // 云台跟随模式
     CV_ROTATE,         // 恒速度旋转
@@ -66,11 +67,11 @@ enum PowerControlState // 功率控制状态
 
 enum GIMBAL_ACTION
 {
-    GIMBAL_POWER_DOWN, // 云台掉电模式
-    GIMBAL_ACT_MODE,
-    GIMBAL_AUTO_AIM_MODE,
-    GIMBAL_SMALL_BUFF_MODE, // 打符模式
-    GIMBAL_BIG_BUFF_MODE,   // 大符
+    GIMBAL_POWER_DOWN,         // 云台掉电模式
+    GIMBAL_ACT_MODE,           // 正常运动模式
+    GIMBAL_AUTO_AIM_MODE,      // 自瞄模式
+    GIMBAL_SMALL_BUFF_MODE,    // 打符模式
+    GIMBAL_BIG_BUFF_MODE,      // 大符
     GIMBAL_AUTO_ATM_TEST_MODE, // 自瞄测试模式
 };
 
