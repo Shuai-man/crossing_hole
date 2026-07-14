@@ -64,8 +64,9 @@ gimbal\keymouse.o: ../Application/inc/remote_control.h
 gimbal\keymouse.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\keymouse.o: ../Core/Inc/tim.h
 gimbal\keymouse.o: ../Components/boards/inc/bsp_led.h
-gimbal\keymouse.o: ../Application/inc/lifting_control.h
-gimbal\keymouse.o: ../Application/inc/tof.h
+gimbal\keymouse.o: ..\Lift\Inc\lifting_control.h
+gimbal\keymouse.o: ..\Lift\Inc\lifting_types.h
+gimbal\keymouse.o: ../Config/Robot_config.h
 gimbal\keymouse.o: ../Algorithm/inc/pid.h
 gimbal\keymouse.o: ../Algorithm/inc/user_lib.h
 gimbal\keymouse.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -80,7 +81,6 @@ gimbal\keymouse.o: ../Components/motor/inc/M2006.h
 gimbal\keymouse.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\keymouse.o: ../Algorithm/inc/my_filter.h
 gimbal\keymouse.o: ../Application/inc/Gimbal.h
-gimbal\keymouse.o: ../Config/Robot_config.h
 gimbal\keymouse.o: ../Components/motor/inc/GM6020.h
 gimbal\keymouse.o: ../Components/motor/inc/DM_Motor.h
 gimbal\keymouse.o: ../Core/Inc/can.h

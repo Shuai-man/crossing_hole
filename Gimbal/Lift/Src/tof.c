@@ -2,6 +2,8 @@
 
 Tof_SendDataTypeDef Tof_SendData;
 Tof_ReceiveDataTypeDef Tof_ReceiveData;
+/* 在串口接收流程中更新，在1kHz升降任务中读取，因此声明为volatile。 */
+volatile uint32_t Tof_UpdateCounter = 0;
 
 uint8_t Tof_SendData_Buffer[TOF_FRAME_SIZE];  // 用于DMA发送的缓冲区
 
@@ -63,9 +65,11 @@ void TOF_Decode(uint8_t *buf, Tof_ReceiveDataTypeDef *Tof_Recieve)
   Tof_Recieve->cmd = buf[1];
   Tof_Recieve->data_len = buf[2];
   Tof_Recieve->distance = (buf[3] << 8) | buf[4];
-  Tof_Recieve->crc = (buf[6] << 8) | buf[5];
+	Tof_Recieve->crc = (buf[6] << 8) | buf[5];
 	
 	LossUpdate(&global_debugger.tof_debugger,0.2f);
+	/* 必须在整帧数据写入完成后递增，保护逻辑才能读取到对应的新距离。 */
+	Tof_UpdateCounter++;
 }
 
 void TOF_Receive(void)

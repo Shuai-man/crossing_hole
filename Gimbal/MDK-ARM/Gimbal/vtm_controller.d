@@ -61,9 +61,9 @@ gimbal\vtm_controller.o: ../Application/inc/ChassisGet.h
 gimbal\vtm_controller.o: ../Application/inc/remote_control.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_DT7.h
 gimbal\vtm_controller.o: ../Task/inc/Offline_Task.h
-gimbal\vtm_controller.o: ../Application/inc/lifting_control.h
-gimbal\vtm_controller.o: ../Application/inc/remote_control.h
-gimbal\vtm_controller.o: ../Application/inc/tof.h
+gimbal\vtm_controller.o: ..\Lift\Inc\lifting_control.h
+gimbal\vtm_controller.o: ..\Lift\Inc\lifting_types.h
+gimbal\vtm_controller.o: ../Config/Robot_config.h
 gimbal\vtm_controller.o: ../Algorithm/inc/pid.h
 gimbal\vtm_controller.o: ../Algorithm/inc/user_lib.h
 gimbal\vtm_controller.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -78,7 +78,6 @@ gimbal\vtm_controller.o: ../Components/motor/inc/M2006.h
 gimbal\vtm_controller.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\vtm_controller.o: ../Algorithm/inc/my_filter.h
 gimbal\vtm_controller.o: ../Application/inc/Gimbal.h
-gimbal\vtm_controller.o: ../Config/Robot_config.h
 gimbal\vtm_controller.o: ../Components/motor/inc/GM6020.h
 gimbal\vtm_controller.o: ../Components/motor/inc/DM_Motor.h
 gimbal\vtm_controller.o: ../Core/Inc/can.h
@@ -88,6 +87,7 @@ gimbal\vtm_controller.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\vtm_controller.o: ../Algorithm/inc/kalman_filter.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\vtm_controller.o: ../Core/Inc/tim.h
+gimbal\vtm_controller.o: ../Application/inc/remote_control.h
 gimbal\vtm_controller.o: ../Application/inc/pc_serial.h
 gimbal\vtm_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\vtm_controller.o: ../Algorithm/inc/TD.h

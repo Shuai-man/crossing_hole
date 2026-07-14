@@ -60,9 +60,9 @@ gimbal\offline_task.o: ../Core/Inc/usart.h
 gimbal\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_DT7.h
 gimbal\offline_task.o: ../Task/inc/Offline_Task.h
-gimbal\offline_task.o: ../Application/inc/lifting_control.h
-gimbal\offline_task.o: ../Application/inc/remote_control.h
-gimbal\offline_task.o: ../Application/inc/tof.h
+gimbal\offline_task.o: ..\Lift\Inc\lifting_control.h
+gimbal\offline_task.o: ..\Lift\Inc\lifting_types.h
+gimbal\offline_task.o: ../Config/Robot_config.h
 gimbal\offline_task.o: ../Algorithm/inc/pid.h
 gimbal\offline_task.o: ../Algorithm/inc/user_lib.h
 gimbal\offline_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -77,7 +77,6 @@ gimbal\offline_task.o: ../Components/motor/inc/M2006.h
 gimbal\offline_task.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\offline_task.o: ../Algorithm/inc/my_filter.h
 gimbal\offline_task.o: ../Application/inc/Gimbal.h
-gimbal\offline_task.o: ../Config/Robot_config.h
 gimbal\offline_task.o: ../Components/motor/inc/GM6020.h
 gimbal\offline_task.o: ../Components/motor/inc/DM_Motor.h
 gimbal\offline_task.o: ../Core/Inc/can.h
@@ -87,6 +86,7 @@ gimbal\offline_task.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\offline_task.o: ../Algorithm/inc/kalman_filter.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\offline_task.o: ../Core/Inc/tim.h
+gimbal\offline_task.o: ../Application/inc/remote_control.h
 gimbal\offline_task.o: ../Application/inc/pc_serial.h
 gimbal\offline_task.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\offline_task.o: ../Algorithm/inc/TD.h

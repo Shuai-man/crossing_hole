@@ -65,8 +65,9 @@ gimbal\dt7_controller.o: ../Application/inc/remote_control.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\dt7_controller.o: ../Core/Inc/tim.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_led.h
-gimbal\dt7_controller.o: ../Application/inc/lifting_control.h
-gimbal\dt7_controller.o: ../Application/inc/tof.h
+gimbal\dt7_controller.o: ..\Lift\Inc\lifting_control.h
+gimbal\dt7_controller.o: ..\Lift\Inc\lifting_types.h
+gimbal\dt7_controller.o: ../Config/Robot_config.h
 gimbal\dt7_controller.o: ../Algorithm/inc/pid.h
 gimbal\dt7_controller.o: ../Algorithm/inc/user_lib.h
 gimbal\dt7_controller.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -81,7 +82,6 @@ gimbal\dt7_controller.o: ../Components/motor/inc/M2006.h
 gimbal\dt7_controller.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\dt7_controller.o: ../Algorithm/inc/my_filter.h
 gimbal\dt7_controller.o: ../Application/inc/Gimbal.h
-gimbal\dt7_controller.o: ../Config/Robot_config.h
 gimbal\dt7_controller.o: ../Components/motor/inc/GM6020.h
 gimbal\dt7_controller.o: ../Components/motor/inc/DM_Motor.h
 gimbal\dt7_controller.o: ../Core/Inc/can.h

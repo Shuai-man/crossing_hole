@@ -123,10 +123,17 @@ void DataReceive(CAN_HandleTypeDef *hcan, CAN_RxHeaderTypeDef *rx_header, uint8_
 	}
 	else if (hcan == ENCODER_CAN && rx_header->StdId == ENCODER_ID)
 	{
-		memcpy(&encoder.frame, data, 7);
-		encoder.DeviceID = ENCODER_ID;
-		encoder.value = (encoder.frame.data4 << 24) | (encoder.frame.data3 << 16) | (encoder.frame.data2 << 8) | encoder.frame.data1;
-		LossUpdate(&global_debugger.encoder_debugger, ENCODER_LOSS_TIME);
+		/* 只接受协议头完整的自动回传帧，异常CAN帧不能刷新在线状态或进入位置闭环。 */
+		if (rx_header->DLC >= 7U && data[0] == 0x07U && data[1] == 0x01U && data[2] == 0x01U)
+		{
+			memcpy(&encoder.frame, data, 7);
+			encoder.value = ((uint32_t)encoder.frame.data4 << 24) |
+				((uint32_t)encoder.frame.data3 << 16) |
+				((uint32_t)encoder.frame.data2 << 8) |
+				(uint32_t)encoder.frame.data1;
+			Encoder_UpdateCounter++;
+			LossUpdate(&global_debugger.encoder_debugger, ENCODER_LOSS_TIME);
+		}
 	}
 	else if (hcan == CHASSIS_CAN_COMM_CANx && rx_header->StdId == GET_FROM_CHASSIS_CAN_ID_1)
 	{

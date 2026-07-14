@@ -95,6 +95,11 @@ typedef struct Tof_ReceiveDataTypeDef {
 #define TOF_RECEIVE_FRAME_SIZE sizeof(Tof_ReceiveDataTypeDef)
 	
 extern Tof_ReceiveDataTypeDef Tof_ReceiveData;
+/*
+ * TOF新帧序号：每解码一帧递增。
+ * 升降保护用它区分“收到相同距离的新帧”和“控制循环重复读取旧数据”。
+ */
+extern volatile uint32_t Tof_UpdateCounter;
 
 void TOF_BaudRate_Init(void);
 void TOF_Reset(void);

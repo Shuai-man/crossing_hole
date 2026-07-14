@@ -65,8 +65,9 @@ gimbal\actiontask.o: ../Application/inc/remote_control.h
 gimbal\actiontask.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\actiontask.o: ../Core/Inc/tim.h
 gimbal\actiontask.o: ../Components/boards/inc/bsp_led.h
-gimbal\actiontask.o: ../Application/inc/lifting_control.h
-gimbal\actiontask.o: ../Application/inc/tof.h
+gimbal\actiontask.o: ..\Lift\Inc\lifting_control.h
+gimbal\actiontask.o: ..\Lift\Inc\lifting_types.h
+gimbal\actiontask.o: ../Config/Robot_config.h
 gimbal\actiontask.o: ../Algorithm/inc/pid.h
 gimbal\actiontask.o: ../Algorithm/inc/user_lib.h
 gimbal\actiontask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -81,7 +82,6 @@ gimbal\actiontask.o: ../Components/motor/inc/M2006.h
 gimbal\actiontask.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\actiontask.o: ../Algorithm/inc/my_filter.h
 gimbal\actiontask.o: ../Application/inc/Gimbal.h
-gimbal\actiontask.o: ../Config/Robot_config.h
 gimbal\actiontask.o: ../Components/motor/inc/GM6020.h
 gimbal\actiontask.o: ../Components/motor/inc/DM_Motor.h
 gimbal\actiontask.o: ../Core/Inc/can.h

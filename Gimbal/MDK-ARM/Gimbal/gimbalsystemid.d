@@ -85,8 +85,8 @@ gimbal\gimbalsystemid.o: ../Application/inc/ChassisGet.h
 gimbal\gimbalsystemid.o: ../Application/inc/remote_control.h
 gimbal\gimbalsystemid.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\gimbalsystemid.o: ../Components/boards/inc/bsp_led.h
-gimbal\gimbalsystemid.o: ../Application/inc/lifting_control.h
-gimbal\gimbalsystemid.o: ../Application/inc/tof.h
+gimbal\gimbalsystemid.o: ..\Lift\Inc\lifting_control.h
+gimbal\gimbalsystemid.o: ..\Lift\Inc\lifting_types.h
 gimbal\gimbalsystemid.o: ../Components/motor/inc/M2006.h
 gimbal\gimbalsystemid.o: ../Application/inc/Gimbal.h
 gimbal\gimbalsystemid.o: ../Application/inc/pc_serial.h

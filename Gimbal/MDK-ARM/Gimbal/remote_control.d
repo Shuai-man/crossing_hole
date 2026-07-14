@@ -63,8 +63,9 @@ gimbal\remote_control.o: ../Application/inc/remote_control.h
 gimbal\remote_control.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\remote_control.o: ../Core/Inc/tim.h
 gimbal\remote_control.o: ../Components/boards/inc/bsp_led.h
-gimbal\remote_control.o: ../Application/inc/lifting_control.h
-gimbal\remote_control.o: ../Application/inc/tof.h
+gimbal\remote_control.o: ..\Lift\Inc\lifting_control.h
+gimbal\remote_control.o: ..\Lift\Inc\lifting_types.h
+gimbal\remote_control.o: ../Config/Robot_config.h
 gimbal\remote_control.o: ../Algorithm/inc/pid.h
 gimbal\remote_control.o: ../Algorithm/inc/user_lib.h
 gimbal\remote_control.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -79,7 +80,6 @@ gimbal\remote_control.o: ../Components/motor/inc/M2006.h
 gimbal\remote_control.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\remote_control.o: ../Algorithm/inc/my_filter.h
 gimbal\remote_control.o: ../Application/inc/Gimbal.h
-gimbal\remote_control.o: ../Config/Robot_config.h
 gimbal\remote_control.o: ../Components/motor/inc/GM6020.h
 gimbal\remote_control.o: ../Components/motor/inc/DM_Motor.h
 gimbal\remote_control.o: ../Core/Inc/can.h

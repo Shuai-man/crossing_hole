@@ -24,6 +24,7 @@
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Config",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Middlewares\\ST\\ARM\\DSP\\Inc",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Algorithm\\FastMath",
+                "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Lift\\Inc",
                 "D:\\keil\\ARM\\ARMCC\\include",
                 "D:\\keil\\ARM\\ARMCC\\include\\rw",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\MDK-ARM",
@@ -38,6 +39,7 @@
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Components\\boards\\src",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Components\\motor\\src",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Application\\src",
+                "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Lift\\Src",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Task\\src",
                 "d:\\RM\\testwork\\2025_Infantry\\Infantry_crossing_hole\\2026_pancake_car\\Gimbal\\Middlewares\\ST\\ARM\\DSP\\Lib"
             ],

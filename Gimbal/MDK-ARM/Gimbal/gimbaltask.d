@@ -64,8 +64,9 @@ gimbal\gimbaltask.o: ../Application/inc/remote_control.h
 gimbal\gimbaltask.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\gimbaltask.o: ../Core/Inc/tim.h
 gimbal\gimbaltask.o: ../Components/boards/inc/bsp_led.h
-gimbal\gimbaltask.o: ../Application/inc/lifting_control.h
-gimbal\gimbaltask.o: ../Application/inc/tof.h
+gimbal\gimbaltask.o: ..\Lift\Inc\lifting_control.h
+gimbal\gimbaltask.o: ..\Lift\Inc\lifting_types.h
+gimbal\gimbaltask.o: ../Config/Robot_config.h
 gimbal\gimbaltask.o: ../Algorithm/inc/pid.h
 gimbal\gimbaltask.o: ../Algorithm/inc/user_lib.h
 gimbal\gimbaltask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -80,7 +81,6 @@ gimbal\gimbaltask.o: ../Components/motor/inc/M2006.h
 gimbal\gimbaltask.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\gimbaltask.o: ../Algorithm/inc/my_filter.h
 gimbal\gimbaltask.o: ../Application/inc/Gimbal.h
-gimbal\gimbaltask.o: ../Config/Robot_config.h
 gimbal\gimbaltask.o: ../Components/motor/inc/GM6020.h
 gimbal\gimbaltask.o: ../Components/motor/inc/DM_Motor.h
 gimbal\gimbaltask.o: ../Core/Inc/can.h
@@ -102,7 +102,7 @@ gimbal\gimbaltask.o: ../Config/can_config.h
 gimbal\gimbaltask.o: ../Components/boards/inc/bsp_can.h
 gimbal\gimbaltask.o: ../Config/Motor_Typdef.h
 gimbal\gimbaltask.o: ../Application/inc/ToggleBullet.h
-gimbal\gimbaltask.o: ../Application/inc/encoder.h
+gimbal\gimbaltask.o: ..\Lift\Inc\encoder.h
 gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h
 gimbal\gimbaltask.o: ../Application/inc/DT7_Controller.h
 gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h

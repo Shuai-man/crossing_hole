@@ -23,16 +23,17 @@ typedef struct {
     uint8_t data3;      //数据3
     uint8_t data4;      //数据4
 } Encoder_Frame_t;
+#pragma pack()
 
 typedef struct {
-  uint8_t DeviceID; //设备ID，0x01
   Encoder_Frame_t frame;
-  uint32_t value;
+  volatile uint32_t value; // CAN中断更新、控制任务读取的绝对位置计数
 } Encoder_t;
-
-#define DOWN_ENCODER 0.0f
-#define UP_ENCODER 0.0f
-
-extern uint8_t encoder_receive_data[7]; // 接收数据缓冲区
 extern Encoder_t encoder; // 编码器数据结构
+
+/*
+ * 每收到一帧有效的编码器CAN数据就加1。
+ * 升降保护通过它区分“编码器真的更新了”与“1kHz控制循环重复读取了旧值”。
+ */
+extern volatile uint32_t Encoder_UpdateCounter;
 #endif

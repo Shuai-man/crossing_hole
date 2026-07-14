@@ -1,5 +1,5 @@
-gimbal\tof.o: ..\Application\src\tof.c
-gimbal\tof.o: ../Application/inc/tof.h
+gimbal\tof.o: ..\Lift\Src\tof.c
+gimbal\tof.o: ..\Lift\Inc\tof.h
 gimbal\tof.o: ../Core/Inc/main.h
 gimbal\tof.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 gimbal\tof.o: ../Core/Inc/stm32f4xx_hal_conf.h
