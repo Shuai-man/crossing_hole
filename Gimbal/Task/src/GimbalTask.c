@@ -66,8 +66,8 @@ void Gimbal_PC_Cal(void)
     gimbal_controller.gravity_comp = GIMBAL_PITCH_SIN * sin(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
                                      GIMBAL_PITCH_COS * cos(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
                                      GIMBAL_PITCH_C * sign(gimbal_controller.gyro_pitch_speed);
-    gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * pc_recv_data.pitch_acc_setpoint + // 惯量 × 加速度，主要输出项
-                                     GIMBAL_PITCH_B * pc_recv_data.pitch_omega_setpoint;  // 阻尼 × 速度
+    gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * pc_recv_data.pitch_acc_setpoint +  // 惯量 × 加速度，主要输出项
+                                     GIMBAL_PITCH_B * pc_recv_data.pitch_omega_setpoint; // 阻尼 × 速度
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.target_pitch_angle);
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, pc_recv_data.pitch_omega_setpoint);
     gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp + gimbal_controller.ff_tff_pitch;
@@ -75,12 +75,12 @@ void Gimbal_PC_Cal(void)
     // YAW
     gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
     yaw_friction_ratio = LIMIT_MAX_MIN(pc_recv_data.yaw_omega_setpoint /
-                                      BORDER_FRICTION_SPEED,
-                                      1.0f, -1.0f);
+                                           BORDER_FRICTION_SPEED,
+                                       1.0f, -1.0f);
     gimbal_controller.ff_tff =
-        GIMBAL_YAW_J * pc_recv_data.yaw_acc_setpoint +        // 惯量 × 加速度，主要输出项
-        GIMBAL_YAW_B * pc_recv_data.yaw_omega_setpoint +      // 阻尼 × 速度
-        GIMBAL_YAW_C * yaw_friction_ratio;                    // 低速平滑的运动库仑摩擦
+        GIMBAL_YAW_J * pc_recv_data.yaw_acc_setpoint +   // 惯量 × 加速度，主要输出项
+        GIMBAL_YAW_B * pc_recv_data.yaw_omega_setpoint + // 阻尼 × 速度
+        GIMBAL_YAW_C * yaw_friction_ratio;               // 低速平滑的运动库仑摩擦
     PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, pc_recv_data.yaw_setpoint);
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, pc_recv_data.yaw_omega_setpoint); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
     // 总输出 = 前馈 + 角度环输出 + 速度环输出
@@ -99,24 +99,29 @@ void Gimbal_Act_Cal(void)
 // 自瞄模式的云台控制
 void Gimbal_Auto_aim_Cal(void)
 {
-    if (pc_recv_data.detect_number == 0 || fabsf(gimbal_controller.target_yaw_angle - pc_recv_data.yaw_setpoint) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
+    if (pc_recv_data.detect_number == 0 || fabsf(gimbal_controller.gyro_yaw_angle - pc_recv_data.yaw_setpoint) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
     {
-        //位置控制
-        if (pc_recv_data.mode_select == 0x11 && remote_controller.auto_arm ==1)
+        // 无PC数据处理
+        Gimbal_Act_Cal(); 
+    }
+    else if (pc_recv_data.mode_select == 0x11 )
+    {
+        // 位置控制
+        if (remote_controller.auto_arm == 1)
         {
             gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
             gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
         }
-        Gimbal_Act_Cal(); // 无PC数据处理
+        Gimbal_Act_Cal();
     }
-    else if (remote_controller.auto_arm ==1)
+    else if (pc_recv_data.mode_select == 0x22 && remote_controller.auto_arm == 1)
     {
-        //前馈控制
+        // 前馈控制
         Gimbal_PC_Cal();
     }
     else
     {
-        //手动控制
+        // 手动控制
         Gimbal_Act_Cal();
     }
 }
@@ -269,9 +274,9 @@ void Gimbal_Task(void *pvParameters)
     // 云台PID初始化
     GimbalMotorInit();
     GimbalPidInit();
-      /* 系统辨识以及测试 */
-     GimbalSystemID_Init(&gimbal_controller);
-      // 拨弹电机PID初始化
+    /* 系统辨识以及测试 */
+    GimbalSystemID_Init(&gimbal_controller);
+    // 拨弹电机PID初始化
     Toggle_Init();
     // 丝杆电机初始化
     LiftPidInit();
@@ -294,9 +299,9 @@ void Gimbal_Task(void *pvParameters)
 #if GIMBAL_SYSID
         if (!gimbal_sysid.yaw.sysid_done || !gimbal_sysid.pitch.sysid_done)
         {
-             GimbalSystemID_Run();
-          }
-  #endif
+            GimbalSystemID_Run();
+        }
+#endif
         switch (remote_controller.gimbal_action)
         {
         case GIMBAL_POWER_DOWN: // 掉电模式
