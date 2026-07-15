@@ -86,6 +86,7 @@ gimbal\main.o: ../Algorithm/inc/my_filter.h
 gimbal\main.o: ../Components/motor/inc/M3508.h
 gimbal\main.o: ../Application/inc/ChassisGet.h
 gimbal\main.o: ../Application/inc/Gimbal.h
+gimbal\main.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\main.o: ../Components/motor/inc/GM6020.h
 gimbal\main.o: ../Components/motor/inc/DM_Motor.h
 gimbal\main.o: ../Application/inc/ins.h
@@ -104,9 +105,6 @@ gimbal\main.o: ../Application/inc/Gimbal.h
 gimbal\main.o: ../Application/inc/pc_serial.h
 gimbal\main.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\main.o: ../Algorithm/inc/TD.h
-gimbal\main.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\main.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\main.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\main.o: ../Application/inc/GimbalSystemID.h
 gimbal\main.o: ../Application/inc/ToggleBullet.h
 gimbal\main.o: ..\Lift\Inc\encoder.h

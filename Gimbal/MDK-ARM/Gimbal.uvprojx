@@ -961,9 +961,14 @@
               <FilePath>..\Application\src\KeyMouse.c</FilePath>
             </File>
             <File>
-              <FileName>BMI088driver.c</FileName>
+              <FileName>GimbalSystemID.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Application\src\BMI088driver.c</FilePath>
+              <FilePath>..\Application\src\GimbalSystemID.c</FilePath>
+            </File>
+            <File>
+              <FileName>GimbalSystemIDConfig.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\src\GimbalSystemIDConfig.c</FilePath>
             </File>
             <File>
               <FileName>BMI088Middleware.c</FileName>
@@ -971,9 +976,9 @@
               <FilePath>..\Application\src\BMI088Middleware.c</FilePath>
             </File>
             <File>
-              <FileName>GimbalSystemID.c</FileName>
+              <FileName>BMI088driver.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Application\src\GimbalSystemID.c</FilePath>
+              <FilePath>..\Application\src\BMI088driver.c</FilePath>
             </File>
           </Files>
         </Group>

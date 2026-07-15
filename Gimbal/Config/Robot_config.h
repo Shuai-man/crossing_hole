@@ -6,7 +6,7 @@
 
 /* 可由工程编译选项覆盖；当前默认编译老云台配置。 */
 #ifndef ROBOT_SELECT
-#define ROBOT_SELECT NEW
+#define ROBOT_SELECT OLD
 #endif
 
 

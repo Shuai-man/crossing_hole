@@ -81,6 +81,7 @@ gimbal\gimbaltask.o: ../Components/motor/inc/M2006.h
 gimbal\gimbaltask.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\gimbaltask.o: ../Algorithm/inc/my_filter.h
 gimbal\gimbaltask.o: ../Application/inc/Gimbal.h
+gimbal\gimbaltask.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\gimbaltask.o: ../Components/motor/inc/GM6020.h
 gimbal\gimbaltask.o: ../Components/motor/inc/DM_Motor.h
 gimbal\gimbaltask.o: ../Core/Inc/can.h
@@ -92,9 +93,6 @@ gimbal\gimbaltask.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\gimbaltask.o: ../Application/inc/pc_serial.h
 gimbal\gimbaltask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\gimbaltask.o: ../Algorithm/inc/TD.h
-gimbal\gimbaltask.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\gimbaltask.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\gimbaltask.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\gimbaltask.o: ../Application/inc/GimbalSystemID.h
 gimbal\gimbaltask.o: ../Application/inc/FrictionWheel.h
 gimbal\gimbaltask.o: ../Components/motor/inc/M3508.h
@@ -107,6 +105,8 @@ gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h
 gimbal\gimbaltask.o: ../Application/inc/DT7_Controller.h
 gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h
 gimbal\gimbaltask.o: ../Application/inc/VTM_Controller.h
+gimbal\gimbaltask.o: ../Algorithm/inc/SystemIdentification.h
+gimbal\gimbaltask.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\gimbaltask.o: ../USB_DEVICE/App/usb_device.h
 gimbal\gimbaltask.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
 gimbal\gimbaltask.o: ../USB_DEVICE/Target/usbd_conf.h

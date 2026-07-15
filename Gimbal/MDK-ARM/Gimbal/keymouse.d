@@ -81,6 +81,7 @@ gimbal\keymouse.o: ../Components/motor/inc/M2006.h
 gimbal\keymouse.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\keymouse.o: ../Algorithm/inc/my_filter.h
 gimbal\keymouse.o: ../Application/inc/Gimbal.h
+gimbal\keymouse.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\keymouse.o: ../Components/motor/inc/GM6020.h
 gimbal\keymouse.o: ../Components/motor/inc/DM_Motor.h
 gimbal\keymouse.o: ../Core/Inc/can.h
@@ -92,9 +93,6 @@ gimbal\keymouse.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\keymouse.o: ../Application/inc/pc_serial.h
 gimbal\keymouse.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\keymouse.o: ../Algorithm/inc/TD.h
-gimbal\keymouse.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\keymouse.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\keymouse.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\keymouse.o: ../Application/inc/GimbalSystemID.h
 gimbal\keymouse.o: ../Application/inc/DT7_Controller.h
 gimbal\keymouse.o: ../Application/inc/KeyMouse.h

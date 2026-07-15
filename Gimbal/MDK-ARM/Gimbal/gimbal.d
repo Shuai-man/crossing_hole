@@ -38,6 +38,7 @@ gimbal\gimbal.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\gimbal.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\gimbal.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 gimbal\gimbal.o: ../Config/Robot_config.h
+gimbal\gimbal.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\gimbal.o: ../Components/motor/inc/GM6020.h
 gimbal\gimbal.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
 gimbal\gimbal.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
@@ -92,7 +93,4 @@ gimbal\gimbal.o: ../Application/inc/Gimbal.h
 gimbal\gimbal.o: ../Application/inc/pc_serial.h
 gimbal\gimbal.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\gimbal.o: ../Algorithm/inc/TD.h
-gimbal\gimbal.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\gimbal.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\gimbal.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\gimbal.o: ../Application/inc/GimbalSystemID.h

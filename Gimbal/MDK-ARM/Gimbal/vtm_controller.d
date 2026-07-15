@@ -78,6 +78,7 @@ gimbal\vtm_controller.o: ../Components/motor/inc/M2006.h
 gimbal\vtm_controller.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\vtm_controller.o: ../Algorithm/inc/my_filter.h
 gimbal\vtm_controller.o: ../Application/inc/Gimbal.h
+gimbal\vtm_controller.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\vtm_controller.o: ../Components/motor/inc/GM6020.h
 gimbal\vtm_controller.o: ../Components/motor/inc/DM_Motor.h
 gimbal\vtm_controller.o: ../Core/Inc/can.h
@@ -91,9 +92,6 @@ gimbal\vtm_controller.o: ../Application/inc/remote_control.h
 gimbal\vtm_controller.o: ../Application/inc/pc_serial.h
 gimbal\vtm_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\vtm_controller.o: ../Algorithm/inc/TD.h
-gimbal\vtm_controller.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\vtm_controller.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\vtm_controller.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\vtm_controller.o: ../Application/inc/GimbalSystemID.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_led.h

@@ -73,6 +73,7 @@ gimbal\pc_serial.o: ../Components/tools/inc/debug.h
 gimbal\pc_serial.o: ../Application/inc/ChassisGet.h
 gimbal\pc_serial.o: ../Application/inc/Gimbal.h
 gimbal\pc_serial.o: ../Config/Robot_config.h
+gimbal\pc_serial.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\pc_serial.o: ../Components/motor/inc/GM6020.h
 gimbal\pc_serial.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\pc_serial.o: ../Algorithm/inc/my_filter.h
@@ -92,9 +93,6 @@ gimbal\pc_serial.o: ..\Lift\Inc\lifting_types.h
 gimbal\pc_serial.o: ../Components/motor/inc/M2006.h
 gimbal\pc_serial.o: ../Application/inc/Gimbal.h
 gimbal\pc_serial.o: ../Algorithm/inc/TD.h
-gimbal\pc_serial.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\pc_serial.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\pc_serial.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\pc_serial.o: ../Application/inc/GimbalSystemID.h
 gimbal\pc_serial.o: ../Algorithm/FastMath/arm_atan2_f32.h
 gimbal\pc_serial.o: ../USB_DEVICE/App/usbd_cdc_if.h
@@ -105,3 +103,4 @@ gimbal\pc_serial.o: ../USB_DEVICE/Target/usbd_conf.h
 gimbal\pc_serial.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 gimbal\pc_serial.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 gimbal\pc_serial.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
+gimbal\pc_serial.o: ../Algorithm/inc/SignalGenerator.h

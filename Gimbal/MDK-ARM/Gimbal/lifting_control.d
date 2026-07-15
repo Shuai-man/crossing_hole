@@ -69,6 +69,7 @@ gimbal\lifting_control.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\lifting_control.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\lifting_control.o: ../Algorithm/inc/my_filter.h
 gimbal\lifting_control.o: ../Application/inc/Gimbal.h
+gimbal\lifting_control.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\lifting_control.o: ../Components/motor/inc/GM6020.h
 gimbal\lifting_control.o: ../Components/motor/inc/DM_Motor.h
 gimbal\lifting_control.o: ../Core/Inc/can.h
@@ -92,9 +93,6 @@ gimbal\lifting_control.o: ../Application/inc/Gimbal.h
 gimbal\lifting_control.o: ../Application/inc/pc_serial.h
 gimbal\lifting_control.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\lifting_control.o: ../Algorithm/inc/TD.h
-gimbal\lifting_control.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\lifting_control.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\lifting_control.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\lifting_control.o: ../Application/inc/GimbalSystemID.h
 gimbal\lifting_control.o: ..\Lift\Inc\encoder.h
 gimbal\lifting_control.o: ..\Lift\Inc\lifting_config.h

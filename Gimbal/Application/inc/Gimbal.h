@@ -4,6 +4,7 @@
 #include "main.h"
 
 #include "Robot_config.h"
+#include "GimbalSystemIDConfig.h"
 
 #include "GM6020.h"
 #include "DM_Motor.h"
@@ -15,9 +16,6 @@
 #include "pid.h"
 #include "my_filter.h"
 #include "TD.h"
-#include "RLS_Identification.h"
-#include "SystemIdentification.h"
-
 #include "GimbalSystemID.h"
 
 // pitch
@@ -47,45 +45,31 @@
 #define GIMBAL_ANGLE_ZERO 105.309448f
 #endif
 
-//系统辨识模式
-#define GIMBAL_SYSID 0
-
-// 系统辨识步骤选择（Pitch 推荐按 GRAVITY -> BC -> J 执行）
-#define GIMBAL_SYSID_STEP_GRAVITY 1           // 双向等速扫描 -> 辨识重力矩
-#define GIMBAL_SYSID_STEP_BC 2                // 多速度双向扫描 -> 辨识 B、C
-#define GIMBAL_SYSID_STEP_J 3                 // 同速度窗口加减速配对 -> 辨识 J
-#define GIMBAL_SYSID_STEP_ALL 4               // 当前辨识轴自动依次完成全部阶段
-#define GIMBAL_SYSID_STEP GIMBAL_SYSID_STEP_ALL
-
-// YAW轴 系统辨识
-#define GIMBAL_YAW_SYSID 1
+/* 系统辨识的模式和移植参数已集中到 GimbalSystemIDConfig.h/.c。 */
 // YAW轴系统辨识参数
 #if ROBOT_SELECT == OLD
-#define GIMBAL_YAW_J 3.08758259f // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
-#define GIMBAL_YAW_B 1.21354508f   // 阻尼系数，与速度有关
-#define GIMBAL_YAW_C 315.488129f  // 库伦摩擦系数，与结构有关
+#define GIMBAL_YAW_J 3.08147478f // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
+#define GIMBAL_YAW_B 1.0099206f   // 阻尼系数，与速度有关
+#define GIMBAL_YAW_C 428.554718f  // 库伦摩擦系数，与结构有关
 #elif ROBOT_SELECT == NEW
 #define GIMBAL_YAW_J 2.61310053f // 转动惯量 //实测前馈输出过大，可以适当降低惯量，以减小前馈输出
 #define GIMBAL_YAW_B 1.9250102f   // 阻尼系数，与速度有关
 #define GIMBAL_YAW_C 318.858643f  // 库伦摩擦系数，与结构有关
 #endif
 
-// Pitch轴 重补测试开关（0=关闭, 1=开启）
-#define GIMBAL_PITCH_COMP 2
 /* 重力补偿 */
 #if ROBOT_SELECT == OLD
-#define GIMBAL_PITCH_SIN 606.6655f  // 重力矩系数1
-#define GIMBAL_PITCH_COS 1723.191f  // 重力矩系数2
+#define GIMBAL_PITCH_SIN 603.168823f  // 重力矩系数1
+#define GIMBAL_PITCH_COS 1682.7561f  // 重力矩系数2
 #elif ROBOT_SELECT == NEW
 #define GIMBAL_PITCH_SIN 219.408646f  // 重力矩系数1
 #define GIMBAL_PITCH_COS 1499.73376f  // 重力矩系数2
 #endif
-/*PITCH系统辨识*/
-#define GIMBAL_PITCH_SYSID 3
+/* PITCH控制模型参数 */
 #if ROBOT_SELECT == OLD
-#define GIMBAL_PITCH_B 13.6324844f // 阻力系数
-#define GIMBAL_PITCH_C 153.83098f // 摩擦力
-#define GIMBAL_PITCH_J 2.0f         // 转动惯量
+#define GIMBAL_PITCH_B 0.442920297f // 阻力系数
+#define GIMBAL_PITCH_C 246.881256f // 摩擦力
+#define GIMBAL_PITCH_J 0.219061226f         // 转动惯量
 #elif ROBOT_SELECT == NEW
 #define GIMBAL_PITCH_B 0.190167725f // 阻力系数
 #define GIMBAL_PITCH_C 318.399139f // 摩擦力
@@ -102,51 +86,6 @@ typedef enum
   GIMBAL_FRONT = 0,
   GIMBAL_BACK = 1,
 } gimbal_direction_e;
-
-/* 系统辨识全局变量 */
-typedef struct Gimbal_SI
-{
-  float sysid_timer;
-  RLS rls_sysid;
-  SI_t si_sysid;
-  TD_t td_omega;
-  uint8_t sysid_done;
-  float J;
-  float B;
-  float B_raw;       // B 的未约束拟合值；轻微负值时 B 会被钳位为 0
-  float C;
-  float G_sin;       // Pitch 重力矩 sin(theta) 系数
-  float G_cos;       // Pitch 重力矩 cos(theta) 系数
-  float fit_rmse;    // 当前阶段拟合残差（电机反馈力矩单位）
-  float gravity_rmse;
-  float bc_rmse;
-  float j_rmse;
-  float J_pair_min;    // 有效加减速差分点中最小的局部惯量
-  float J_pair_max;    // 有效加减速差分点中最大的局部惯量
-  float j_alpha_filtered; // 低通角加速度，仅用于观察，不参与阶段平均回归
-  float j_signal_rms;  // J*alpha 的 RMS，表示有效惯量力矩强度
-  float j_residual_ratio; // j_rmse / j_signal_rms，越小越好
-  float j_velocity_ref; // 当前 J 测试速度参考值
-  float j_switch_angle; // Pitch为切换角度；Yaw为测试最大参考速度
-  float j_target_accel; // 当前运动阶段的目标加速度，减速阶段为负
-  /* 最近平均点：B/C保存行程均值；J保存同角度/同速度加减速差分。 */
-  float mean_torque;
-  float mean_omega;
-  float mean_gravity;
-  float mean_input;    // B/C为sgn(omega)，J为delta_alpha
-  float mean_residual; // B/C为T-G，J为delta_T-B*delta_omega-delta_G
-  uint32_t mean_raw_count;
-  uint32_t sample_count;
-  uint32_t gravity_valid_bins;
-  uint32_t bc_sample_count;
-  uint32_t j_sample_count;
-  uint8_t mean_point_count; // 当前阶段已生成的等权平均点数量
-  uint8_t j_motion_phase; // 当前轴J测试运动阶段，具体含义见实现中的阶段枚举
-  uint8_t j_pass_count;   // Pitch为上升趟数；Yaw为已完成方向数
-  uint8_t sysid_stage;
-  uint8_t sysid_valid;
-  uint8_t sysid_error;
-} Gimbal_SI;
 
 typedef struct GimbalController
 {
@@ -207,10 +146,6 @@ typedef struct GimbalController
   float if_spin_reverse;   // 是否反拨拨盘
   float stuck_time;        // 卡弹持续时间
   float spin_reverse_time; // 反转时间
-
-  /*----------系统辨识-----------------*/
-  Gimbal_SI yaw_sysid;
-  Gimbal_SI pitch_sysid;
 
 } GimbalController;
 

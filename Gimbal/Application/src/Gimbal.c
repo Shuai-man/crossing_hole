@@ -16,9 +16,8 @@ void GimbalMotorInit(void)
  */
 void GimbalPidInit(void)
 {
-
     // Pitch
-    PID_Init(&gimbal_controller.pitch_angle_pid, 5000.0f, 0, 0.0f, 600.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
+    PID_Init(&gimbal_controller.pitch_angle_pid, 5000.0f, 0, 0.0f, 800.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
 #if GIMBAL_SYSID == GIMBAL_PITCH_SYSID
     /* Pitch 系统辨识专用速度环参数，适用于重力、B/C 和 J 三个阶段。 */
     PID_Init(&gimbal_controller.pitch_speed_pid, 5000.0f, 4000.0f, 0.0f, 60.0f, 0.0f, 0.15f, 0, 0, 0.0018f, 0, 1, Integral_Limit);
@@ -47,10 +46,7 @@ void GimbalPidInit(void)
 // todo 把重力补偿加上
 float Gimbal_Pitch_Calculate(float set_point)
 {
-#if GIMBAL_SYSID ==GIMBAL_PITCH_COMP
-    gimbal_controller.pitch_out = set_point * gimbal_controller.pitch_angle_pid.Kp;
-    return gimbal_controller.pitch_out;
-#elif GIMBAL_SYSID ==GIMBAL_PITCH_SYSID
+#if GIMBAL_SYSID ==GIMBAL_PITCH_SYSID
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, gimbal_controller.pitch_speed_pid.Ref);
     gimbal_controller.pitch_out = gimbal_controller.pitch_speed_pid.Output;
     return gimbal_controller.pitch_out;

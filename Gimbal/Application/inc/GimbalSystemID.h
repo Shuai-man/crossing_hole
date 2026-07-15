@@ -11,11 +11,80 @@
 
 #include "stdint.h"
 #include "stdbool.h"
-    /* GimbalController, Gimbal_SI */
-#include "RLS_Identification.h"
-#include "SignalGenerator.h"
+#include "GimbalSystemIDConfig.h"
+#include "TD.h"
 
 struct GimbalController;
+
+/*
+ * 单轴辨识状态与结果。它不属于普通云台控制器，可在调试器中独立查看。
+ * 已删除旧实现遗留且未使用的 RLS / SI 成员，降低对其他算法模块的依赖。
+ */
+typedef struct Gimbal_SI
+{
+    float sysid_timer;
+    TD_t td_omega;
+    uint8_t sysid_done;
+    float J;
+    float B;
+    float B_raw;
+    float C;
+    float G_sin;
+    float G_cos;
+    float fit_rmse;
+    float gravity_rmse;
+    float bc_rmse;
+    float j_rmse;
+    float J_pair_min;
+    float J_pair_max;
+    float j_alpha_filtered;
+    float j_signal_rms;
+    float j_residual_ratio;
+    float j_velocity_ref;
+    float j_switch_angle;
+    float j_target_accel;
+    float mean_torque;
+    float mean_omega;
+    float mean_gravity;
+    float mean_input;
+    float mean_residual;
+    uint32_t mean_raw_count;
+    uint32_t sample_count;
+    uint32_t gravity_valid_bins;
+    uint32_t bc_sample_count;
+    uint32_t j_sample_count;
+    uint8_t mean_point_count;
+    uint8_t j_motion_phase;
+    uint8_t j_pass_count;
+    uint8_t sysid_stage;
+    uint8_t sysid_valid;
+    uint8_t sysid_error;
+} Gimbal_SI;
+
+/* 由 safe_min_deg / safe_max_deg 自动生成，便于调试器检查实际运动区间。 */
+typedef struct
+{
+    float safe_min_deg;
+    float safe_max_deg;
+    float reverse_min_deg;
+    float reverse_max_deg;
+    float sample_min_deg;
+    float sample_max_deg;
+    float j_start_deg;
+    float j_end_deg;
+    float j_switch_deg[GIMBAL_SYSID_PITCH_J_PASS_COUNT];
+    float j_pair_center_deg[GIMBAL_SYSID_PITCH_J_PAIR_COUNT];
+} GimbalSysIdPitchAngleLayout;
+
+typedef struct
+{
+    Gimbal_SI yaw;
+    Gimbal_SI pitch;
+    GimbalSysIdPitchAngleLayout pitch_angle_layout;
+} GimbalSystemIDContext;
+
+/* Debug直接观察 gimbal_sysid.yaw 或 gimbal_sysid.pitch。 */
+extern GimbalSystemIDContext gimbal_sysid;
 
 /* Debug 观察值：sysid_stage / sysid_error。 */
 typedef enum {
@@ -33,7 +102,8 @@ typedef enum {
     GIMBAL_SYSID_ERROR_SAFETY_LIMIT,
     GIMBAL_SYSID_ERROR_NON_PHYSICAL_RESULT,
     GIMBAL_SYSID_ERROR_PAIR_MISMATCH,
-    GIMBAL_SYSID_ERROR_POOR_FIT
+    GIMBAL_SYSID_ERROR_POOR_FIT,
+    GIMBAL_SYSID_ERROR_INVALID_CONFIG
 } GimbalSysIdError;
 
 /* ========== 1. 采样累加器 ========== */

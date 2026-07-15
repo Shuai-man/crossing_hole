@@ -7,7 +7,9 @@
  * 用法：
  *   1. 在合适位置调用 GimbalSystemID_Init(&gimbal_controller)
  *   2. 在循环中调用 GimbalSystemID_Run()
- *   3. 通过 GIMBAL_SYSID / GIMBAL_SYSID_STEP 编译宏切换轴和步骤
+ *   3. 在 GimbalSystemIDConfig.h 中选择轴/步骤
+ *   4. 在 GimbalSystemIDConfig.c 中设置机构相关参数
+ *   5. 新项目先阅读 GimbalSystemID_PORTING.md
  ******************************************************************************
  */
 #include "Gimbal.h" 
@@ -17,8 +19,12 @@
 #include "arm_math.h"
 #include "ins.h"        /* ANGLE_TO_RAD_COEF */
 
-/* ========== Yaw 辨识配置 ========== */
-#define YAW_BC_POINT_COUNT                       8U
+/*
+ * ========== 算法内部默认值 ==========
+ * 与机构相关的运动参数统一来自 gimbal_sysid_user_config；这里保留的主要是
+ * 采样质量、滤波和拟合判据，移植者通常不需要修改。
+ */
+#define YAW_BC_POINT_COUNT                       GIMBAL_SYSID_YAW_BC_POINT_COUNT
 #define YAW_BC_SETTLE_S                         0.4f
 #define YAW_BC_SAMPLE_REVOLUTIONS               0.5f
 #define YAW_BC_SPEED_TRACK_RATIO                0.25f
@@ -28,10 +34,10 @@
  * J：先正向再反向完成一组加速/减速，净转角接近0。每个方向均在相同
  * 实际速度窗口配对，C自动抵消，只需修正B*delta_omega。
  */
-#define YAW_J_PAIR_WINDOW_COUNT                  2U
+#define YAW_J_PAIR_WINDOW_COUNT                  GIMBAL_SYSID_YAW_J_PAIR_COUNT
 #define YAW_J_DIRECTION_COUNT                    2U
-#define YAW_J_REF_ACCEL_DPS2                    80.0f
-#define YAW_J_MAX_REF_DPS                      200.0f
+#define YAW_J_REF_ACCEL_DPS2                    (gimbal_sysid_user_config.yaw.j_ref_accel_dps2)
+#define YAW_J_MAX_REF_DPS                       (gimbal_sysid_user_config.yaw.j_max_ref_dps)
 #define YAW_J_PAIR_HALF_WIDTH_DPS               15.0f
 #define YAW_J_MIN_TRAVERSAL_SAMPLES             30U
 #define YAW_J_MIN_TRAVERSAL_TIME_S              0.08f
@@ -43,11 +49,11 @@
 #define YAW_J_ALPHA_LPF_HZ                       3.0f
 #define YAW_J_RAW_ALPHA_REJECT_DPS2            500.0f
 
-/* ========== Pitch 辨识配置 ========== */
-#define PITCH_SAFE_MIN_DEG                 -13.0f
-#define PITCH_SAFE_MAX_DEG                  40.0f
+#define PITCH_SAFE_MIN_DEG                 (gimbal_sysid_user_config.pitch.safe_min_deg)
+#define PITCH_SAFE_MAX_DEG                 (gimbal_sysid_user_config.pitch.safe_max_deg)
 #define PITCH_REVERSE_MARGIN_DEG             1.0f
 #define PITCH_SAMPLE_MARGIN_DEG              2.5f
+#define PITCH_MIN_USABLE_SPAN_DEG            20.0f
 #define PITCH_REVERSAL_SETTLE_S               0.25f
 #define PITCH_CONST_ALPHA_MAX_DPS2           80.0f
 #define PITCH_SPEED_TRACK_RATIO               0.35f
@@ -56,8 +62,8 @@
  * 重力扫描参考速度。纯 P 速度环受重力影响，上升和下降使用独立参考值；
  * 调参目标是让两个方向的实际速度幅值接近，而不是让参考值相等。
  */
-#define PITCH_GRAVITY_UP_REF_DPS              50.0f
-#define PITCH_GRAVITY_DOWN_REF_DPS             1.0f
+#define PITCH_GRAVITY_UP_REF_DPS             (gimbal_sysid_user_config.pitch.gravity_up_ref_dps)
+#define PITCH_GRAVITY_DOWN_REF_DPS           (gimbal_sysid_user_config.pitch.gravity_down_ref_dps)
 #define PITCH_GRAVITY_MIN_ACTUAL_SPEED_DPS      3.0f
 #define PITCH_GRAVITY_PAIR_SPEED_TOL_DPS        3.0f
 #define PITCH_GRAVITY_HALF_CYCLES             4U
@@ -66,7 +72,7 @@
 #define PITCH_GRAVITY_MIN_VALID_BINS          8U
 
 /* B/C：每个速度幅值都做一次正向和反向全行程扫描。 */
-#define PITCH_BC_SPEED_LEVELS                 3U
+#define PITCH_BC_SPEED_LEVELS                 GIMBAL_SYSID_PITCH_BC_LEVEL_COUNT
 #define PITCH_BC_HALF_CYCLES                 (2U * PITCH_BC_SPEED_LEVELS)
 #define PITCH_BC_MIN_SPEED_DPS                5.0f
 #define PITCH_BC_MIN_SEGMENT_RAW_SAMPLES     50U
@@ -76,25 +82,29 @@
  * J：单向上升测量。前半程匀加速、后半程匀减速，采样期间 omega 始终为正，
  * 因而库仑摩擦方向固定；下降过程只用于复位，不参与辨识。
  */
-#define PITCH_J_START_DEG                    -8.0f
-#define PITCH_J_END_DEG                      35.0f
+#define PITCH_REVERSE_MIN_DEG               (gimbal_sysid.pitch_angle_layout.reverse_min_deg)
+#define PITCH_REVERSE_MAX_DEG               (gimbal_sysid.pitch_angle_layout.reverse_max_deg)
+#define PITCH_SAMPLE_MIN_DEG                (gimbal_sysid.pitch_angle_layout.sample_min_deg)
+#define PITCH_SAMPLE_MAX_DEG                (gimbal_sysid.pitch_angle_layout.sample_max_deg)
+#define PITCH_J_START_DEG                   (gimbal_sysid.pitch_angle_layout.j_start_deg)
+#define PITCH_J_END_DEG                     (gimbal_sysid.pitch_angle_layout.j_end_deg)
 #define PITCH_J_CENTER_TOL_DEG                0.8f
 #define PITCH_J_PREP_FAST_BAND_DEG             2.0f
-#define PITCH_J_PREP_UP_REF_DPS               50.0f
-#define PITCH_J_PREP_DOWN_REF_DPS              1.0f
+#define PITCH_J_PREP_UP_REF_DPS              (gimbal_sysid_user_config.pitch.j_prepare_up_ref_dps)
+#define PITCH_J_PREP_DOWN_REF_DPS            (gimbal_sysid_user_config.pitch.j_prepare_down_ref_dps)
 #define PITCH_J_PREP_HOLD_REF_DPS            25.0f
 #define PITCH_J_PREP_POSITION_KP               8.0f
 #define PITCH_J_PREP_REF_MIN_DPS              15.0f
 #define PITCH_J_PREP_REF_MAX_DPS              40.0f
 #define PITCH_J_SETTLE_S                      0.5f
 #define PITCH_J_ACTUAL_MIN_SPEED_DPS           5.0f
-#define PITCH_J_ACTUAL_PEAK_SPEED_DPS         30.0f
-#define PITCH_J_UP_REF_OFFSET_DPS              30.0f
-#define PITCH_J_UP_REF_MIN_DPS                 35.0f
-#define PITCH_J_UP_REF_MAX_DPS                 60.0f
-#define PITCH_J_RETURN_DOWN_REF_DPS             1.0f
-#define PITCH_J_MEASURED_PASSES                 3U
-#define PITCH_J_PAIR_BIN_COUNT                   2U
+#define PITCH_J_ACTUAL_PEAK_SPEED_DPS        (gimbal_sysid_user_config.pitch.j_actual_peak_speed_dps)
+#define PITCH_J_UP_REF_OFFSET_DPS            (gimbal_sysid_user_config.pitch.j_up_ref_offset_dps)
+#define PITCH_J_UP_REF_MIN_DPS               (gimbal_sysid_user_config.pitch.j_up_ref_min_dps)
+#define PITCH_J_UP_REF_MAX_DPS               (gimbal_sysid_user_config.pitch.j_up_ref_max_dps)
+#define PITCH_J_RETURN_DOWN_REF_DPS          (gimbal_sysid_user_config.pitch.j_return_down_ref_dps)
+#define PITCH_J_MEASURED_PASSES              GIMBAL_SYSID_PITCH_J_PASS_COUNT
+#define PITCH_J_PAIR_BIN_COUNT               GIMBAL_SYSID_PITCH_J_PAIR_COUNT
 #define PITCH_J_PAIR_HALF_WIDTH_DEG              1.5f
 #define PITCH_J_MIN_TRAVERSAL_SAMPLES            20U
 #define PITCH_J_MIN_TRAVERSAL_TIME_S             0.03f
@@ -223,6 +233,7 @@ typedef enum
 
 /* ========== 模块级全局状态 ========== */
 static GimbalController *ctrl = NULL;
+GimbalSystemIDContext gimbal_sysid;
 
 /* ---------- Yaw 轴测试状态 ---------- */
 static StepSequencer    yaw_bc_seq;
@@ -259,44 +270,14 @@ static uint8_t          pitch_j_pass_count;
 static PitchBCMean      pitch_bc_mean;
 static uint32_t         pitch_stage_raw_total;
 
-/* 每一趟使用不同切换角度，使同一角度附近同时出现正、负加速度。 */
-static const float pitch_j_switch_deg[PITCH_J_MEASURED_PASSES] =
-{
-    4.0f, 12.0f, 20.0f
-};
-static const float pitch_j_pair_center_deg[PITCH_J_PAIR_BIN_COUNT] =
-{
-    8.0f, 16.0f
-};
-
-/*
- * 实测映射：上升 50/60/70 -> 实际约 20/30/40 deg/s；
- *           下降  1/ 12/ 20 -> 实际约 20/30/40 deg/s。
- */
-static const float pitch_bc_up_ref_dps[PITCH_BC_SPEED_LEVELS] =
-{
-    50.0f, 60.0f, 70.0f
-};
-static const float pitch_bc_down_ref_dps[PITCH_BC_SPEED_LEVELS] =
-{
-    1.0f, 12.0f, 20.0f
-};
-static const float pitch_bc_expected_actual_dps[PITCH_BC_SPEED_LEVELS] =
-{
-    20.0f, 30.0f, 40.0f
-};
-
-/* 正负速度交替，减小温升和零偏随时间变化对B/C的影响。 */
-static const float yaw_bc_speed_dps[YAW_BC_POINT_COUNT] =
-{
-    50.0f, -50.0f, 100.0f, -100.0f,
-    150.0f, -150.0f, 200.0f, -200.0f
-};
-
-static const float yaw_j_pair_center_dps[YAW_J_PAIR_WINDOW_COUNT] =
-{
-    80.0f, 150.0f
-};
+/* 与机构相关的数组集中在 GimbalSystemIDConfig.c，此处只保留短别名。 */
+#define PITCH_J_SWITCH_DEG          (gimbal_sysid.pitch_angle_layout.j_switch_deg)
+#define PITCH_J_PAIR_CENTER_DEG     (gimbal_sysid.pitch_angle_layout.j_pair_center_deg)
+#define PITCH_BC_UP_REF_DPS         (gimbal_sysid_user_config.pitch.bc_up_ref_dps)
+#define PITCH_BC_DOWN_REF_DPS       (gimbal_sysid_user_config.pitch.bc_down_ref_dps)
+#define PITCH_BC_EXPECTED_DPS       (gimbal_sysid_user_config.pitch.bc_expected_actual_dps)
+#define YAW_BC_SPEED_DPS            (gimbal_sysid_user_config.yaw.bc_speed_dps)
+#define YAW_J_PAIR_CENTER_DPS       (gimbal_sysid_user_config.yaw.j_pair_center_dps)
 
 /* ==================================================================
  *  1. 采样累加器
@@ -535,17 +516,17 @@ static bool LS2_Solve(const LeastSquares2 *ls, float *x0, float *x1, float *rmse
 static void Pitch_SetStage(PitchSysIdStage stage)
 {
     pitch_stage = stage;
-    ctrl->pitch_sysid.sysid_stage = (uint8_t)stage;
+    gimbal_sysid.pitch.sysid_stage = (uint8_t)stage;
 }
 
 static void Pitch_Finish(bool valid, uint8_t error, float rmse, uint32_t sample_count)
 {
     ctrl->pitch_speed_pid.Ref = 0.0f;
-    ctrl->pitch_sysid.fit_rmse = rmse;
-    ctrl->pitch_sysid.sample_count = sample_count;
-    ctrl->pitch_sysid.sysid_valid = valid ? 1U : 0U;
-    ctrl->pitch_sysid.sysid_error = error;
-    ctrl->pitch_sysid.sysid_done = 1U;
+    gimbal_sysid.pitch.fit_rmse = rmse;
+    gimbal_sysid.pitch.sample_count = sample_count;
+    gimbal_sysid.pitch.sysid_valid = valid ? 1U : 0U;
+    gimbal_sysid.pitch.sysid_error = error;
+    gimbal_sysid.pitch.sysid_done = 1U;
     Pitch_SetStage(PITCH_SYSID_STAGE_DONE);
 }
 
@@ -563,17 +544,52 @@ static void Pitch_ResetGravityBins(void)
     }
 }
 
+/*
+ * 所有Pitch测试角度只由安全上下限生成：
+ *   1. 扫描换向点相对硬边界内缩 PITCH_REVERSE_MARGIN_DEG；
+ *   2. 有效采样/J运动区间内缩 PITCH_SAMPLE_MARGIN_DEG；
+ *   3. 三个J切换点将运动区间四等分；
+ *   4. 两个J配对点位于相邻切换点中间。
+ */
+static void Pitch_BuildAngleLayout(void)
+{
+    GimbalSysIdPitchAngleLayout *layout = &gimbal_sysid.pitch_angle_layout;
+    float span;
+    uint32_t i;
+
+    layout->safe_min_deg = PITCH_SAFE_MIN_DEG;
+    layout->safe_max_deg = PITCH_SAFE_MAX_DEG;
+    layout->reverse_min_deg = PITCH_SAFE_MIN_DEG + PITCH_REVERSE_MARGIN_DEG;
+    layout->reverse_max_deg = PITCH_SAFE_MAX_DEG - PITCH_REVERSE_MARGIN_DEG;
+    layout->sample_min_deg = PITCH_SAFE_MIN_DEG + PITCH_SAMPLE_MARGIN_DEG;
+    layout->sample_max_deg = PITCH_SAFE_MAX_DEG - PITCH_SAMPLE_MARGIN_DEG;
+    layout->j_start_deg = layout->sample_min_deg;
+    layout->j_end_deg = layout->sample_max_deg;
+
+    span = layout->j_end_deg - layout->j_start_deg;
+    for (i = 0U; i < PITCH_J_MEASURED_PASSES; i++)
+    {
+        layout->j_switch_deg[i] = layout->j_start_deg
+            + span * (float)(i + 1U) / (float)(PITCH_J_MEASURED_PASSES + 1U);
+    }
+    for (i = 0U; i < PITCH_J_PAIR_BIN_COUNT; i++)
+    {
+        layout->j_pair_center_deg[i] = 0.5f
+            * (layout->j_switch_deg[i] + layout->j_switch_deg[i + 1U]);
+    }
+}
+
 static void Pitch_BeginGravity(void)
 {
     Pitch_ResetGravityBins();
     BScan_Init_ConstVel(&pitch_scanner,
-                        PITCH_SAFE_MIN_DEG, PITCH_SAFE_MAX_DEG,
-                        PITCH_REVERSE_MARGIN_DEG,
+                        PITCH_REVERSE_MIN_DEG, PITCH_REVERSE_MAX_DEG,
+                        0.0f,
                         PITCH_GRAVITY_UP_REF_DPS, PITCH_GRAVITY_DOWN_REF_DPS,
                         PITCH_GRAVITY_HALF_CYCLES);
     pitch_last_half_cycle = 0U;
     pitch_reversal_elapsed = 0.0f;
-    TD_Clear(&ctrl->pitch_sysid.td_omega, ctrl->gyro_pitch_speed);
+    TD_Clear(&gimbal_sysid.pitch.td_omega, ctrl->gyro_pitch_speed);
     Pitch_SetStage(PITCH_SYSID_STAGE_GRAVITY);
 }
 
@@ -585,22 +601,22 @@ static void Pitch_BeginBC(void)
     pitch_bc_mean.gravity_sum = 0.0f;
     pitch_bc_mean.count = 0U;
     pitch_stage_raw_total = 0U;
-    ctrl->pitch_sysid.mean_torque = 0.0f;
-    ctrl->pitch_sysid.mean_omega = 0.0f;
-    ctrl->pitch_sysid.mean_gravity = 0.0f;
-    ctrl->pitch_sysid.mean_input = 0.0f;
-    ctrl->pitch_sysid.mean_residual = 0.0f;
-    ctrl->pitch_sysid.mean_raw_count = 0U;
-    ctrl->pitch_sysid.mean_point_count = 0U;
-    ctrl->pitch_sysid.bc_sample_count = 0U;
+    gimbal_sysid.pitch.mean_torque = 0.0f;
+    gimbal_sysid.pitch.mean_omega = 0.0f;
+    gimbal_sysid.pitch.mean_gravity = 0.0f;
+    gimbal_sysid.pitch.mean_input = 0.0f;
+    gimbal_sysid.pitch.mean_residual = 0.0f;
+    gimbal_sysid.pitch.mean_raw_count = 0U;
+    gimbal_sysid.pitch.mean_point_count = 0U;
+    gimbal_sysid.pitch.bc_sample_count = 0U;
     BScan_Init_ConstVel(&pitch_scanner,
-                        PITCH_SAFE_MIN_DEG, PITCH_SAFE_MAX_DEG,
-                        PITCH_REVERSE_MARGIN_DEG,
-                        pitch_bc_up_ref_dps[0], pitch_bc_down_ref_dps[0],
+                        PITCH_REVERSE_MIN_DEG, PITCH_REVERSE_MAX_DEG,
+                        0.0f,
+                        PITCH_BC_UP_REF_DPS[0], PITCH_BC_DOWN_REF_DPS[0],
                         PITCH_BC_HALF_CYCLES);
     pitch_last_half_cycle = 0U;
     pitch_reversal_elapsed = 0.0f;
-    TD_Clear(&ctrl->pitch_sysid.td_omega, ctrl->gyro_pitch_speed);
+    TD_Clear(&gimbal_sysid.pitch.td_omega, ctrl->gyro_pitch_speed);
     Pitch_SetStage(PITCH_SYSID_STAGE_BC);
 }
 
@@ -672,19 +688,19 @@ static void SysId_PublishMeanPoint(Gimbal_SI *sysid, float torque,
 static void Yaw_SetStage(YawSysIdStage stage)
 {
     yaw_stage = stage;
-    ctrl->yaw_sysid.sysid_stage = (uint8_t)stage;
+    gimbal_sysid.yaw.sysid_stage = (uint8_t)stage;
 }
 
 static void Yaw_Finish(bool valid, uint8_t error, float rmse,
                        uint32_t sample_count)
 {
     ctrl->yaw_speed_pid.Ref = 0.0f;
-    ctrl->yaw_sysid.j_velocity_ref = 0.0f;
-    ctrl->yaw_sysid.fit_rmse = rmse;
-    ctrl->yaw_sysid.sample_count = sample_count;
-    ctrl->yaw_sysid.sysid_valid = valid ? 1U : 0U;
-    ctrl->yaw_sysid.sysid_error = error;
-    ctrl->yaw_sysid.sysid_done = 1U;
+    gimbal_sysid.yaw.j_velocity_ref = 0.0f;
+    gimbal_sysid.yaw.fit_rmse = rmse;
+    gimbal_sysid.yaw.sample_count = sample_count;
+    gimbal_sysid.yaw.sysid_valid = valid ? 1U : 0U;
+    gimbal_sysid.yaw.sysid_error = error;
+    gimbal_sysid.yaw.sysid_done = 1U;
     Yaw_SetStage(YAW_SYSID_STAGE_DONE);
 }
 
@@ -735,41 +751,41 @@ static void Yaw_BeginJ(void)
     yaw_j_raw_total = 0U;
     yaw_j_direction_index = 0U;
 
-    ctrl->yaw_sysid.J_pair_min = 0.0f;
-    ctrl->yaw_sysid.J_pair_max = 0.0f;
-    ctrl->yaw_sysid.j_alpha_filtered = 0.0f;
-    ctrl->yaw_sysid.j_signal_rms = 0.0f;
-    ctrl->yaw_sysid.j_residual_ratio = 0.0f;
-    ctrl->yaw_sysid.j_velocity_ref = 0.0f;
-    ctrl->yaw_sysid.j_switch_angle = YAW_J_MAX_REF_DPS;
-    ctrl->yaw_sysid.j_target_accel = 0.0f;
-    ctrl->yaw_sysid.j_sample_count = 0U;
-    ctrl->yaw_sysid.mean_torque = 0.0f;
-    ctrl->yaw_sysid.mean_omega = 0.0f;
-    ctrl->yaw_sysid.mean_gravity = 0.0f;
-    ctrl->yaw_sysid.mean_input = 0.0f;
-    ctrl->yaw_sysid.mean_residual = 0.0f;
-    ctrl->yaw_sysid.mean_raw_count = 0U;
-    ctrl->yaw_sysid.mean_point_count = 0U;
-    ctrl->yaw_sysid.j_motion_phase = (uint8_t)YAW_J_MOTION_PREPARE;
-    ctrl->yaw_sysid.j_pass_count = 0U;
+    gimbal_sysid.yaw.J_pair_min = 0.0f;
+    gimbal_sysid.yaw.J_pair_max = 0.0f;
+    gimbal_sysid.yaw.j_alpha_filtered = 0.0f;
+    gimbal_sysid.yaw.j_signal_rms = 0.0f;
+    gimbal_sysid.yaw.j_residual_ratio = 0.0f;
+    gimbal_sysid.yaw.j_velocity_ref = 0.0f;
+    gimbal_sysid.yaw.j_switch_angle = YAW_J_MAX_REF_DPS;
+    gimbal_sysid.yaw.j_target_accel = 0.0f;
+    gimbal_sysid.yaw.j_sample_count = 0U;
+    gimbal_sysid.yaw.mean_torque = 0.0f;
+    gimbal_sysid.yaw.mean_omega = 0.0f;
+    gimbal_sysid.yaw.mean_gravity = 0.0f;
+    gimbal_sysid.yaw.mean_input = 0.0f;
+    gimbal_sysid.yaw.mean_residual = 0.0f;
+    gimbal_sysid.yaw.mean_raw_count = 0U;
+    gimbal_sysid.yaw.mean_point_count = 0U;
+    gimbal_sysid.yaw.j_motion_phase = (uint8_t)YAW_J_MOTION_PREPARE;
+    gimbal_sysid.yaw.j_pass_count = 0U;
     ctrl->yaw_speed_pid.Ref = 0.0f;
-    TD_Clear(&ctrl->yaw_sysid.td_omega, ctrl->gyro_yaw_speed);
+    TD_Clear(&gimbal_sysid.yaw.td_omega, ctrl->gyro_yaw_speed);
     Yaw_SetStage(YAW_SYSID_STAGE_J_PREPARE);
 }
 
 static void Yaw_BeginBC(void)
 {
     LS2_Reset(&yaw_bc_ls);
-    StepSeq_Init(&yaw_bc_seq, yaw_bc_speed_dps, YAW_BC_POINT_COUNT,
+    StepSeq_Init(&yaw_bc_seq, YAW_BC_SPEED_DPS, YAW_BC_POINT_COUNT,
                  YAW_BC_SETTLE_S, YAW_BC_SAMPLE_REVOLUTIONS, 360.0f);
-    ctrl->yaw_sysid.B_raw = ctrl->yaw_sysid.B;
-    ctrl->yaw_sysid.bc_rmse = 0.0f;
-    ctrl->yaw_sysid.bc_sample_count = 0U;
-    ctrl->yaw_sysid.mean_raw_count = 0U;
-    ctrl->yaw_sysid.mean_point_count = 0U;
-    ctrl->yaw_speed_pid.Ref = yaw_bc_speed_dps[0];
-    TD_Clear(&ctrl->yaw_sysid.td_omega, ctrl->gyro_yaw_speed);
+    gimbal_sysid.yaw.B_raw = gimbal_sysid.yaw.B;
+    gimbal_sysid.yaw.bc_rmse = 0.0f;
+    gimbal_sysid.yaw.bc_sample_count = 0U;
+    gimbal_sysid.yaw.mean_raw_count = 0U;
+    gimbal_sysid.yaw.mean_point_count = 0U;
+    ctrl->yaw_speed_pid.Ref = YAW_BC_SPEED_DPS[0];
+    TD_Clear(&gimbal_sysid.yaw.td_omega, ctrl->gyro_yaw_speed);
     Yaw_SetStage(YAW_SYSID_STAGE_BC);
 }
 
@@ -797,11 +813,11 @@ static void Yaw_BCRun(float omega, float torque, float dt)
     {
         sign_omega = (out_omega > 0.0f) ? 1.0f : -1.0f;
         LS2_Add(&yaw_bc_ls, out_omega, sign_omega, out_torque);
-        SysId_PublishMeanPoint(&ctrl->yaw_sysid, out_torque, out_omega,
+        SysId_PublishMeanPoint(&gimbal_sysid.yaw, out_torque, out_omega,
                                0.0f, sign_omega, out_torque, 0U,
                                yaw_bc_ls.count);
-        ctrl->yaw_sysid.bc_sample_count = yaw_bc_ls.count;
-        TD_Clear(&ctrl->yaw_sysid.td_omega, ctrl->gyro_yaw_speed);
+        gimbal_sysid.yaw.bc_sample_count = yaw_bc_ls.count;
+        TD_Clear(&gimbal_sysid.yaw.td_omega, ctrl->gyro_yaw_speed);
     }
 
     if (!done)
@@ -810,27 +826,27 @@ static void Yaw_BCRun(float omega, float torque, float dt)
     if (yaw_bc_ls.count != YAW_BC_POINT_COUNT ||
         !LS2_Solve(&yaw_bc_ls, &B, &C, &rmse))
     {
-        ctrl->yaw_sysid.bc_rmse = rmse;
+        gimbal_sysid.yaw.bc_rmse = rmse;
         Yaw_Finish(false, GIMBAL_SYSID_ERROR_INSUFFICIENT_EXCITATION,
                    rmse, yaw_bc_ls.count);
         return;
     }
 
-    ctrl->yaw_sysid.B_raw = B;
-    ctrl->yaw_sysid.C = C;
-    ctrl->yaw_sysid.bc_rmse = rmse;
-    ctrl->yaw_sysid.fit_rmse = rmse;
-    ctrl->yaw_sysid.bc_sample_count = yaw_bc_ls.count;
+    gimbal_sysid.yaw.B_raw = B;
+    gimbal_sysid.yaw.C = C;
+    gimbal_sysid.yaw.bc_rmse = rmse;
+    gimbal_sysid.yaw.fit_rmse = rmse;
+    gimbal_sysid.yaw.bc_sample_count = yaw_bc_ls.count;
     if (B < -YAW_BC_NEGATIVE_B_TOLERANCE || C < 0.0f)
     {
-        ctrl->yaw_sysid.B = B;
+        gimbal_sysid.yaw.B = B;
         Yaw_Finish(false, GIMBAL_SYSID_ERROR_NON_PHYSICAL_RESULT,
                    rmse, yaw_bc_ls.count);
         return;
     }
     if (B < 0.0f)
         B = 0.0f;
-    ctrl->yaw_sysid.B = B;
+    gimbal_sysid.yaw.B = B;
 
     if (yaw_run_all)
         Yaw_BeginJ();
@@ -845,7 +861,7 @@ static int8_t YawJ_FindPairWindow(float omega)
 
     for (i = 0U; i < YAW_J_PAIR_WINDOW_COUNT; i++)
     {
-        if (fabsf(speed - yaw_j_pair_center_dps[i])
+        if (fabsf(speed - YAW_J_PAIR_CENTER_DPS[i])
             <= YAW_J_PAIR_HALF_WIDTH_DPS)
             return (int8_t)i;
     }
@@ -905,7 +921,7 @@ static void YawJ_FinishTraversal(void)
     group->raw_count += yaw_j_traversal.count;
     group->traversal_count++;
     yaw_j_raw_total += yaw_j_traversal.count;
-    ctrl->yaw_sysid.j_sample_count = yaw_j_raw_total;
+    gimbal_sysid.yaw.j_sample_count = yaw_j_raw_total;
     YawJ_ResetTraversal();
 }
 
@@ -979,8 +995,8 @@ static void YawJ_Finalize(void)
 
     YawJ_FinishTraversal();
     LS1_Reset(&yaw_j_all);
-    ctrl->yaw_sysid.J_pair_min = 1.0e6f;
-    ctrl->yaw_sysid.J_pair_max = -1.0e6f;
+    gimbal_sysid.yaw.J_pair_min = 1.0e6f;
+    gimbal_sysid.yaw.J_pair_max = -1.0e6f;
 
     for (i = 0U; i < YAW_J_PAIR_WINDOW_COUNT; i++)
     {
@@ -1011,15 +1027,15 @@ static void YawJ_Finalize(void)
                 continue;
 
             pair_residual = delta_torque
-                          - ctrl->yaw_sysid.B * delta_omega;
+                          - gimbal_sysid.yaw.B * delta_omega;
             pair_J = pair_residual / delta_alpha;
             raw_count = accel_group->raw_count + decel_group->raw_count;
             LS1_Add(&yaw_j_all, delta_alpha, pair_residual);
-            if (pair_J < ctrl->yaw_sysid.J_pair_min)
-                ctrl->yaw_sysid.J_pair_min = pair_J;
-            if (pair_J > ctrl->yaw_sysid.J_pair_max)
-                ctrl->yaw_sysid.J_pair_max = pair_J;
-            SysId_PublishMeanPoint(&ctrl->yaw_sysid, delta_torque,
+            if (pair_J < gimbal_sysid.yaw.J_pair_min)
+                gimbal_sysid.yaw.J_pair_min = pair_J;
+            if (pair_J > gimbal_sysid.yaw.J_pair_max)
+                gimbal_sysid.yaw.J_pair_max = pair_J;
+            SysId_PublishMeanPoint(&gimbal_sysid.yaw, delta_torque,
                                    delta_omega, 0.0f, delta_alpha,
                                    pair_residual, raw_count,
                                    yaw_j_all.count);
@@ -1031,39 +1047,39 @@ static void YawJ_Finalize(void)
     {
         if (yaw_j_all.count == 0U)
         {
-            ctrl->yaw_sysid.J_pair_min = 0.0f;
-            ctrl->yaw_sysid.J_pair_max = 0.0f;
+            gimbal_sysid.yaw.J_pair_min = 0.0f;
+            gimbal_sysid.yaw.J_pair_max = 0.0f;
         }
         Yaw_Finish(false, GIMBAL_SYSID_ERROR_INSUFFICIENT_EXCITATION,
                    0.0f, yaw_j_raw_total);
         return;
     }
 
-    ctrl->yaw_sysid.J = J;
-    ctrl->yaw_sysid.j_rmse = rmse;
+    gimbal_sysid.yaw.J = J;
+    gimbal_sysid.yaw.j_rmse = rmse;
     alpha_rms = sqrtf(yaw_j_all.aa / (float)yaw_j_all.count);
-    ctrl->yaw_sysid.j_signal_rms = fabsf(J) * alpha_rms;
-    if (ctrl->yaw_sysid.j_signal_rms > 1.0e-3f)
-        ctrl->yaw_sysid.j_residual_ratio =
-            rmse / ctrl->yaw_sysid.j_signal_rms;
+    gimbal_sysid.yaw.j_signal_rms = fabsf(J) * alpha_rms;
+    if (gimbal_sysid.yaw.j_signal_rms > 1.0e-3f)
+        gimbal_sysid.yaw.j_residual_ratio =
+            rmse / gimbal_sysid.yaw.j_signal_rms;
     else
-        ctrl->yaw_sysid.j_residual_ratio = 1.0e6f;
+        gimbal_sysid.yaw.j_residual_ratio = 1.0e6f;
 
-    if (J <= 0.0f || ctrl->yaw_sysid.J_pair_min <= 0.0f)
+    if (J <= 0.0f || gimbal_sysid.yaw.J_pair_min <= 0.0f)
     {
         Yaw_Finish(false, GIMBAL_SYSID_ERROR_NON_PHYSICAL_RESULT,
                    rmse, yaw_j_raw_total);
         return;
     }
-    pair_ratio = ctrl->yaw_sysid.J_pair_max
-               / ctrl->yaw_sysid.J_pair_min;
+    pair_ratio = gimbal_sysid.yaw.J_pair_max
+               / gimbal_sysid.yaw.J_pair_min;
     if (pair_ratio > YAW_J_MAX_PAIR_RATIO)
     {
         Yaw_Finish(false, GIMBAL_SYSID_ERROR_PAIR_MISMATCH,
                    rmse, yaw_j_raw_total);
         return;
     }
-    if (ctrl->yaw_sysid.j_residual_ratio > YAW_J_MAX_RMSE_SIGNAL_RATIO)
+    if (gimbal_sysid.yaw.j_residual_ratio > YAW_J_MAX_RMSE_SIGNAL_RATIO)
     {
         Yaw_Finish(false, GIMBAL_SYSID_ERROR_POOR_FIT,
                    rmse, yaw_j_raw_total);
@@ -1128,7 +1144,7 @@ static void Yaw_JRun(float omega, float torque, float dt)
         if (yaw_j_zero_elapsed >= YAW_J_ZERO_SETTLE_S)
         {
             yaw_j_direction_index++;
-            ctrl->yaw_sysid.j_pass_count = yaw_j_direction_index;
+            gimbal_sysid.yaw.j_pass_count = yaw_j_direction_index;
             yaw_j_zero_elapsed = 0.0f;
             if (yaw_j_direction_index >= YAW_J_DIRECTION_COUNT)
                 yaw_j_motion_phase = YAW_J_MOTION_FINAL_HOLD;
@@ -1142,18 +1158,18 @@ static void Yaw_JRun(float omega, float torque, float dt)
     else
     {
         ctrl->yaw_speed_pid.Ref = 0.0f;
-        ctrl->yaw_sysid.j_velocity_ref = 0.0f;
-        ctrl->yaw_sysid.j_target_accel = 0.0f;
-        ctrl->yaw_sysid.j_motion_phase = (uint8_t)yaw_j_motion_phase;
+        gimbal_sysid.yaw.j_velocity_ref = 0.0f;
+        gimbal_sysid.yaw.j_target_accel = 0.0f;
+        gimbal_sysid.yaw.j_motion_phase = (uint8_t)yaw_j_motion_phase;
         YawJ_CollectPairSample(omega, torque, dt, false);
         YawJ_Finalize();
         return;
     }
 
     ctrl->yaw_speed_pid.Ref = vel_ref;
-    ctrl->yaw_sysid.j_velocity_ref = vel_ref;
-    ctrl->yaw_sysid.j_target_accel = target_accel;
-    ctrl->yaw_sysid.j_motion_phase = (uint8_t)yaw_j_motion_phase;
+    gimbal_sysid.yaw.j_velocity_ref = vel_ref;
+    gimbal_sysid.yaw.j_target_accel = target_accel;
+    gimbal_sysid.yaw.j_motion_phase = (uint8_t)yaw_j_motion_phase;
     collect_enabled = (yaw_j_motion_phase == YAW_J_MOTION_ACCEL ||
                        yaw_j_motion_phase == YAW_J_MOTION_DECEL);
     YawJ_CollectPairSample(omega, torque, dt, collect_enabled);
@@ -1169,9 +1185,10 @@ static void Yaw_Run(float dt)
     float torque;
 
     omega_raw = ctrl->gyro_yaw_speed;
-    omega_smooth = TD_Calculate(&ctrl->yaw_sysid.td_omega, omega_raw);
-    alpha_raw = ctrl->yaw_sysid.td_omega.dx;
-    torque = GIMBAL_YAW_MOTOR_SIGN * ctrl->DM_Yaw_Motor.t_ff_Receive;
+    omega_smooth = TD_Calculate(&gimbal_sysid.yaw.td_omega, omega_raw);
+    alpha_raw = gimbal_sysid.yaw.td_omega.dx;
+    torque = gimbal_sysid_user_config.yaw.torque_feedback_coef
+           * ctrl->DM_Yaw_Motor.t_ff_Receive;
     if (fabsf(alpha_raw) <= YAW_J_RAW_ALPHA_REJECT_DPS2)
     {
         alpha_lpf_k = two_pi * YAW_J_ALPHA_LPF_HZ * dt;
@@ -1179,7 +1196,7 @@ static void Yaw_Run(float dt)
         yaw_j_alpha_filtered += alpha_lpf_k
                               * (alpha_raw - yaw_j_alpha_filtered);
     }
-    ctrl->yaw_sysid.j_alpha_filtered = yaw_j_alpha_filtered;
+    gimbal_sysid.yaw.j_alpha_filtered = yaw_j_alpha_filtered;
 
     if (yaw_stage == YAW_SYSID_STAGE_BC)
         Yaw_BCRun(omega_smooth, torque, dt);
@@ -1234,25 +1251,25 @@ static void Pitch_BeginJ(void)
     pitch_j_pass_count = 0U;
     pitch_stage_raw_total = 0U;
 
-    ctrl->pitch_sysid.J_pair_min = 0.0f;
-    ctrl->pitch_sysid.J_pair_max = 0.0f;
-    ctrl->pitch_sysid.j_alpha_filtered = 0.0f;
-    ctrl->pitch_sysid.j_signal_rms = 0.0f;
-    ctrl->pitch_sysid.j_residual_ratio = 0.0f;
-    ctrl->pitch_sysid.j_velocity_ref = 0.0f;
-    ctrl->pitch_sysid.j_switch_angle = pitch_j_switch_deg[0];
-    ctrl->pitch_sysid.j_target_accel = 0.0f;
-    ctrl->pitch_sysid.j_sample_count = 0U;
-    ctrl->pitch_sysid.mean_torque = 0.0f;
-    ctrl->pitch_sysid.mean_omega = 0.0f;
-    ctrl->pitch_sysid.mean_gravity = 0.0f;
-    ctrl->pitch_sysid.mean_input = 0.0f;
-    ctrl->pitch_sysid.mean_residual = 0.0f;
-    ctrl->pitch_sysid.mean_raw_count = 0U;
-    ctrl->pitch_sysid.mean_point_count = 0U;
-    ctrl->pitch_sysid.j_motion_phase = (uint8_t)PITCH_J_MOTION_PREPARE;
-    ctrl->pitch_sysid.j_pass_count = 0U;
-    TD_Clear(&ctrl->pitch_sysid.td_omega, ctrl->gyro_pitch_speed);
+    gimbal_sysid.pitch.J_pair_min = 0.0f;
+    gimbal_sysid.pitch.J_pair_max = 0.0f;
+    gimbal_sysid.pitch.j_alpha_filtered = 0.0f;
+    gimbal_sysid.pitch.j_signal_rms = 0.0f;
+    gimbal_sysid.pitch.j_residual_ratio = 0.0f;
+    gimbal_sysid.pitch.j_velocity_ref = 0.0f;
+    gimbal_sysid.pitch.j_switch_angle = PITCH_J_SWITCH_DEG[0];
+    gimbal_sysid.pitch.j_target_accel = 0.0f;
+    gimbal_sysid.pitch.j_sample_count = 0U;
+    gimbal_sysid.pitch.mean_torque = 0.0f;
+    gimbal_sysid.pitch.mean_omega = 0.0f;
+    gimbal_sysid.pitch.mean_gravity = 0.0f;
+    gimbal_sysid.pitch.mean_input = 0.0f;
+    gimbal_sysid.pitch.mean_residual = 0.0f;
+    gimbal_sysid.pitch.mean_raw_count = 0U;
+    gimbal_sysid.pitch.mean_point_count = 0U;
+    gimbal_sysid.pitch.j_motion_phase = (uint8_t)PITCH_J_MOTION_PREPARE;
+    gimbal_sysid.pitch.j_pass_count = 0U;
+    TD_Clear(&gimbal_sysid.pitch.td_omega, ctrl->gyro_pitch_speed);
     Pitch_SetStage(PITCH_SYSID_STAGE_J_PREPARE);
 }
 
@@ -1300,8 +1317,8 @@ static bool Pitch_ConstSampleValid(float theta_deg, float omega, float alpha,
 
     if (pitch_reversal_elapsed < PITCH_REVERSAL_SETTLE_S)
         return false;
-    if (theta_deg < PITCH_SAFE_MIN_DEG + PITCH_SAMPLE_MARGIN_DEG ||
-        theta_deg > PITCH_SAFE_MAX_DEG - PITCH_SAMPLE_MARGIN_DEG)
+    if (theta_deg < PITCH_SAMPLE_MIN_DEG ||
+        theta_deg > PITCH_SAMPLE_MAX_DEG)
         return false;
     if (omega * vel_ref <= 0.0f)
         return false;
@@ -1315,8 +1332,8 @@ static bool Pitch_ConstSampleValid(float theta_deg, float omega, float alpha,
 
 static void Pitch_AddGravitySample(float theta_deg, float omega, float torque)
 {
-    const float angle_lo = PITCH_SAFE_MIN_DEG + PITCH_SAMPLE_MARGIN_DEG;
-    const float angle_hi = PITCH_SAFE_MAX_DEG - PITCH_SAMPLE_MARGIN_DEG;
+    const float angle_lo = PITCH_SAMPLE_MIN_DEG;
+    const float angle_hi = PITCH_SAMPLE_MAX_DEG;
     float position;
     uint32_t index;
     GravityAngleBin *bin;
@@ -1346,8 +1363,8 @@ static void Pitch_AddGravitySample(float theta_deg, float omega, float torque)
 
 static bool Pitch_SolveGravity(float *rmse, uint32_t *valid_bins)
 {
-    const float angle_lo = PITCH_SAFE_MIN_DEG + PITCH_SAMPLE_MARGIN_DEG;
-    const float angle_hi = PITCH_SAFE_MAX_DEG - PITCH_SAMPLE_MARGIN_DEG;
+    const float angle_lo = PITCH_SAMPLE_MIN_DEG;
+    const float angle_hi = PITCH_SAMPLE_MAX_DEG;
     LeastSquares2 gravity_ls;
     uint32_t i;
     float theta_deg;
@@ -1384,8 +1401,8 @@ static bool Pitch_SolveGravity(float *rmse, uint32_t *valid_bins)
         !LS2_Solve(&gravity_ls, &g_sin, &g_cos, rmse))
         return false;
 
-    ctrl->pitch_sysid.G_sin = g_sin;
-    ctrl->pitch_sysid.G_cos = g_cos;
+    gimbal_sysid.pitch.G_sin = g_sin;
+    gimbal_sysid.pitch.G_cos = g_cos;
     return true;
 }
 
@@ -1410,16 +1427,16 @@ static void Pitch_GravityRun(float theta_deg, float omega, float alpha,
 
     if (!Pitch_SolveGravity(&rmse, &valid_bins))
     {
-        ctrl->pitch_sysid.gravity_rmse = rmse;
-        ctrl->pitch_sysid.gravity_valid_bins = valid_bins;
+        gimbal_sysid.pitch.gravity_rmse = rmse;
+        gimbal_sysid.pitch.gravity_valid_bins = valid_bins;
         Pitch_Finish(false, GIMBAL_SYSID_ERROR_INSUFFICIENT_EXCITATION, rmse, valid_bins);
         return;
     }
 
-    ctrl->pitch_sysid.fit_rmse = rmse;
-    ctrl->pitch_sysid.sample_count = valid_bins;
-    ctrl->pitch_sysid.gravity_rmse = rmse;
-    ctrl->pitch_sysid.gravity_valid_bins = valid_bins;
+    gimbal_sysid.pitch.fit_rmse = rmse;
+    gimbal_sysid.pitch.sample_count = valid_bins;
+    gimbal_sysid.pitch.gravity_rmse = rmse;
+    gimbal_sysid.pitch.gravity_valid_bins = valid_bins;
     if (pitch_run_all)
         Pitch_BeginBC();
     else
@@ -1454,7 +1471,7 @@ static bool Pitch_BCFinalizeMean(void)
     residual = torque_avg - gravity_avg;
     LS2_Add(&pitch_bc_ls, omega_avg, sign_omega, residual);
     pitch_stage_raw_total += raw_count;
-    SysId_PublishMeanPoint(&ctrl->pitch_sysid, torque_avg, omega_avg,
+    SysId_PublishMeanPoint(&gimbal_sysid.pitch, torque_avg, omega_avg,
                            gravity_avg, sign_omega, residual, raw_count,
                            pitch_bc_ls.count);
     Pitch_ResetBCMean();
@@ -1479,9 +1496,9 @@ static void Pitch_BCRun(float theta_deg, float omega, float alpha,
 
     if (speed_index >= PITCH_BC_SPEED_LEVELS)
         speed_index = PITCH_BC_SPEED_LEVELS - 1U;
-    up_ref_dps = pitch_bc_up_ref_dps[speed_index];
-    down_ref_dps = pitch_bc_down_ref_dps[speed_index];
-    expected_actual_dps = pitch_bc_expected_actual_dps[speed_index];
+    up_ref_dps = PITCH_BC_UP_REF_DPS[speed_index];
+    down_ref_dps = PITCH_BC_DOWN_REF_DPS[speed_index];
+    expected_actual_dps = PITCH_BC_EXPECTED_DPS[speed_index];
     done = Pitch_RunConstScanner(theta_deg,
                                  up_ref_dps, down_ref_dps,
                                  dt, &vel_ref);
@@ -1498,42 +1515,42 @@ static void Pitch_BCRun(float theta_deg, float omega, float alpha,
         Pitch_ConstSampleValid(theta_deg, omega, alpha, vel_ref, false))
     {
         theta_rad = theta_deg * ANGLE_TO_RAD_COEF;
-        gravity = ctrl->pitch_sysid.G_sin * sinf(theta_rad)
-                + ctrl->pitch_sysid.G_cos * cosf(theta_rad);
+        gravity = gimbal_sysid.pitch.G_sin * sinf(theta_rad)
+                + gimbal_sysid.pitch.G_cos * cosf(theta_rad);
         Pitch_AddBCMeanSample(torque, omega, gravity);
     }
 
     if (!done)
         return;
 
-    ctrl->pitch_sysid.bc_sample_count = pitch_stage_raw_total;
+    gimbal_sysid.pitch.bc_sample_count = pitch_stage_raw_total;
     if (pitch_bc_ls.count != PITCH_BC_HALF_CYCLES ||
         !LS2_Solve(&pitch_bc_ls, &B, &C, &rmse))
     {
-        ctrl->pitch_sysid.bc_rmse = rmse;
+        gimbal_sysid.pitch.bc_rmse = rmse;
         Pitch_Finish(false, GIMBAL_SYSID_ERROR_INSUFFICIENT_EXCITATION,
                      rmse, pitch_stage_raw_total);
         return;
     }
 
-    ctrl->pitch_sysid.B_raw = B;
-    ctrl->pitch_sysid.C = C;
-    ctrl->pitch_sysid.fit_rmse = rmse;
-    ctrl->pitch_sysid.sample_count = pitch_stage_raw_total;
-    ctrl->pitch_sysid.bc_rmse = rmse;
-    ctrl->pitch_sysid.bc_sample_count = pitch_stage_raw_total;
+    gimbal_sysid.pitch.B_raw = B;
+    gimbal_sysid.pitch.C = C;
+    gimbal_sysid.pitch.fit_rmse = rmse;
+    gimbal_sysid.pitch.sample_count = pitch_stage_raw_total;
+    gimbal_sysid.pitch.bc_rmse = rmse;
+    gimbal_sysid.pitch.bc_sample_count = pitch_stage_raw_total;
 
     /* 轻微负 B 通常来自噪声：保留原始值用于诊断，控制参数钳位为 0。 */
     if (B < -PITCH_BC_NEGATIVE_B_TOLERANCE || C < 0.0f)
     {
-        ctrl->pitch_sysid.B = B;
+        gimbal_sysid.pitch.B = B;
         Pitch_Finish(false, GIMBAL_SYSID_ERROR_NON_PHYSICAL_RESULT,
                      rmse, pitch_stage_raw_total);
         return;
     }
     if (B < 0.0f)
         B = 0.0f;
-    ctrl->pitch_sysid.B = B;
+    gimbal_sysid.pitch.B = B;
 
     if (pitch_run_all)
         Pitch_BeginJ();
@@ -1555,7 +1572,7 @@ static int8_t PitchJ_FindPairBin(float theta_deg)
 
     for (i = 0U; i < PITCH_J_PAIR_BIN_COUNT; i++)
     {
-        if (fabsf(theta_deg - pitch_j_pair_center_deg[i])
+        if (fabsf(theta_deg - PITCH_J_PAIR_CENTER_DEG[i])
             <= PITCH_J_PAIR_HALF_WIDTH_DEG)
             return (int8_t)i;
     }
@@ -1605,7 +1622,7 @@ static void PitchJ_FinishTraversal(void)
     group->raw_count += pitch_j_traversal.count;
     group->traversal_count++;
     pitch_stage_raw_total += pitch_j_traversal.count;
-    ctrl->pitch_sysid.j_sample_count = pitch_stage_raw_total;
+    gimbal_sysid.pitch.j_sample_count = pitch_stage_raw_total;
     PitchJ_ResetTraversal();
 }
 
@@ -1652,8 +1669,8 @@ static void PitchJ_CollectPairSample(float theta_deg, float omega,
 
 static void PitchJ_FinishAndHold(bool valid, uint8_t error, float rmse)
 {
-    float hold_ref = ctrl->pitch_sysid.j_velocity_ref;
-    Pitch_Finish(valid, error, rmse, ctrl->pitch_sysid.j_sample_count);
+    float hold_ref = gimbal_sysid.pitch.j_velocity_ref;
+    Pitch_Finish(valid, error, rmse, gimbal_sysid.pitch.j_sample_count);
     /* 测试最终停在下端，用近似重力平衡参考保持，避免 done 后继续下坠。 */
     ctrl->pitch_speed_pid.Ref = hold_ref;
 }
@@ -1687,8 +1704,8 @@ static void PitchJ_Finalize(void)
 
     PitchJ_FinishTraversal();
     LS1_Reset(&pitch_j_all);
-    ctrl->pitch_sysid.J_pair_min = 1.0e6f;
-    ctrl->pitch_sysid.J_pair_max = -1.0e6f;
+    gimbal_sysid.pitch.J_pair_min = 1.0e6f;
+    gimbal_sysid.pitch.J_pair_max = -1.0e6f;
 
     for (i = 0U; i < PITCH_J_PAIR_BIN_COUNT; i++)
     {
@@ -1718,28 +1735,28 @@ static void PitchJ_Finalize(void)
         if (delta_alpha < 2.0f * PITCH_J_MIN_MEAN_ALPHA_DPS2)
             continue;
 
-        gravity_accel = ctrl->pitch_sysid.G_sin
+        gravity_accel = gimbal_sysid.pitch.G_sin
                       * sinf(theta_accel * ANGLE_TO_RAD_COEF)
-                      + ctrl->pitch_sysid.G_cos
+                      + gimbal_sysid.pitch.G_cos
                       * cosf(theta_accel * ANGLE_TO_RAD_COEF);
-        gravity_decel = ctrl->pitch_sysid.G_sin
+        gravity_decel = gimbal_sysid.pitch.G_sin
                       * sinf(theta_decel * ANGLE_TO_RAD_COEF)
-                      + ctrl->pitch_sysid.G_cos
+                      + gimbal_sysid.pitch.G_cos
                       * cosf(theta_decel * ANGLE_TO_RAD_COEF);
         delta_torque = torque_accel - torque_decel;
         delta_omega = omega_accel - omega_decel;
         delta_gravity = gravity_accel - gravity_decel;
-        pair_residual = delta_torque - ctrl->pitch_sysid.B * delta_omega
+        pair_residual = delta_torque - gimbal_sysid.pitch.B * delta_omega
                       - delta_gravity;
         pair_J = pair_residual / delta_alpha;
         raw_count = accel_group->raw_count + decel_group->raw_count;
 
         LS1_Add(&pitch_j_all, delta_alpha, pair_residual);
-        if (pair_J < ctrl->pitch_sysid.J_pair_min)
-            ctrl->pitch_sysid.J_pair_min = pair_J;
-        if (pair_J > ctrl->pitch_sysid.J_pair_max)
-            ctrl->pitch_sysid.J_pair_max = pair_J;
-        SysId_PublishMeanPoint(&ctrl->pitch_sysid, delta_torque,
+        if (pair_J < gimbal_sysid.pitch.J_pair_min)
+            gimbal_sysid.pitch.J_pair_min = pair_J;
+        if (pair_J > gimbal_sysid.pitch.J_pair_max)
+            gimbal_sysid.pitch.J_pair_max = pair_J;
+        SysId_PublishMeanPoint(&gimbal_sysid.pitch, delta_torque,
                                delta_omega, delta_gravity, delta_alpha,
                                pair_residual, raw_count, pitch_j_all.count);
     }
@@ -1752,30 +1769,30 @@ static void PitchJ_Finalize(void)
         return;
     }
 
-    ctrl->pitch_sysid.J = J;
-    ctrl->pitch_sysid.j_rmse = rmse;
+    gimbal_sysid.pitch.J = J;
+    gimbal_sysid.pitch.j_rmse = rmse;
     alpha_rms = sqrtf(pitch_j_all.aa / (float)pitch_j_all.count);
-    ctrl->pitch_sysid.j_signal_rms = fabsf(J) * alpha_rms;
-    if (ctrl->pitch_sysid.j_signal_rms > 1.0e-3f)
-        ctrl->pitch_sysid.j_residual_ratio = rmse / ctrl->pitch_sysid.j_signal_rms;
+    gimbal_sysid.pitch.j_signal_rms = fabsf(J) * alpha_rms;
+    if (gimbal_sysid.pitch.j_signal_rms > 1.0e-3f)
+        gimbal_sysid.pitch.j_residual_ratio = rmse / gimbal_sysid.pitch.j_signal_rms;
     else
-        ctrl->pitch_sysid.j_residual_ratio = 1.0e6f;
+        gimbal_sysid.pitch.j_residual_ratio = 1.0e6f;
 
-    if (J <= 0.0f || ctrl->pitch_sysid.J_pair_min <= 0.0f)
+    if (J <= 0.0f || gimbal_sysid.pitch.J_pair_min <= 0.0f)
     {
         PitchJ_FinishAndHold(false, GIMBAL_SYSID_ERROR_NON_PHYSICAL_RESULT, rmse);
         return;
     }
 
-    pair_ratio = ctrl->pitch_sysid.J_pair_max
-               / ctrl->pitch_sysid.J_pair_min;
+    pair_ratio = gimbal_sysid.pitch.J_pair_max
+               / gimbal_sysid.pitch.J_pair_min;
     if (pair_ratio > PITCH_J_MAX_PAIR_RATIO)
     {
         PitchJ_FinishAndHold(false, GIMBAL_SYSID_ERROR_PAIR_MISMATCH, rmse);
         return;
     }
 
-    if (ctrl->pitch_sysid.j_residual_ratio > PITCH_J_MAX_RMSE_SIGNAL_RATIO)
+    if (gimbal_sysid.pitch.j_residual_ratio > PITCH_J_MAX_RMSE_SIGNAL_RATIO)
     {
         PitchJ_FinishAndHold(false, GIMBAL_SYSID_ERROR_POOR_FIT, rmse);
         return;
@@ -1810,7 +1827,7 @@ static void Pitch_JRun(float theta_deg, float omega, float torque, float dt)
         else
             vel_ref = PitchJ_HoldRef(theta_deg);
         ctrl->pitch_speed_pid.Ref = vel_ref;
-        ctrl->pitch_sysid.j_velocity_ref = vel_ref;
+        gimbal_sysid.pitch.j_velocity_ref = vel_ref;
 
         if (fabsf(error) < PITCH_J_CENTER_TOL_DEG && fabsf(omega) < 2.0f)
             pitch_j_centered_elapsed += dt;
@@ -1823,9 +1840,9 @@ static void Pitch_JRun(float theta_deg, float omega, float torque, float dt)
             pitch_j_centered_elapsed = 0.0f;
             pitch_j_alpha_filtered = 0.0f;
             pitch_j_motion_phase = PITCH_J_MOTION_UP_ACCEL;
-            ctrl->pitch_sysid.j_motion_phase = (uint8_t)pitch_j_motion_phase;
+            gimbal_sysid.pitch.j_motion_phase = (uint8_t)pitch_j_motion_phase;
             PitchJ_ResetTraversal();
-            TD_Clear(&ctrl->pitch_sysid.td_omega, ctrl->gyro_pitch_speed);
+            TD_Clear(&gimbal_sysid.pitch.td_omega, ctrl->gyro_pitch_speed);
             Pitch_SetStage(PITCH_SYSID_STAGE_J_EXCITE);
         }
         return;
@@ -1833,15 +1850,15 @@ static void Pitch_JRun(float theta_deg, float omega, float torque, float dt)
 
     pitch_j_phase_elapsed += dt;
     if (pitch_j_pass_count < PITCH_J_MEASURED_PASSES)
-        switch_deg = pitch_j_switch_deg[pitch_j_pass_count];
+        switch_deg = PITCH_J_SWITCH_DEG[pitch_j_pass_count];
     else
-        switch_deg = pitch_j_switch_deg[PITCH_J_MEASURED_PASSES - 1U];
+        switch_deg = PITCH_J_SWITCH_DEG[PITCH_J_MEASURED_PASSES - 1U];
     delta_speed_sq = PITCH_J_ACTUAL_PEAK_SPEED_DPS *
                      PITCH_J_ACTUAL_PEAK_SPEED_DPS -
                      PITCH_J_ACTUAL_MIN_SPEED_DPS *
                      PITCH_J_ACTUAL_MIN_SPEED_DPS;
     target_accel = 0.0f;
-    ctrl->pitch_sysid.j_switch_angle = switch_deg;
+    gimbal_sysid.pitch.j_switch_angle = switch_deg;
 
     if (pitch_j_motion_phase == PITCH_J_MOTION_UP_ACCEL)
     {
@@ -1866,7 +1883,7 @@ static void Pitch_JRun(float theta_deg, float omega, float torque, float dt)
             pitch_j_motion_phase = PITCH_J_MOTION_RETURN_DOWN;
             pitch_j_phase_elapsed = 0.0f;
             pitch_j_pass_count++;
-            ctrl->pitch_sysid.j_pass_count = pitch_j_pass_count;
+            gimbal_sysid.pitch.j_pass_count = pitch_j_pass_count;
         }
         distance = LIMIT_MAX_MIN(PITCH_J_END_DEG - theta_deg,
                                  PITCH_J_END_DEG - switch_deg, 0.0f);
@@ -1902,8 +1919,8 @@ static void Pitch_JRun(float theta_deg, float omega, float torque, float dt)
             pitch_j_centered_elapsed = 0.0f;
 
         ctrl->pitch_speed_pid.Ref = vel_ref;
-        ctrl->pitch_sysid.j_velocity_ref = vel_ref;
-        ctrl->pitch_sysid.j_motion_phase = (uint8_t)pitch_j_motion_phase;
+        gimbal_sysid.pitch.j_velocity_ref = vel_ref;
+        gimbal_sysid.pitch.j_motion_phase = (uint8_t)pitch_j_motion_phase;
         if (pitch_j_centered_elapsed >= PITCH_J_SETTLE_S ||
             pitch_j_phase_elapsed >= PITCH_J_FINAL_HOLD_TIMEOUT_S)
             PitchJ_Finalize();
@@ -1917,11 +1934,11 @@ static void Pitch_JRun(float theta_deg, float omega, float torque, float dt)
         vel_ref = LIMIT_MAX_MIN(vel_ref, PITCH_J_UP_REF_MAX_DPS,
                                 PITCH_J_UP_REF_MIN_DPS);
     ctrl->pitch_speed_pid.Ref = vel_ref;
-    ctrl->pitch_sysid.j_velocity_ref = vel_ref;
-    ctrl->pitch_sysid.j_target_accel =
+    gimbal_sysid.pitch.j_velocity_ref = vel_ref;
+    gimbal_sysid.pitch.j_target_accel =
         (pitch_j_motion_phase == PITCH_J_MOTION_UP_DECEL)
         ? -target_accel : target_accel;
-    ctrl->pitch_sysid.j_motion_phase = (uint8_t)pitch_j_motion_phase;
+    gimbal_sysid.pitch.j_motion_phase = (uint8_t)pitch_j_motion_phase;
 
     pair_sample_enabled = (pitch_j_motion_phase == PITCH_J_MOTION_UP_ACCEL ||
                            pitch_j_motion_phase == PITCH_J_MOTION_UP_DECEL) &&
@@ -1947,9 +1964,10 @@ static void Pitch_Run(void)
 
     theta_deg = ctrl->gyro_pitch_angle;
     omega_raw = ctrl->gyro_pitch_speed;
-    torque_raw = GIMBAL_PITCH_MOTOR_SIGN * ctrl->DM_Pitch_Motor.t_ff_Receive;
-    omega_smooth = TD_Calculate(&ctrl->pitch_sysid.td_omega, omega_raw);
-    alpha_raw = ctrl->pitch_sysid.td_omega.dx;
+    torque_raw = gimbal_sysid_user_config.pitch.torque_feedback_coef
+               * ctrl->DM_Pitch_Motor.t_ff_Receive;
+    omega_smooth = TD_Calculate(&gimbal_sysid.pitch.td_omega, omega_raw);
+    alpha_raw = gimbal_sysid.pitch.td_omega.dx;
 
     /* TD 微分的偶发尖峰不进入低通器，避免单点通过 alpha^2 支配 J 拟合。 */
     if (fabsf(alpha_raw) <= PITCH_J_RAW_ALPHA_REJECT_DPS2)
@@ -1959,12 +1977,12 @@ static void Pitch_Run(void)
         pitch_j_alpha_filtered += alpha_lpf_k
                                 * (alpha_raw - pitch_j_alpha_filtered);
     }
-    ctrl->pitch_sysid.j_alpha_filtered = pitch_j_alpha_filtered;
+    gimbal_sysid.pitch.j_alpha_filtered = pitch_j_alpha_filtered;
 
     if (theta_deg <= PITCH_SAFE_MIN_DEG || theta_deg >= PITCH_SAFE_MAX_DEG)
     {
         Pitch_Finish(false, GIMBAL_SYSID_ERROR_SAFETY_LIMIT, 0.0f,
-                     ctrl->pitch_sysid.sample_count);
+                     gimbal_sysid.pitch.sample_count);
         return;
     }
 
@@ -1986,6 +2004,108 @@ static void Pitch_Run(void)
     }
 }
 
+#if GIMBAL_SYSID == GIMBAL_YAW_SYSID
+static bool Yaw_UserConfigValid(void)
+{
+    uint32_t i;
+    bool has_positive_speed = false;
+    bool has_negative_speed = false;
+
+    if (fabsf(gimbal_sysid_user_config.yaw.torque_feedback_coef) < 0.01f ||
+        YAW_J_REF_ACCEL_DPS2 <= 0.0f || YAW_J_MAX_REF_DPS <= 0.0f)
+        return false;
+
+    for (i = 0U; i < YAW_BC_POINT_COUNT; i++)
+    {
+        if (YAW_BC_SPEED_DPS[i] > 0.0f)
+            has_positive_speed = true;
+        else if (YAW_BC_SPEED_DPS[i] < 0.0f)
+            has_negative_speed = true;
+        else
+            return false;
+    }
+    if (!has_positive_speed || !has_negative_speed)
+        return false;
+
+    for (i = 0U; i < YAW_J_PAIR_WINDOW_COUNT; i++)
+    {
+        if (YAW_J_PAIR_CENTER_DPS[i] <= YAW_J_PAIR_HALF_WIDTH_DPS ||
+            YAW_J_PAIR_CENTER_DPS[i] + YAW_J_PAIR_HALF_WIDTH_DPS
+                >= YAW_J_MAX_REF_DPS)
+            return false;
+    }
+    return true;
+}
+#endif
+
+#if GIMBAL_SYSID == GIMBAL_PITCH_SYSID
+static bool Pitch_UserConfigValid(void)
+{
+    uint32_t i;
+    uint32_t j;
+    bool has_accel;
+    bool has_decel;
+
+    if (fabsf(gimbal_sysid_user_config.pitch.torque_feedback_coef) < 0.01f ||
+        PITCH_SAFE_MIN_DEG >= PITCH_SAFE_MAX_DEG ||
+        PITCH_J_END_DEG - PITCH_J_START_DEG < PITCH_MIN_USABLE_SPAN_DEG ||
+        PITCH_REVERSE_MIN_DEG <= PITCH_SAFE_MIN_DEG ||
+        PITCH_REVERSE_MAX_DEG >= PITCH_SAFE_MAX_DEG ||
+        PITCH_SAMPLE_MIN_DEG <= PITCH_REVERSE_MIN_DEG ||
+        PITCH_SAMPLE_MAX_DEG >= PITCH_REVERSE_MAX_DEG ||
+        PITCH_J_START_DEG != PITCH_SAMPLE_MIN_DEG ||
+        PITCH_J_END_DEG != PITCH_SAMPLE_MAX_DEG ||
+        PITCH_J_START_DEG >= PITCH_J_END_DEG ||
+        PITCH_GRAVITY_UP_REF_DPS <= 0.0f ||
+        PITCH_GRAVITY_DOWN_REF_DPS <= 0.0f ||
+        PITCH_J_PREP_UP_REF_DPS <= 0.0f ||
+        PITCH_J_PREP_DOWN_REF_DPS <= 0.0f ||
+        PITCH_J_ACTUAL_PEAK_SPEED_DPS <= PITCH_J_ACTUAL_MIN_SPEED_DPS ||
+        PITCH_J_UP_REF_MIN_DPS <= 0.0f ||
+        PITCH_J_UP_REF_MIN_DPS > PITCH_J_UP_REF_MAX_DPS ||
+        PITCH_J_RETURN_DOWN_REF_DPS <= 0.0f)
+        return false;
+
+    for (i = 0U; i < PITCH_BC_SPEED_LEVELS; i++)
+    {
+        if (PITCH_BC_UP_REF_DPS[i] <= 0.0f ||
+            PITCH_BC_DOWN_REF_DPS[i] <= 0.0f ||
+            PITCH_BC_EXPECTED_DPS[i] <= PITCH_BC_MIN_SPEED_DPS)
+            return false;
+    }
+
+    for (i = 0U; i < PITCH_J_MEASURED_PASSES; i++)
+    {
+        if (PITCH_J_SWITCH_DEG[i] <= PITCH_J_START_DEG ||
+            PITCH_J_SWITCH_DEG[i] >= PITCH_J_END_DEG)
+            return false;
+    }
+
+    for (i = 0U; i < PITCH_J_PAIR_BIN_COUNT; i++)
+    {
+        if (PITCH_J_PAIR_CENTER_DEG[i] <= PITCH_J_START_DEG ||
+            PITCH_J_PAIR_CENTER_DEG[i] >= PITCH_J_END_DEG ||
+            PITCH_J_PAIR_CENTER_DEG[i] - PITCH_J_PAIR_HALF_WIDTH_DEG
+                <= PITCH_J_START_DEG ||
+            PITCH_J_PAIR_CENTER_DEG[i] + PITCH_J_PAIR_HALF_WIDTH_DEG
+                >= PITCH_J_END_DEG)
+            return false;
+        has_accel = false;
+        has_decel = false;
+        for (j = 0U; j < PITCH_J_MEASURED_PASSES; j++)
+        {
+            if (PITCH_J_SWITCH_DEG[j] > PITCH_J_PAIR_CENTER_DEG[i])
+                has_accel = true;
+            if (PITCH_J_SWITCH_DEG[j] < PITCH_J_PAIR_CENTER_DEG[i])
+                has_decel = true;
+        }
+        if (!has_accel || !has_decel)
+            return false;
+    }
+    return true;
+}
+#endif
+
 /* ==================================================================
  *  7. 顶层接口
  * ================================================================== */
@@ -1997,88 +2117,97 @@ void GimbalSystemID_Init(GimbalController *controller)
     if (ctrl == NULL)
         return;
 
+    GimbalSystemID_LoadSelectedProfile();
+    /* The two safe limits are the only user-entered Pitch angles. */
+    Pitch_BuildAngleLayout();
+
     /* 通用初始化 */
-    TD_Init(&ctrl->yaw_sysid.td_omega,   10000.0f, 0.005f);
-    TD_Init(&ctrl->pitch_sysid.td_omega, 10000.0f, 0.005f);
+    TD_Init(&gimbal_sysid.yaw.td_omega,   10000.0f, 0.005f);
+    TD_Init(&gimbal_sysid.pitch.td_omega, 10000.0f, 0.005f);
 
-    ctrl->yaw_sysid.sysid_timer   = 0.0f;
-    ctrl->yaw_sysid.sysid_done    = 1U;
-    ctrl->pitch_sysid.sysid_timer = 0.0f;
-    ctrl->pitch_sysid.sysid_done  = 1U;
+    gimbal_sysid.yaw.sysid_timer   = 0.0f;
+    gimbal_sysid.yaw.sysid_done    = 1U;
+    gimbal_sysid.pitch.sysid_timer = 0.0f;
+    gimbal_sysid.pitch.sysid_done  = 1U;
 
-    ctrl->yaw_sysid.J = GIMBAL_YAW_J;
-    ctrl->yaw_sysid.B = GIMBAL_YAW_B;
-    ctrl->yaw_sysid.B_raw = GIMBAL_YAW_B;
-    ctrl->yaw_sysid.C = GIMBAL_YAW_C;
-    ctrl->yaw_sysid.fit_rmse = 0.0f;
-    ctrl->yaw_sysid.gravity_rmse = 0.0f;
-    ctrl->yaw_sysid.bc_rmse = 0.0f;
-    ctrl->yaw_sysid.j_rmse = 0.0f;
-    ctrl->yaw_sysid.J_pair_min = 0.0f;
-    ctrl->yaw_sysid.J_pair_max = 0.0f;
-    ctrl->yaw_sysid.j_alpha_filtered = 0.0f;
-    ctrl->yaw_sysid.j_signal_rms = 0.0f;
-    ctrl->yaw_sysid.j_residual_ratio = 0.0f;
-    ctrl->yaw_sysid.j_velocity_ref = 0.0f;
-    ctrl->yaw_sysid.j_switch_angle = 0.0f;
-    ctrl->yaw_sysid.j_target_accel = 0.0f;
-    ctrl->yaw_sysid.mean_torque = 0.0f;
-    ctrl->yaw_sysid.mean_omega = 0.0f;
-    ctrl->yaw_sysid.mean_gravity = 0.0f;
-    ctrl->yaw_sysid.mean_input = 0.0f;
-    ctrl->yaw_sysid.mean_residual = 0.0f;
-    ctrl->yaw_sysid.mean_raw_count = 0U;
-    ctrl->yaw_sysid.sample_count = 0U;
-    ctrl->yaw_sysid.gravity_valid_bins = 0U;
-    ctrl->yaw_sysid.bc_sample_count = 0U;
-    ctrl->yaw_sysid.j_sample_count = 0U;
-    ctrl->yaw_sysid.mean_point_count = 0U;
-    ctrl->yaw_sysid.j_motion_phase = (uint8_t)YAW_J_MOTION_PREPARE;
-    ctrl->yaw_sysid.j_pass_count = 0U;
-    ctrl->yaw_sysid.sysid_valid = 0U;
-    ctrl->yaw_sysid.sysid_error = GIMBAL_SYSID_ERROR_NONE;
+    gimbal_sysid.yaw.J = GIMBAL_YAW_J;
+    gimbal_sysid.yaw.B = GIMBAL_YAW_B;
+    gimbal_sysid.yaw.B_raw = GIMBAL_YAW_B;
+    gimbal_sysid.yaw.C = GIMBAL_YAW_C;
+    gimbal_sysid.yaw.fit_rmse = 0.0f;
+    gimbal_sysid.yaw.gravity_rmse = 0.0f;
+    gimbal_sysid.yaw.bc_rmse = 0.0f;
+    gimbal_sysid.yaw.j_rmse = 0.0f;
+    gimbal_sysid.yaw.J_pair_min = 0.0f;
+    gimbal_sysid.yaw.J_pair_max = 0.0f;
+    gimbal_sysid.yaw.j_alpha_filtered = 0.0f;
+    gimbal_sysid.yaw.j_signal_rms = 0.0f;
+    gimbal_sysid.yaw.j_residual_ratio = 0.0f;
+    gimbal_sysid.yaw.j_velocity_ref = 0.0f;
+    gimbal_sysid.yaw.j_switch_angle = 0.0f;
+    gimbal_sysid.yaw.j_target_accel = 0.0f;
+    gimbal_sysid.yaw.mean_torque = 0.0f;
+    gimbal_sysid.yaw.mean_omega = 0.0f;
+    gimbal_sysid.yaw.mean_gravity = 0.0f;
+    gimbal_sysid.yaw.mean_input = 0.0f;
+    gimbal_sysid.yaw.mean_residual = 0.0f;
+    gimbal_sysid.yaw.mean_raw_count = 0U;
+    gimbal_sysid.yaw.sample_count = 0U;
+    gimbal_sysid.yaw.gravity_valid_bins = 0U;
+    gimbal_sysid.yaw.bc_sample_count = 0U;
+    gimbal_sysid.yaw.j_sample_count = 0U;
+    gimbal_sysid.yaw.mean_point_count = 0U;
+    gimbal_sysid.yaw.j_motion_phase = (uint8_t)YAW_J_MOTION_PREPARE;
+    gimbal_sysid.yaw.j_pass_count = 0U;
+    gimbal_sysid.yaw.sysid_valid = 0U;
+    gimbal_sysid.yaw.sysid_error = GIMBAL_SYSID_ERROR_NONE;
     yaw_run_all = false;
     Yaw_SetStage(YAW_SYSID_STAGE_IDLE);
 
-    ctrl->pitch_sysid.G_sin = GIMBAL_PITCH_SIN;
-    ctrl->pitch_sysid.G_cos = GIMBAL_PITCH_COS;
-    ctrl->pitch_sysid.B = GIMBAL_PITCH_B;
-    ctrl->pitch_sysid.B_raw = GIMBAL_PITCH_B;
-    ctrl->pitch_sysid.C = GIMBAL_PITCH_C;
-    ctrl->pitch_sysid.J = GIMBAL_PITCH_J;
-    ctrl->pitch_sysid.fit_rmse = 0.0f;
-    ctrl->pitch_sysid.gravity_rmse = 0.0f;
-    ctrl->pitch_sysid.bc_rmse = 0.0f;
-    ctrl->pitch_sysid.j_rmse = 0.0f;
-    ctrl->pitch_sysid.J_pair_min = 0.0f;
-    ctrl->pitch_sysid.J_pair_max = 0.0f;
-    ctrl->pitch_sysid.j_alpha_filtered = 0.0f;
-    ctrl->pitch_sysid.j_signal_rms = 0.0f;
-    ctrl->pitch_sysid.j_residual_ratio = 0.0f;
-    ctrl->pitch_sysid.j_velocity_ref = 0.0f;
-    ctrl->pitch_sysid.j_switch_angle = pitch_j_switch_deg[0];
-    ctrl->pitch_sysid.j_target_accel = 0.0f;
-    ctrl->pitch_sysid.mean_torque = 0.0f;
-    ctrl->pitch_sysid.mean_omega = 0.0f;
-    ctrl->pitch_sysid.mean_gravity = 0.0f;
-    ctrl->pitch_sysid.mean_input = 0.0f;
-    ctrl->pitch_sysid.mean_residual = 0.0f;
-    ctrl->pitch_sysid.mean_raw_count = 0U;
-    ctrl->pitch_sysid.sample_count = 0U;
-    ctrl->pitch_sysid.gravity_valid_bins = 0U;
-    ctrl->pitch_sysid.bc_sample_count = 0U;
-    ctrl->pitch_sysid.j_sample_count = 0U;
-    ctrl->pitch_sysid.mean_point_count = 0U;
-    ctrl->pitch_sysid.j_motion_phase = (uint8_t)PITCH_J_MOTION_PREPARE;
-    ctrl->pitch_sysid.j_pass_count = 0U;
-    ctrl->pitch_sysid.sysid_valid = 0U;
-    ctrl->pitch_sysid.sysid_error = GIMBAL_SYSID_ERROR_NONE;
+    gimbal_sysid.pitch.G_sin = GIMBAL_PITCH_SIN;
+    gimbal_sysid.pitch.G_cos = GIMBAL_PITCH_COS;
+    gimbal_sysid.pitch.B = GIMBAL_PITCH_B;
+    gimbal_sysid.pitch.B_raw = GIMBAL_PITCH_B;
+    gimbal_sysid.pitch.C = GIMBAL_PITCH_C;
+    gimbal_sysid.pitch.J = GIMBAL_PITCH_J;
+    gimbal_sysid.pitch.fit_rmse = 0.0f;
+    gimbal_sysid.pitch.gravity_rmse = 0.0f;
+    gimbal_sysid.pitch.bc_rmse = 0.0f;
+    gimbal_sysid.pitch.j_rmse = 0.0f;
+    gimbal_sysid.pitch.J_pair_min = 0.0f;
+    gimbal_sysid.pitch.J_pair_max = 0.0f;
+    gimbal_sysid.pitch.j_alpha_filtered = 0.0f;
+    gimbal_sysid.pitch.j_signal_rms = 0.0f;
+    gimbal_sysid.pitch.j_residual_ratio = 0.0f;
+    gimbal_sysid.pitch.j_velocity_ref = 0.0f;
+    gimbal_sysid.pitch.j_switch_angle = PITCH_J_SWITCH_DEG[0];
+    gimbal_sysid.pitch.j_target_accel = 0.0f;
+    gimbal_sysid.pitch.mean_torque = 0.0f;
+    gimbal_sysid.pitch.mean_omega = 0.0f;
+    gimbal_sysid.pitch.mean_gravity = 0.0f;
+    gimbal_sysid.pitch.mean_input = 0.0f;
+    gimbal_sysid.pitch.mean_residual = 0.0f;
+    gimbal_sysid.pitch.mean_raw_count = 0U;
+    gimbal_sysid.pitch.sample_count = 0U;
+    gimbal_sysid.pitch.gravity_valid_bins = 0U;
+    gimbal_sysid.pitch.bc_sample_count = 0U;
+    gimbal_sysid.pitch.j_sample_count = 0U;
+    gimbal_sysid.pitch.mean_point_count = 0U;
+    gimbal_sysid.pitch.j_motion_phase = (uint8_t)PITCH_J_MOTION_PREPARE;
+    gimbal_sysid.pitch.j_pass_count = 0U;
+    gimbal_sysid.pitch.sysid_valid = 0U;
+    gimbal_sysid.pitch.sysid_error = GIMBAL_SYSID_ERROR_NONE;
     pitch_run_all = false;
     Pitch_SetStage(PITCH_SYSID_STAGE_IDLE);
 
 #if GIMBAL_SYSID == GIMBAL_YAW_SYSID
     /* 安全互锁：上电保持 done=1，进入 Debug 后手动置 0 才允许运动。 */
-    ctrl->yaw_sysid.sysid_done = 1U;
+    gimbal_sysid.yaw.sysid_done = 1U;
+    if (!Yaw_UserConfigValid())
+    {
+        Yaw_Finish(false, GIMBAL_SYSID_ERROR_INVALID_CONFIG, 0.0f, 0U);
+        return;
+    }
   #if GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_BC
     Yaw_BeginBC();
   #elif GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_J
@@ -2093,7 +2222,12 @@ void GimbalSystemID_Init(GimbalController *controller)
 
 #elif GIMBAL_SYSID == GIMBAL_PITCH_SYSID
     /* 安全互锁：上电保持 done=1，进入 Debug 后手动置 0 才允许运动。 */
-    ctrl->pitch_sysid.sysid_done = 1U;
+    gimbal_sysid.pitch.sysid_done = 1U;
+    if (!Pitch_UserConfigValid())
+    {
+        Pitch_Finish(false, GIMBAL_SYSID_ERROR_INVALID_CONFIG, 0.0f, 0U);
+        return;
+    }
   #if GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_GRAVITY
     Pitch_BeginGravity();
   #elif GIMBAL_SYSID_STEP == GIMBAL_SYSID_STEP_BC
@@ -2122,15 +2256,15 @@ void GimbalSystemID_Run(void)
         dt = 0.002f;
 
 #if GIMBAL_SYSID == GIMBAL_YAW_SYSID
-    if (ctrl->yaw_sysid.sysid_done)
+    if (gimbal_sysid.yaw.sysid_done)
         return;
-    ctrl->yaw_sysid.sysid_timer += dt;
+    gimbal_sysid.yaw.sysid_timer += dt;
     Yaw_Run(dt);
 
 #elif GIMBAL_SYSID == GIMBAL_PITCH_SYSID
-    if (ctrl->pitch_sysid.sysid_done)
+    if (gimbal_sysid.pitch.sysid_done)
         return;
-    ctrl->pitch_sysid.sysid_timer += dt;
+    gimbal_sysid.pitch.sysid_timer += dt;
     Pitch_Run();
 #endif
 }

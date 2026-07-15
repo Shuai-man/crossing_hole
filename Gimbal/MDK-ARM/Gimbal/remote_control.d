@@ -80,6 +80,7 @@ gimbal\remote_control.o: ../Components/motor/inc/M2006.h
 gimbal\remote_control.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\remote_control.o: ../Algorithm/inc/my_filter.h
 gimbal\remote_control.o: ../Application/inc/Gimbal.h
+gimbal\remote_control.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\remote_control.o: ../Components/motor/inc/GM6020.h
 gimbal\remote_control.o: ../Components/motor/inc/DM_Motor.h
 gimbal\remote_control.o: ../Core/Inc/can.h
@@ -91,7 +92,4 @@ gimbal\remote_control.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\remote_control.o: ../Application/inc/pc_serial.h
 gimbal\remote_control.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\remote_control.o: ../Algorithm/inc/TD.h
-gimbal\remote_control.o: ../Algorithm/inc/RLS_Identification.h
-gimbal\remote_control.o: ../Algorithm/inc/SystemIdentification.h
-gimbal\remote_control.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\remote_control.o: ../Application/inc/GimbalSystemID.h
