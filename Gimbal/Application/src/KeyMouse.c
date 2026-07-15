@@ -17,7 +17,7 @@ ChassisSolver chassis_solver;
 void State_Clear(void)
 {
     // 清空状态
-    setGameModeAction(OFF_MODE);
+    setGameModeAction(POWER_DOWN_MODE);
 }
 
 void KeyMouse_Init(void)

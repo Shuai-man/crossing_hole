@@ -19,16 +19,21 @@ void GimbalPidInit(void)
 
     // Pitch
     PID_Init(&gimbal_controller.pitch_angle_pid, 5000.0f, 0, 0.0f, 600.0f, 0, 0.0f, 0, 0, 0, 0.02f, 1, NONE);
-    PID_Init(&gimbal_controller.pitch_speed_pid, 5000.0f, 4000.0f, 0.0f, 60.0f, 0.0f, 0, 0, 0, 0.0018f, 0, 1, Integral_Limit);
+#if GIMBAL_SYSID == GIMBAL_PITCH_SYSID
+    /* Pitch 系统辨识专用速度环参数，适用于重力、B/C 和 J 三个阶段。 */
+    PID_Init(&gimbal_controller.pitch_speed_pid, 5000.0f, 4000.0f, 0.0f, 60.0f, 0.0f, 0.15f, 0, 0, 0.0018f, 0, 1, Integral_Limit);
+#else
+    PID_Init(&gimbal_controller.pitch_speed_pid, 5000.0f, 4000.0f, 0.0f, 50.0f, 0.0f, 0, 0, 0, 0.0018f, 0, 1, Integral_Limit);
+#endif
     // td结构体: r:加速度因子, h0:滤波系数，单位s
     TD_Init(&gimbal_controller.pos_pitch_td, 1000, 0.005);
 
     // Yaw
-    PID_Init(&gimbal_controller.yaw_angle_pid, 5000.0, 0, 0, 1000.0f, 0, 0.0f, 0, 0, 0.0, 0.02f, 1, DerivativeFilter);
+    PID_Init(&gimbal_controller.yaw_angle_pid, 5000.0, 0, 0, 2000.0f, 0, 0.0f, 0, 0, 0.0, 0.02f, 1, DerivativeFilter);
     PID_Init(&gimbal_controller.yaw_speed_pid, 5000, 1600, 0.0, 100.0f, 0.0f, 0, 0, 0, 0.0018, 0, 1, Integral_Limit | Trapezoid_Intergral);
     // td结构体: r:越大，突变越大，离原始信号越接近； h0:滤波系数，单位s，h0越大延迟越大
     // r增大，可以增加加速度项，从而加大前馈的输出值
-    TD_Init(&gimbal_controller.pos_yaw_td, 700, 0.005);
+    TD_Init(&gimbal_controller.pos_yaw_td, 2000, 0.005);
 
     // 底盘转向前馈
     float ff_c_follow[3] = {0, 0.01, 0};
@@ -50,14 +55,24 @@ float Gimbal_Pitch_Calculate(float set_point)
     gimbal_controller.pitch_out = gimbal_controller.pitch_speed_pid.Output;
     return gimbal_controller.pitch_out;
 #else
+    float friction_ratio;
+
     TD_Calculate(&gimbal_controller.pos_pitch_td, set_point);
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.pos_pitch_td.x);
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, gimbal_controller.pos_pitch_td.dx);
-    gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
-                                     GIMBAL_PITCH_B * cos(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
-                                     GIMBAL_PITCH_C * sign(gimbal_controller.gyro_pitch_speed);
+    gimbal_controller.gravity_comp = GIMBAL_PITCH_SIN * sin(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_COS * cos(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF);
+
+    /*
+     * C 是运动时的库仑摩擦，不是静摩擦。使用轨迹参考速度决定方向，并在低速区
+     * 线性淡入，避免实际速度在零点附近抖动时前馈来回跳变。静止时该项为 0，
+     * 剩余静摩擦和模型误差由闭环（尤其积分项）处理。
+     */
+    friction_ratio = LIMIT_MAX_MIN(gimbal_controller.pos_pitch_td.dx / BORDER_FRICTION_SPEED,
+                                   1.0f, -1.0f);
     gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * gimbal_controller.pos_pitch_td.ddx + // 惯量 × 加速度，主要输出项
-                                     GIMBAL_PITCH_CB * gimbal_controller.pos_pitch_td.dx;  // 阻尼 × 速度
+                                     GIMBAL_PITCH_B * gimbal_controller.pos_pitch_td.dx + // 粘性阻尼 × 速度
+                                     GIMBAL_PITCH_C * friction_ratio;                       // 运动库仑摩擦
 
     gimbal_controller.pitch_out = gimbal_controller.ff_tff_pitch + gimbal_controller.gravity_comp + gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output;
     return gimbal_controller.pitch_out;
@@ -84,13 +99,23 @@ float Gimbal_Yaw_Calculate(float set_point)
     gimbal_controller.yaw_out = gimbal_controller.yaw_speed_pid.Output;
     return gimbal_controller.yaw_out;
 #else
+    float friction_ratio;
+
     // 输出滤波的角度，角速度，角加速度
     TD_Calculate(&gimbal_controller.pos_yaw_td, set_point);
+    /*
+     * C 表示运动时的库仑摩擦。使用轨迹参考速度决定方向，并在低速区
+     * 线性淡入；参考速度为0时摩擦前馈也为0，避免 sign(0)=+1 造成
+     * 固定的正向力矩和位置稳态偏差。
+     */
+    friction_ratio = LIMIT_MAX_MIN(gimbal_controller.pos_yaw_td.dx /
+                                   BORDER_FRICTION_SPEED,
+                                   1.0f, -1.0f);
     // 计算前馈力矩
     gimbal_controller.ff_tff =
         GIMBAL_YAW_J * gimbal_controller.pos_yaw_td.ddx +     // 惯量 × 加速度，主要输出项
         GIMBAL_YAW_B * gimbal_controller.pos_yaw_td.dx +      // 阻尼 × 速度
-        GIMBAL_YAW_C * sign(gimbal_controller.pos_yaw_td.dx); // 库伦摩擦 × 速度方向   // pid闭环
+        GIMBAL_YAW_C * friction_ratio;                         // 低速平滑的运动库仑摩擦
     PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, gimbal_controller.pos_yaw_td.x);
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, gimbal_controller.pos_yaw_td.dx); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
     // 总输出 = 前馈 + 角度环输出 + 速度环输出

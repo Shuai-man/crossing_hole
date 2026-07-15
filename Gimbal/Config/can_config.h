@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include "main.h"
 #include "can.h"
+#include "Robot_config.h"
 
 
 // 电机接收配置(注意不会影响发送)
@@ -16,8 +17,13 @@
 #define PITCH_MOTOR_CAN &hcan2
 
 // 摩擦轮电机
+#if ROBOT_SELECT == OLD
 #define LEFT_FRICTION_WHEEL_CAN_ID 0x207  // 摩擦轮ID1(左)
 #define RIGHT_FRICTION_WHEEL_CAN_ID 0x208 // 摩擦轮ID2(右)
+#elif ROBOT_SELECT ==NEW
+#define LEFT_FRICTION_WHEEL_CAN_ID 0x208  // 摩擦轮ID1(左)
+#define RIGHT_FRICTION_WHEEL_CAN_ID 0x207 // 摩擦轮ID2(右)
+#endif
 #define FRICTION_LOSS_TIME	0.0075f //s
 #define FRICTION_WHEEL_CAN &hcan2
 

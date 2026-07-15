@@ -17,6 +17,25 @@
 
 struct GimbalController;
 
+/* Debug 观察值：sysid_stage / sysid_error。 */
+typedef enum {
+    PITCH_SYSID_STAGE_IDLE = 0,
+    PITCH_SYSID_STAGE_GRAVITY,
+    PITCH_SYSID_STAGE_BC,
+    PITCH_SYSID_STAGE_J_PREPARE,
+    PITCH_SYSID_STAGE_J_EXCITE,
+    PITCH_SYSID_STAGE_DONE
+} PitchSysIdStage;
+
+typedef enum {
+    GIMBAL_SYSID_ERROR_NONE = 0,
+    GIMBAL_SYSID_ERROR_INSUFFICIENT_EXCITATION,
+    GIMBAL_SYSID_ERROR_SAFETY_LIMIT,
+    GIMBAL_SYSID_ERROR_NON_PHYSICAL_RESULT,
+    GIMBAL_SYSID_ERROR_PAIR_MISMATCH,
+    GIMBAL_SYSID_ERROR_POOR_FIT
+} GimbalSysIdError;
+
 /* ========== 1. 采样累加器 ========== */
 typedef struct {
     float   sum;

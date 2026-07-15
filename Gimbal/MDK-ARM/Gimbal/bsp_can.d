@@ -40,6 +40,7 @@ gimbal\bsp_can.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 gimbal\bsp_can.o: ../Core/Inc/can.h
 gimbal\bsp_can.o: ../Config/can_config.h
 gimbal\bsp_can.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+gimbal\bsp_can.o: ../Config/Robot_config.h
 gimbal\bsp_can.o: ../Config/Motor_Typdef.h
 gimbal\bsp_can.o: ../Application/inc/FrictionWheel.h
 gimbal\bsp_can.o: ../Algorithm/inc/pid.h
@@ -72,7 +73,6 @@ gimbal\bsp_can.o: ../Algorithm/inc/my_filter.h
 gimbal\bsp_can.o: ../Components/motor/inc/M3508.h
 gimbal\bsp_can.o: ../Application/inc/ChassisGet.h
 gimbal\bsp_can.o: ../Application/inc/Gimbal.h
-gimbal\bsp_can.o: ../Config/Robot_config.h
 gimbal\bsp_can.o: ../Components/motor/inc/GM6020.h
 gimbal\bsp_can.o: ../Components/motor/inc/DM_Motor.h
 gimbal\bsp_can.o: ../Application/inc/ins.h

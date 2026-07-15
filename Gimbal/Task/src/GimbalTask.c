@@ -58,24 +58,29 @@ void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
 
 void Gimbal_PC_Cal(void)
 {
+    float yaw_friction_ratio;
+
     // PITCH
     gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
     limitPitchAngle(); // pitch限制幅值
-    gimbal_controller.gravity_comp = GIMBAL_PITCH_A * sin(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
-                                     GIMBAL_PITCH_B * cos(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
+    gimbal_controller.gravity_comp = GIMBAL_PITCH_SIN * sin(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
+                                     GIMBAL_PITCH_COS * cos(gimbal_controller.gyro_pitch_angle * ANGLE_TO_RAD_COEF) +
                                      GIMBAL_PITCH_C * sign(gimbal_controller.gyro_pitch_speed);
     gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * pc_recv_data.pitch_acc_setpoint + // 惯量 × 加速度，主要输出项
-                                     GIMBAL_PITCH_CB * pc_recv_data.pitch_omega_setpoint;  // 阻尼 × 速度
+                                     GIMBAL_PITCH_B * pc_recv_data.pitch_omega_setpoint;  // 阻尼 × 速度
     PID_Calculate(&gimbal_controller.pitch_angle_pid, gimbal_controller.gyro_pitch_angle, gimbal_controller.target_pitch_angle);
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, pc_recv_data.pitch_omega_setpoint);
     gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp + gimbal_controller.ff_tff_pitch;
 
     // YAW
     gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
+    yaw_friction_ratio = LIMIT_MAX_MIN(pc_recv_data.yaw_omega_setpoint /
+                                      BORDER_FRICTION_SPEED,
+                                      1.0f, -1.0f);
     gimbal_controller.ff_tff =
         GIMBAL_YAW_J * pc_recv_data.yaw_acc_setpoint +        // 惯量 × 加速度，主要输出项
         GIMBAL_YAW_B * pc_recv_data.yaw_omega_setpoint +      // 阻尼 × 速度
-        GIMBAL_YAW_C * sign(pc_recv_data.yaw_omega_setpoint); // 库伦摩擦 × 速度方向   // pid闭环
+        GIMBAL_YAW_C * yaw_friction_ratio;                    // 低速平滑的运动库仑摩擦
     PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, pc_recv_data.yaw_setpoint);
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, pc_recv_data.yaw_omega_setpoint); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
     // 总输出 = 前馈 + 角度环输出 + 速度环输出

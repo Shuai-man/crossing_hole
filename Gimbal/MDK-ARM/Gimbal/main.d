@@ -71,6 +71,7 @@ gimbal\main.o: ../Components/boards/inc/bsp_VTM.h
 gimbal\main.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\main.o: ../Components/boards/inc/bsp_can.h
 gimbal\main.o: ../Config/can_config.h
+gimbal\main.o: ../Config/Robot_config.h
 gimbal\main.o: ../Config/Motor_Typdef.h
 gimbal\main.o: ../Application/inc/FrictionWheel.h
 gimbal\main.o: ../Algorithm/inc/pid.h
@@ -85,7 +86,6 @@ gimbal\main.o: ../Algorithm/inc/my_filter.h
 gimbal\main.o: ../Components/motor/inc/M3508.h
 gimbal\main.o: ../Application/inc/ChassisGet.h
 gimbal\main.o: ../Application/inc/Gimbal.h
-gimbal\main.o: ../Config/Robot_config.h
 gimbal\main.o: ../Components/motor/inc/GM6020.h
 gimbal\main.o: ../Components/motor/inc/DM_Motor.h
 gimbal\main.o: ../Application/inc/ins.h
