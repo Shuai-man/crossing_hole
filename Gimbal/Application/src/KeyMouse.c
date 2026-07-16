@@ -24,9 +24,9 @@ void KeyMouse_Init(void)
 {
     // 初始化微分器
     // 底盘速度，低敏
-    speed_smoother_init(&chassis_solver.speed_x_smoother, 0.10f, 0.6f, 5.0f);
-    speed_smoother_init(&chassis_solver.speed_y_smoother, 0.10f, 0.6f, 5.0f);
-    speed_smoother_init(&chassis_solver.speed_w_smoother, 0.10f, 0.6f, 5.0f);
+    speed_smoother_init(&chassis_solver.speed_x_smoother, 0.30f, 0.6f, 5.0f);
+    speed_smoother_init(&chassis_solver.speed_y_smoother, 0.30f, 0.6f, 5.0f);
+    speed_smoother_init(&chassis_solver.speed_w_smoother, 0.30f, 0.6f, 5.0f);
 
     // 鼠标速度，高敏
     TD_Init(&chassis_solver.mouse_x_td, 50000, 0.005);
@@ -150,20 +150,20 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             if (remote_controller.game_mode == GAME_MODE && remote_controller.gimbal_position == UP)
             {
                 setChassisModeAction(CV_ROTATE);
-                speed_w = 0.5f;
+                speed_w = 1.0f;
             }
             break;
         case KEY_D:
-            speed_y = 0.4f; // 建议加个缓启动
+            speed_y = 1.0f; // 建议加个缓启动
             break;
         case KEY_A:
-            speed_y = -0.4f;
+            speed_y = -1.0f;
             break;
         case KEY_S:
-            speed_x = -0.4f; // 后退太灵敏，衰减一下
+            speed_x = -1.0f; // 后退太灵敏，衰减一下
             break;
         case KEY_W:
-            speed_x = 0.4f;
+            speed_x = 1.0f;
             break;
         default:
             break;

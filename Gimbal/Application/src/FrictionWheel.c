@@ -14,7 +14,7 @@ void FrictionWheel_Init()
 	Feedforward_Init(&friction_wheels.feedforward[LEFT_FRICTION_WHEEL], 16384,ff_c_l,0.05,1,1);
 	Feedforward_Init(&friction_wheels.feedforward[RIGHT_FRICTION_WHEEL], 16384,ff_c_r,0.05,1,1);
 					 // 实测弹速会超0.5左右，但是基本不低于设定弹速
-	friction_wheels.friction_speed = 23.78f; // 初始弹速设置
+	friction_wheels.friction_speed = 22.5f; // 初始弹速设置
 }
 
 // 自动切弹速
@@ -32,28 +32,28 @@ void setFrictionSpeed(void)
 
 	if (friction_wheels.shoot_speed != 0 && friction_wheels.last_shoot_Speed == 0) // 上升沿检测弹速更新
 	{
-		if (friction_wheels.shoot_speed > 25.0f)
-		{
-			friction_wheels.over_times += 1;
-			friction_wheels.over_speed = friction_wheels.shoot_speed;
-			friction_wheels.friction_speed -= (friction_wheels.over_speed - 25.0f);
-		}
-		// 掉速处理
-		if (chassis_pack_get_1.shoot_speed < 23.0f && chassis_pack_get_1.shoot_speed > 20.0f) // 排除漏弹
-		{
-			friction_wheels.lower_speed_times += 1;
-		}
-		else
-		{ // 偶尔掉速，不处理
-			friction_wheels.lower_speed_times = 0;
-		}
-		if (friction_wheels.lower_speed_times >= 3)
-		{
-			// 多次低于，调整弹速
-			friction_wheels.lower_speed = friction_wheels.shoot_speed;
-			friction_wheels.friction_speed += (23.5f - friction_wheels.lower_speed);
-			friction_wheels.lower_speed_times = 0;
-		}
+//		if (friction_wheels.shoot_speed > 25.0f)
+//		{
+//			friction_wheels.over_times += 1;
+//			friction_wheels.over_speed = friction_wheels.shoot_speed;
+//			friction_wheels.friction_speed -= (friction_wheels.over_speed - 25.0f);
+//		}
+//		// 掉速处理
+//		if (chassis_pack_get_1.shoot_speed < 23.0f && chassis_pack_get_1.shoot_speed > 20.0f) // 排除漏弹
+//		{
+//			friction_wheels.lower_speed_times += 1;
+//		}
+//		else
+//		{ // 偶尔掉速，不处理
+//			friction_wheels.lower_speed_times = 0;
+//		}
+//		if (friction_wheels.lower_speed_times >= 3)
+//		{
+//			// 多次低于，调整弹速
+//			friction_wheels.lower_speed = friction_wheels.shoot_speed;
+//			friction_wheels.friction_speed += (23.5f - friction_wheels.lower_speed);
+//			friction_wheels.lower_speed_times = 0;
+//		}
 	}
 
 	friction_wheels.last_shoot_Speed = friction_wheels.shoot_speed;

@@ -19,18 +19,8 @@ void Ref_Init(void);
 void Refereetask(void const *argument);
 
 void Sightglass_static_show(void);
-void Sightglass1_static_show(void);
-void Sightglass2_static_show(void);
-
-void Show_ZERO_static(void);
-void Show_FIRE_static(void);
-void Show_FALL_static(void);
-void Show_BUMP_static(void);
-void Show_SPIN_static(void);
-void Show_CHANGE_static(void);
-
-void Sightglass_flash_show(void);
 void Sightglass1_flash_show(void);
+void Sightglass2_flash_show(void);
 
 //EXTERN部分
 extern int Rest_UI_Flag;

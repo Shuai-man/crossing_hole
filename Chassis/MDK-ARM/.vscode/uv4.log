@@ -1,67 +1,38 @@
-*** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\keil\ARM\ARMCC\Bin'
-Build target 'Chassis'
-Note: source file '..\Judge\Src\Referee.c' - object file renamed from 'Chassis\Referee.o' to 'Chassis\referee_1.o'.compiling bsp_referee.c...
-..\boards\src\bsp_referee.c(14): error:  #20: identifier "REFEREE_FIFO_BUF_LENGTH" is undefined
-  uint8_t Referee_FIFO_Buffer[REFEREE_FIFO_BUF_LENGTH];
-..\boards\src\bsp_referee.c(16): error:  #20: identifier "unpack_data_t" is undefined
-  unpack_data_t Referee_Unpack_OBJ; //protocol解析包结构体
-..\boards\src\bsp_referee.c(18): error:  #20: identifier "REFEREE_USART_RX_BUF_LENGHT" is undefined
-  uint8_t Referee_Buffer[2][REFEREE_USART_RX_BUF_LENGHT]; //裁判系统串口双缓冲区
-..\boards\src\bsp_referee.c(38): error:  #20: identifier "Referee_UART" is undefined
-  	
-ET_BIT(Referee_UART.Instance->CR3, USART_CR3_DMAR);
-..\boards\src\bsp_referee.c(91): error:  #20: identifier "hdma_usart4_rx" is undefined
-  		if ((hdma_usart4_rx.Instance->CR & DMA_SxCR_CT) == RESET)
-..\boards\src\bsp_referee.c: 0 warnings, 5 errors
-compiling stm32f4xx_it.c...
-../Core/Src/stm32f4xx_it.c(180): error:  #20: identifier "referee_data" is undefined
-  		referee_data.decoder.judgementFullCount++;
-../Core/Src/stm32f4xx_it.c: 0 warnings, 1 error
-compiling main.c...
-../Core/Src/main.c(112): error:  #20: identifier "Refereebuffer" is undefined
-  	HAL_UART_Receive_DMA(&huart4, Refereebuffer, sizeof(Refereebuffer));
-../Core/Src/main.c: 0 warnings, 1 error
-compiling GimbalReceive.c...
-compiling robot_config.c...
-compiling ChassisController.c...
-compiling freertos.c...
-compiling bsp_can.c...
-compiling GimbalSend.c...
-..\application\src\GimbalSend.c(10): error:  #20: identifier "referee_data" is undefined
-  	if(referee_data.Game_Robot_State.current_HP==0)
-..\application\src\GimbalSend.c(18): error:  #20: identifier "referee_data" is undefined
-    gimbal_pack_send_1.robot_color = referee_data.Game_Robot_State.robot_id < 10 ? 1 : 0;
-..\application\src\GimbalSend.c(21): error:  #20: identifier "heat_controller" is undefined
-    gimbal_pack_send_1.shoot_avaiable = heat_controller.available_shoot;
-..\application\src\GimbalSend.c: 0 warnings, 3 errors
-compiling Referee.c...
-compiling RefereeTask.c...
-..\Task\src\RefereeTask.c(136): warning:  #177-D: variable "flow_angle"  was declared but never referenced
-  	static int flow_angle = 0;
-..\Task\src\RefereeTask.c(137): warning:  #177-D: variable "v_cap"  was declared but never referenced
-  	static int v_cap = 0;
-..\Task\src\RefereeTask.c: 2 warnings, 0 errors
-compiling PowerControlTask.c...
-..\Task\src\PowerControlTask.c(8): error:  #20: identifier "referee_data" is undefined
-  	if(referee_data.Buff_Musk.remaining_energy & 0x01)
-..\Task\src\PowerControlTask.c(53): error:  #20: identifier "referee_data" is undefined
-  			referee_power = 
-IMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 100, 45);
-..\Task\src\PowerControlTask.c(56): error:  #20: identifier "referee_data" is undefined
-  			referee_power = 
-IMIT_MAX_MIN(referee_data.Game_Robot_State.chassis_power_limit, 100, 45);
-..\Task\src\PowerControlTask.c(61): error:  #20: identifier "referee_data" is undefined
-  			NingCapControl(referee_data.Power_Heat_Data.buffer_energy, referee_power, referee_power + 60.0f);
-..\Task\src\PowerControlTask.c(66): error:  #20: identifier "referee_data" is undefined
-  			NingCapControl(referee_data.Power_Heat_Data.buffer_energy, referee_power, referee_power);//一般进入这
-..\Task\src\PowerControlTask.c: 0 warnings, 5 errors
-compiling ChassisControlTask.c...
-compiling PowerLimit.c...
-compiling mecanum.c...
-compiling GimbalTask.c...
-..\Task\src\GimbalTask.c(27): warning:  #223-D: function "HeatUpdate" declared implicitly
-          HeatUpdate();
-..\Task\src\GimbalTask.c: 1 warning, 0 errors
-"Chassis\Chassis.axf" - 15 Error(s), 3 Warning(s).
-Target not created.
-Build Time Elapsed:  00:00:19
+Load "Chassis\\Chassis.axf" 
+Set JLink Project File to "c:\Users\21036\Desktop\UI���ƴ���\2026.7.16 Chassis\Chassis\MDK-ARM\JLinkSettings.ini"* JLink Info: Device "STM32F405RG" selected.
+
+JLink info:
+------------
+DLL: V6.12a, compiled Dec  2 2016 16:44:26
+Firmware: J-Link ARM-OB STM32 compiled Aug 22 2012 19:52:04
+Hardware: V7.00
+S/N : 20090928 
+Feature(s) : JFlash, RDI, GDB, FlashDL, FlashBP 
+
+* JLink Info: Found SWD-DP with ID 0x2BA01477
+* JLink Info: Found SWD-DP with ID 0x2BA01477
+* JLink Info: AP-IDR: 0x24770011, Type: AHB-AP
+* JLink Info: Found Cortex-M4 r0p1, Little endian.
+* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
+* JLink Info: CoreSight components:
+* JLink Info: ROMTbl 0 @ E00FF000
+* JLink Info: ROMTbl 0 [0]: FFF0F000, CID: B105E00D, PID: 000BB00C SCS
+* JLink Info: ROMTbl 0 [1]: FFF02000, CID: B105E00D, PID: 003BB002 DWT
+* JLink Info: ROMTbl 0 [2]: FFF03000, CID: B105E00D, PID: 002BB003 FPB
+* JLink Info: ROMTbl 0 [3]: FFF01000, CID: B105E00D, PID: 003BB001 ITM
+* JLink Info: ROMTbl 0 [4]: FFF41000, CID: B105900D, PID: 000BB9A1 TPIU
+* JLink Info: ROMTbl 0 [5]: FFF42000, CID: B105900D, PID: 000BB925 ETM
+ROMTableAddr = 0xE00FF000
+
+Target info:
+------------
+Device: STM32F405RGTx
+VTarget = 3.300V
+State of Pins: TCK: 0, TDI: 0, TDO: 1, TMS: 0, TRES: 1, TRST: 0
+Hardware-Breakpoints: 6
+Software-Breakpoints: 8192
+Watchpoints:          4
+JTAG speed: 4000 kHz
+
+Erase Done.Programming Done.Verify OK.Application running ...
+Flash Load finished at 19:15:57

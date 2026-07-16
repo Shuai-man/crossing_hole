@@ -61,3 +61,9 @@ chassis\refereetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_
 chassis\refereetask.o: ../boards/inc/bsp_referee.h
 chassis\refereetask.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 chassis\refereetask.o: ../config/robot_config.h
+chassis\refereetask.o: ../application/inc/GimbalReceive.h
+chassis\refereetask.o: ../Components/tools/inc/debug.h
+chassis\refereetask.o: ../Components/tools/inc/tools.h
+chassis\refereetask.o: ../boards/inc/bsp_dwt.h
+chassis\refereetask.o: ../application/inc/remote_control.h
+chassis\refereetask.o: ../application/inc/NingCap.h

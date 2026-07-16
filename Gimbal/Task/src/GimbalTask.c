@@ -85,6 +85,10 @@ void Gimbal_PC_Cal(void)
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, pc_recv_data.yaw_omega_setpoint); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
     // 总输出 = 前馈 + 角度环输出 + 速度环输出
     gimbal_controller.yaw_out = gimbal_controller.ff_tff + gimbal_controller.yaw_angle_pid.Output + gimbal_controller.yaw_speed_pid.Output;
+
+    //同步TD的输入，防止退出时产生波动
+    TD_Clear(&gimbal_controller.pos_yaw_td, gimbal_controller.target_yaw_angle);
+    TD_Clear(&gimbal_controller.pos_pitch_td, gimbal_controller.target_pitch_angle);
 }
 
 void Gimbal_Act_Cal(void)
@@ -102,9 +106,9 @@ void Gimbal_Auto_aim_Cal(void)
     if (pc_recv_data.detect_number == 0 || fabsf(gimbal_controller.gyro_yaw_angle - pc_recv_data.yaw_setpoint) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
     {
         // 无PC数据处理
-        Gimbal_Act_Cal(); 
+        Gimbal_Act_Cal();
     }
-    else if (pc_recv_data.mode_select == 0x11 )
+    else if (pc_recv_data.mode_select == 0x11)
     {
         // 位置控制
         if (remote_controller.auto_arm == 1)

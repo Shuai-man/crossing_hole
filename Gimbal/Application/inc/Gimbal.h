@@ -28,14 +28,18 @@
 #define GIMBAL_YAW_GYRO_SIGN 1.0f   // 用来标记gyro的方向，逆时针为正
 
 // 云台角度限位
-#define GIMBAL_ANGLE_MAX 40.0f // 实测最大40度
-#define GIMBAL_ANGLE_MIN -10.0f
-
+#if ROBOT_SELECT == OLD
+#define GIMBAL_ANGLE_MAX 25.0f // 实测最大40度
+#define GIMBAL_ANGLE_MIN -15.0f
+#elif ROBOT_SELECT ==NEW
+#define GIMBAL_ANGLE_MAX 37.0f // 实测最大40度
+#define GIMBAL_ANGLE_MIN -11.0f
+#endif
 // Pitch角度机械零点
 #if ROBOT_SELECT == OLD
 #define GIMBAL_PITCH_ZERO 215.172729f 
 #elif ROBOT_SELECT ==NEW
-#define GIMBAL_PITCH_ZERO 207.674561f
+#define GIMBAL_PITCH_ZERO 206.520996f
 #endif
 
 // 云台底盘的yaw轴零点都需要更改

@@ -83,7 +83,7 @@ void Referee_Receive(void)
 			hdma_uart4_rx.Instance->NDTR = REFEREE_USART_RX_BUF_LENGHT;
 			hdma_uart4_rx.Instance->CR |= DMA_SxCR_CT;
 			__HAL_DMA_ENABLE(&hdma_uart4_rx);
-			fifo_s_puts(&Referee_FIFO, (char*)Referee_Buffer[1], this_time_rx_len);
+			fifo_s_puts(&Referee_FIFO, (char*)Referee_Buffer[0], this_time_rx_len);
 			LossUpdate(&global_debugger.referee_debugger,0.2f);
 		}
 		else
@@ -91,7 +91,7 @@ void Referee_Receive(void)
 			__HAL_DMA_DISABLE(&hdma_uart4_rx);
 			this_time_rx_len = REFEREE_USART_RX_BUF_LENGHT - hdma_uart4_rx.Instance->NDTR;
 			hdma_uart4_rx.Instance->NDTR = REFEREE_USART_RX_BUF_LENGHT;
-			DMA1_Stream1->CR &= ~(DMA_SxCR_CT);
+			hdma_uart4_rx.Instance->CR &= ~(DMA_SxCR_CT);
 			__HAL_DMA_ENABLE(&hdma_uart4_rx);
 			fifo_s_puts(&Referee_FIFO, (char*)Referee_Buffer[1], this_time_rx_len);
 			LossUpdate(&global_debugger.referee_debugger,0.2f);

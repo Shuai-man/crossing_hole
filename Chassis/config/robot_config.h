@@ -5,7 +5,7 @@
 #define OLD 0
 #define NEW 1
 
-#define ROBOT OLD
+#define ROBOT NEW
 
 
 typedef enum CHASSIS_TYPE
