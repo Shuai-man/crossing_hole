@@ -120,7 +120,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>?絯t體</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -269,6 +268,11 @@
           <count>22</count>
           <WinNumber>1</WinNumber>
           <ItemText>gimbal_sysid,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>23</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>yaw_min</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -1605,7 +1609,7 @@
 
   <Group>
     <GroupName>Lift</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

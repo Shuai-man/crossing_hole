@@ -93,7 +93,6 @@ gimbal\chassissend.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\chassissend.o: ../Application/inc/pc_serial.h
 gimbal\chassissend.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\chassissend.o: ../Algorithm/inc/TD.h
-gimbal\chassissend.o: ../Application/inc/GimbalSystemID.h
 gimbal\chassissend.o: ../Application/inc/KeyMouse.h
 gimbal\chassissend.o: ../Application/inc/DT7_Controller.h
 gimbal\chassissend.o: ../Application/inc/KeyMouse.h

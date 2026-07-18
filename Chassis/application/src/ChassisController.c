@@ -227,7 +227,7 @@ void set_robot_speed(Infantry *infantry)
         {
             infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.008f + 1.2f;
             infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.008f + 1.2f;
-            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.008f + 0.5f;
+            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.008f + 5.0f;
         }			
     }
 }

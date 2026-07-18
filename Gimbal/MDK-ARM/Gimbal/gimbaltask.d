@@ -93,7 +93,6 @@ gimbal\gimbaltask.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\gimbaltask.o: ../Application/inc/pc_serial.h
 gimbal\gimbaltask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\gimbaltask.o: ../Algorithm/inc/TD.h
-gimbal\gimbaltask.o: ../Application/inc/GimbalSystemID.h
 gimbal\gimbaltask.o: ../Application/inc/FrictionWheel.h
 gimbal\gimbaltask.o: ../Components/motor/inc/M3508.h
 gimbal\gimbaltask.o: ../Config/can_config.h
@@ -110,3 +109,4 @@ gimbal\gimbaltask.o: ../Algorithm/inc/SignalGenerator.h
 gimbal\gimbaltask.o: ../USB_DEVICE/App/usb_device.h
 gimbal\gimbaltask.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
 gimbal\gimbaltask.o: ../USB_DEVICE/Target/usbd_conf.h
+gimbal\gimbaltask.o: ../Application/inc/GimbalSystemID.h

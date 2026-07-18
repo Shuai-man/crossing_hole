@@ -21,6 +21,7 @@ void TD_Clear(TD_t *td, float x)
     td->ddx = 0;
     td->last_dx = 0;
     td->last_ddx = 0;
+    td->dt = DWT_GetDeltaT((void *)&td->DWT_CNT);
 }
 float TD_Calculate(TD_t *td, float input)
 {

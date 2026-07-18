@@ -54,6 +54,7 @@ gimbal\freertos.o: ../Task/inc/GimbalEstimateTask.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_dwt.h
 gimbal\freertos.o: ../Application/inc/ins.h
 gimbal\freertos.o: ../Application/inc/BMI088driver.h
+gimbal\freertos.o: ../Config/robot_config.h
 gimbal\freertos.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\freertos.o: ../Algorithm/inc/kalman_filter.h
 gimbal\freertos.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
@@ -80,7 +81,6 @@ gimbal\freertos.o: ../Components/boards/inc/bsp_DT7.h
 gimbal\freertos.o: ../Task/inc/Offline_Task.h
 gimbal\freertos.o: ..\Lift\Inc\lifting_control.h
 gimbal\freertos.o: ..\Lift\Inc\lifting_types.h
-gimbal\freertos.o: ../Config/Robot_config.h
 gimbal\freertos.o: ../Components/motor/inc/M2006.h
 gimbal\freertos.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\freertos.o: ../Algorithm/inc/my_filter.h
@@ -93,7 +93,6 @@ gimbal\freertos.o: ../Application/inc/remote_control.h
 gimbal\freertos.o: ../Application/inc/pc_serial.h
 gimbal\freertos.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\freertos.o: ../Algorithm/inc/TD.h
-gimbal\freertos.o: ../Application/inc/GimbalSystemID.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_led.h
 gimbal\freertos.o: ../Task/inc/GimbalTask.h

@@ -93,7 +93,6 @@ gimbal\lifting_control.o: ../Application/inc/Gimbal.h
 gimbal\lifting_control.o: ../Application/inc/pc_serial.h
 gimbal\lifting_control.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\lifting_control.o: ../Algorithm/inc/TD.h
-gimbal\lifting_control.o: ../Application/inc/GimbalSystemID.h
 gimbal\lifting_control.o: ..\Lift\Inc\encoder.h
 gimbal\lifting_control.o: ..\Lift\Inc\lifting_config.h
 gimbal\lifting_control.o: ..\Lift\Inc\lifting_encoder_protection.h

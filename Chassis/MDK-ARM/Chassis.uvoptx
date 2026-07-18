@@ -120,7 +120,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>?絯条?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -249,16 +248,6 @@
           <count>17</count>
           <WinNumber>1</WinNumber>
           <ItemText>UI_Graph7</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>UI_Graph5.Graphic[1].end_y</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>vanishing_y</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>

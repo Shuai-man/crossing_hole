@@ -31,7 +31,7 @@ typedef enum YAW_MOTOR_TYPE
 #if ROBOT == OLD
 #define GIMBAL_FOLLOW_ZERO 9.51965332f  // 底盘跟随角度零点
 #elif ROBOT == NEW
-#define GIMBAL_FOLLOW_ZERO 105.309448f
+#define GIMBAL_FOLLOW_ZERO 106.32019f
 #endif
 
 #define GIMBAL_MOTOR_SIGN -1    // 云台电机方向，以逆时针为正

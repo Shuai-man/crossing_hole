@@ -91,6 +91,5 @@ gimbal\offline_task.o: ../Application/inc/remote_control.h
 gimbal\offline_task.o: ../Application/inc/pc_serial.h
 gimbal\offline_task.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\offline_task.o: ../Algorithm/inc/TD.h
-gimbal\offline_task.o: ../Application/inc/GimbalSystemID.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_led.h

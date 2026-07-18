@@ -49,6 +49,7 @@ gimbal\gimbalestimatetask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_p
 gimbal\gimbalestimatetask.o: ../Application/inc/ins.h
 gimbal\gimbalestimatetask.o: ../Application/inc/BMI088driver.h
 gimbal\gimbalestimatetask.o: ../Core/Inc/main.h
+gimbal\gimbalestimatetask.o: ../Config/robot_config.h
 gimbal\gimbalestimatetask.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\gimbalestimatetask.o: ../Algorithm/inc/kalman_filter.h
 gimbal\gimbalestimatetask.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h

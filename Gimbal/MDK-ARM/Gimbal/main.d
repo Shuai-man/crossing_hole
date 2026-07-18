@@ -105,7 +105,6 @@ gimbal\main.o: ../Application/inc/Gimbal.h
 gimbal\main.o: ../Application/inc/pc_serial.h
 gimbal\main.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\main.o: ../Algorithm/inc/TD.h
-gimbal\main.o: ../Application/inc/GimbalSystemID.h
 gimbal\main.o: ../Application/inc/ToggleBullet.h
 gimbal\main.o: ..\Lift\Inc\encoder.h
 gimbal\main.o: ..\Lift\Inc\tof.h

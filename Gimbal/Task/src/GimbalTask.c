@@ -1,4 +1,5 @@
 #include "GimbalTask.h"
+#include "GimbalSystemID.h"
 
 int8_t dji_motors_send_data_can1[8];
 int8_t dji_motors_send_data_can2[8];
@@ -59,7 +60,6 @@ void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
 void Gimbal_PC_Cal(void)
 {
     float yaw_friction_ratio;
-
     // PITCH
     gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
     limitPitchAngle(); // pitch限制幅值
@@ -72,8 +72,8 @@ void Gimbal_PC_Cal(void)
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, pc_recv_data.pitch_omega_setpoint);
     gimbal_controller.pitch_out = gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output + gimbal_controller.gravity_comp + gimbal_controller.ff_tff_pitch;
 
-    // YAW
-    gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
+    // YAW：增量式控制
+    gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + gimbal_controller.pc_dt_yaw;
     yaw_friction_ratio = LIMIT_MAX_MIN(pc_recv_data.yaw_omega_setpoint /
                                            BORDER_FRICTION_SPEED,
                                        1.0f, -1.0f);
@@ -81,12 +81,12 @@ void Gimbal_PC_Cal(void)
         GIMBAL_YAW_J * pc_recv_data.yaw_acc_setpoint +   // 惯量 × 加速度，主要输出项
         GIMBAL_YAW_B * pc_recv_data.yaw_omega_setpoint + // 阻尼 × 速度
         GIMBAL_YAW_C * yaw_friction_ratio;               // 低速平滑的运动库仑摩擦
-    PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, pc_recv_data.yaw_setpoint);
+    PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, gimbal_controller.target_yaw_angle);
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, pc_recv_data.yaw_omega_setpoint); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
     // 总输出 = 前馈 + 角度环输出 + 速度环输出
     gimbal_controller.yaw_out = gimbal_controller.ff_tff + gimbal_controller.yaw_angle_pid.Output + gimbal_controller.yaw_speed_pid.Output;
 
-    //同步TD的输入，防止退出时产生波动
+    // 同步TD的输入，防止退出时产生波动
     TD_Clear(&gimbal_controller.pos_yaw_td, gimbal_controller.target_yaw_angle);
     TD_Clear(&gimbal_controller.pos_pitch_td, gimbal_controller.target_pitch_angle);
 }
@@ -103,7 +103,8 @@ void Gimbal_Act_Cal(void)
 // 自瞄模式的云台控制
 void Gimbal_Auto_aim_Cal(void)
 {
-    if (pc_recv_data.detect_number == 0 || fabsf(gimbal_controller.gyro_yaw_angle - pc_recv_data.yaw_setpoint) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
+    gimbal_controller.pc_dt_yaw = find_min_angle(pc_recv_data.yaw_setpoint, gimbal_controller.gyro_yaw_angle);
+    if (pc_recv_data.detect_number == 0 || fabs(gimbal_controller.pc_dt_yaw) > 70.0f || global_debugger.pc_receive_debugger.state != ON) // 没有识别到目标或者目标角度过大，或者pc掉线
     {
         // 无PC数据处理
         Gimbal_Act_Cal();
@@ -114,7 +115,7 @@ void Gimbal_Auto_aim_Cal(void)
         if (remote_controller.auto_arm == 1)
         {
             gimbal_controller.target_pitch_angle = pc_recv_data.pitch_setpoint;
-            gimbal_controller.target_yaw_angle = pc_recv_data.yaw_setpoint;
+            gimbal_controller.target_yaw_angle = gimbal_controller.gyro_yaw_angle + gimbal_controller.pc_dt_yaw;
         }
         Gimbal_Act_Cal();
     }
@@ -128,16 +129,6 @@ void Gimbal_Auto_aim_Cal(void)
         // 手动控制
         Gimbal_Act_Cal();
     }
-}
-
-void Gimbal_SI_Cal()
-{
-#if GIMBAL_TEST
-    // 求力矩与电机转动角度之间的传递函数
-    gimbal_controller.yaw_speed_pid.Output = SIRun(&SI_object, gimbal_controller.delta_t);
-    // 限幅
-
-#endif
 }
 
 void Shoot_Power_down_Cal(void)

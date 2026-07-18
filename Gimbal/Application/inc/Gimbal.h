@@ -16,7 +16,6 @@
 #include "pid.h"
 #include "my_filter.h"
 #include "TD.h"
-#include "GimbalSystemID.h"
 
 // pitch
 #define GIMBAL_PITCH_GYRO_SIGN 1.0f // pitch符号，向上为正
@@ -46,7 +45,7 @@
 #if ROBOT_SELECT == OLD
 #define GIMBAL_ANGLE_ZERO 9.51965332f 
 #elif ROBOT_SELECT ==NEW
-#define GIMBAL_ANGLE_ZERO 105.309448f
+#define GIMBAL_ANGLE_ZERO 106.32019f
 #endif
 
 /* 系统辨识的模式和移植参数已集中到 GimbalSystemIDConfig.h/.c。 */
@@ -105,6 +104,9 @@ typedef struct GimbalController
   float err_angle_180; // 误差余角，用于判断方向
   uint8_t return_flag; // 回正标志位，0是完成，1是开始回正，2是正在回正
   gimbal_direction_e gimbal_direction;
+
+  /*----PC控制----*/
+  float pc_dt_yaw;// PC控制的yaw角度增量
   /*----------Pitch 轴-----------------*/
   // 陀螺仪信息及其解算
   float gyro_pitch_speed;
@@ -170,5 +172,5 @@ float Gimbal_Yaw_Calculate(float set_point);
 float GimbalFrictionModel(void);
 
 float limit_angle(float in);
-
+float find_min_angle(float target_angle, float current_angle);
 #endif // !_GIMBAL_H

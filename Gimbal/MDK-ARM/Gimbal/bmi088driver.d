@@ -37,6 +37,7 @@ gimbal\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 gimbal\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\bmi088driver.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
+gimbal\bmi088driver.o: ../Config/robot_config.h
 gimbal\bmi088driver.o: ../Application/inc/BMI088reg.h
 gimbal\bmi088driver.o: ../Application/inc/BMI088Middleware.h
 gimbal\bmi088driver.o: ../Core/Inc/spi.h

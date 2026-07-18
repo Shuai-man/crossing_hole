@@ -94,7 +94,6 @@ gimbal\chassistask.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\chassistask.o: ../Application/inc/pc_serial.h
 gimbal\chassistask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\chassistask.o: ../Algorithm/inc/TD.h
-gimbal\chassistask.o: ../Application/inc/GimbalSystemID.h
 gimbal\chassistask.o: ../Application/inc/DT7_Controller.h
 gimbal\chassistask.o: ../Application/inc/KeyMouse.h
 gimbal\chassistask.o: ../Application/inc/VTM_Controller.h

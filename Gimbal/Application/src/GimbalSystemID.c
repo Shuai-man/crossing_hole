@@ -12,7 +12,6 @@
  *   5. 新项目先阅读 GimbalSystemID_PORTING.md
  ******************************************************************************
  */
-#include "Gimbal.h" 
 #include "GimbalSystemID.h"
 #include "TD.h"
 #include "tools.h"

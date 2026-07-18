@@ -16,7 +16,7 @@
 
 #include "stdint.h"
 #include "main.h"
-//#include "robot_config.h"
+#include "robot_config.h"
 
 #define BMI088_TEMP_FACTOR 0.125f
 #define BMI088_TEMP_OFFSET 23.0f
@@ -45,12 +45,19 @@
 #define BMI088_GYRO_250_SEN 0.00013315805450396191230191732547673f
 #define BMI088_GYRO_125_SEN 0.000066579027251980956150958662738366f
 
-
+#if ROBOT_SELECT == OLD
 #define GxOFFSET 0.00280998903
 #define GyOFFSET -0.00484138308
 #define GzOFFSET 0.00171389617
 #define gNORM 9.89920425
 #define GRAVITY 9.81f
+#elif ROBOT_SELECT == NEW
+#define GxOFFSET 0.00280998903
+#define GyOFFSET -0.00484138308
+#define GzOFFSET 0.00171389617
+#define gNORM 9.89920425
+#define GRAVITY 9.81f
+#endif
 
 typedef struct
 {

@@ -93,7 +93,6 @@ gimbal\keymouse.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\keymouse.o: ../Application/inc/pc_serial.h
 gimbal\keymouse.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\keymouse.o: ../Algorithm/inc/TD.h
-gimbal\keymouse.o: ../Application/inc/GimbalSystemID.h
 gimbal\keymouse.o: ../Application/inc/DT7_Controller.h
 gimbal\keymouse.o: ../Application/inc/KeyMouse.h
 gimbal\keymouse.o: ../Application/inc/VTM_Controller.h

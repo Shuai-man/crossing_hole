@@ -13,8 +13,7 @@
 #include "stdbool.h"
 #include "GimbalSystemIDConfig.h"
 #include "TD.h"
-
-struct GimbalController;
+#include "Gimbal.h"
 
 /*
  * 单轴辨识状态与结果。它不属于普通云台控制器，可在调试器中独立查看。
@@ -178,7 +177,7 @@ bool BScan_Run(BoundaryScanner *bs, float theta_deg, float dt,
 bool BScan_IsDone(const BoundaryScanner *bs);
 
 /* ========== 4. 云台系统辨识顶层接口 ========== */
-void GimbalSystemID_Init(struct GimbalController *ctrl);
+void GimbalSystemID_Init(GimbalController *ctrl);
 void GimbalSystemID_Run(void);
 
 #endif /* _GIMBAL_SYSTEM_ID_H */

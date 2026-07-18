@@ -38,6 +38,7 @@ gimbal\ins.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 gimbal\ins.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\ins.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\ins.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
+gimbal\ins.o: ../Config/robot_config.h
 gimbal\ins.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\ins.o: ../Algorithm/inc/kalman_filter.h
 gimbal\ins.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h

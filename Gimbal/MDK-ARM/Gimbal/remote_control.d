@@ -92,4 +92,3 @@ gimbal\remote_control.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\remote_control.o: ../Application/inc/pc_serial.h
 gimbal\remote_control.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\remote_control.o: ../Algorithm/inc/TD.h
-gimbal\remote_control.o: ../Application/inc/GimbalSystemID.h

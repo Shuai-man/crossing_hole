@@ -1,5 +1,6 @@
 #include "Gimbal.h"
 #include "bsp_dwt.h"
+#include "GimbalSystemID.h"
 
 GimbalController gimbal_controller;
 
@@ -46,7 +47,7 @@ void GimbalPidInit(void)
 // todo 把重力补偿加上
 float Gimbal_Pitch_Calculate(float set_point)
 {
-#if GIMBAL_SYSID ==GIMBAL_PITCH_SYSID
+#if GIMBAL_SYSID == GIMBAL_PITCH_SYSID
     PID_Calculate(&gimbal_controller.pitch_speed_pid, gimbal_controller.gyro_pitch_speed, gimbal_controller.pitch_speed_pid.Ref);
     gimbal_controller.pitch_out = gimbal_controller.pitch_speed_pid.Output;
     return gimbal_controller.pitch_out;
@@ -67,8 +68,8 @@ float Gimbal_Pitch_Calculate(float set_point)
     friction_ratio = LIMIT_MAX_MIN(gimbal_controller.pos_pitch_td.dx / BORDER_FRICTION_SPEED,
                                    1.0f, -1.0f);
     gimbal_controller.ff_tff_pitch = GIMBAL_PITCH_J * gimbal_controller.pos_pitch_td.ddx + // 惯量 × 加速度，主要输出项
-                                     GIMBAL_PITCH_B * gimbal_controller.pos_pitch_td.dx + // 粘性阻尼 × 速度
-                                     GIMBAL_PITCH_C * friction_ratio;                       // 运动库仑摩擦
+                                     GIMBAL_PITCH_B * gimbal_controller.pos_pitch_td.dx +  // 粘性阻尼 × 速度
+                                     GIMBAL_PITCH_C * friction_ratio;                      // 运动库仑摩擦
 
     gimbal_controller.pitch_out = gimbal_controller.ff_tff_pitch + gimbal_controller.gravity_comp + gimbal_controller.pitch_angle_pid.Output + gimbal_controller.pitch_speed_pid.Output;
     return gimbal_controller.pitch_out;
@@ -105,13 +106,13 @@ float Gimbal_Yaw_Calculate(float set_point)
      * 固定的正向力矩和位置稳态偏差。
      */
     friction_ratio = LIMIT_MAX_MIN(gimbal_controller.pos_yaw_td.dx /
-                                   BORDER_FRICTION_SPEED,
+                                       BORDER_FRICTION_SPEED,
                                    1.0f, -1.0f);
     // 计算前馈力矩
     gimbal_controller.ff_tff =
-        GIMBAL_YAW_J * gimbal_controller.pos_yaw_td.ddx +     // 惯量 × 加速度，主要输出项
-        GIMBAL_YAW_B * gimbal_controller.pos_yaw_td.dx +      // 阻尼 × 速度
-        GIMBAL_YAW_C * friction_ratio;                         // 低速平滑的运动库仑摩擦
+        GIMBAL_YAW_J * gimbal_controller.pos_yaw_td.ddx + // 惯量 × 加速度，主要输出项
+        GIMBAL_YAW_B * gimbal_controller.pos_yaw_td.dx +  // 阻尼 × 速度
+        GIMBAL_YAW_C * friction_ratio;                    // 低速平滑的运动库仑摩擦
     PID_Calculate(&gimbal_controller.yaw_angle_pid, gimbal_controller.gyro_yaw_angle, gimbal_controller.pos_yaw_td.x);
     PID_Calculate(&gimbal_controller.yaw_speed_pid, gimbal_controller.gyro_yaw_speed, gimbal_controller.pos_yaw_td.dx); // 速度环类似阻尼项，因为前馈会拉着电机加速，所以实际速度比设定速度快，一开始速度环输出会是负的，如果影响大，可以适当减小速度环的p
     // 总输出 = 前馈 + 角度环输出 + 速度环输出
@@ -123,14 +124,18 @@ float Gimbal_Yaw_Calculate(float set_point)
 // 限制角度在[-180,180]范围内
 float limit_angle(float in)
 {
-    while (in < -180.0f || in > 180.0f)
-    {
-        if (in < -180.0f)
-            in = in + 2 * 180.0f;
-        if (in > 180.0f)
-            in = in - 2 * 180.0f;
-    }
-    return in;
+    float angle = fmodf(in, 360.0f);
+    if (angle < -180.0f)
+        angle = angle + 2 * 180.0f;
+    if (angle > 180.0f)
+        angle = angle - 2 * 180.0f;
+    return angle;
+}
+
+float find_min_angle(float target_angle, float current_angle)
+{
+    float angle = limit_angle(target_angle - current_angle );
+    return angle;
 }
 
 void GimbalClear(void)

@@ -19,7 +19,7 @@
 #include "FrictionWheel.h"
 
 //参考遥控器，假设鼠标速度峰值为300，delta_t为0.01s
-#define MOUSE_YAW_SPEED 1.0f/250.0f //t/速度峰值
+#define MOUSE_YAW_SPEED 1.0f/100.0f // 速度/速度峰值
 #define MOUSE_YAW_SENSITIVITY   0.01f*180.0f/400.0f //t*角度/速度峰值
 #define MOUSE_PITCH_SENSITIVITY 0.01f*180.0f/400.0f //t*角度/速度峰值
 #define MOUSE_SCROLL_SENSITIVITY 0.001f

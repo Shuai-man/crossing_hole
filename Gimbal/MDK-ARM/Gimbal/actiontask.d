@@ -94,7 +94,6 @@ gimbal\actiontask.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\actiontask.o: ../Application/inc/pc_serial.h
 gimbal\actiontask.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\actiontask.o: ../Algorithm/inc/TD.h
-gimbal\actiontask.o: ../Application/inc/GimbalSystemID.h
 gimbal\actiontask.o: ../Application/inc/DT7_Controller.h
 gimbal\actiontask.o: ../Application/inc/KeyMouse.h
 gimbal\actiontask.o: ../Application/inc/VTM_Controller.h

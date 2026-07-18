@@ -52,6 +52,7 @@ gimbal\usbd_cdc_if.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\usbd_cdc_if.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 gimbal\usbd_cdc_if.o: ../Application/inc/ins.h
 gimbal\usbd_cdc_if.o: ../Application/inc/BMI088driver.h
+gimbal\usbd_cdc_if.o: ../Config/robot_config.h
 gimbal\usbd_cdc_if.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\usbd_cdc_if.o: ../Algorithm/inc/kalman_filter.h
 gimbal\usbd_cdc_if.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h

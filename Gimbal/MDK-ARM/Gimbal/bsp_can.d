@@ -98,6 +98,5 @@ gimbal\bsp_can.o: ../Application/inc/Gimbal.h
 gimbal\bsp_can.o: ../Application/inc/pc_serial.h
 gimbal\bsp_can.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\bsp_can.o: ../Algorithm/inc/TD.h
-gimbal\bsp_can.o: ../Application/inc/GimbalSystemID.h
 gimbal\bsp_can.o: ../Application/inc/ToggleBullet.h
 gimbal\bsp_can.o: ..\Lift\Inc\encoder.h

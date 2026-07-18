@@ -94,7 +94,6 @@ gimbal\dt7_controller.o: ../Components/boards/inc/bsp_PWM.h
 gimbal\dt7_controller.o: ../Application/inc/pc_serial.h
 gimbal\dt7_controller.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\dt7_controller.o: ../Algorithm/inc/TD.h
-gimbal\dt7_controller.o: ../Application/inc/GimbalSystemID.h
 gimbal\dt7_controller.o: ../Application/inc/DT7_Controller.h
 gimbal\dt7_controller.o: ../Application/inc/VTM_Controller.h
 gimbal\dt7_controller.o: ../Application/inc/KeyMouse.h

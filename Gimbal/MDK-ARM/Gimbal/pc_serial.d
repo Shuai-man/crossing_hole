@@ -44,6 +44,7 @@ gimbal\pc_serial.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 gimbal\pc_serial.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\pc_serial.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\pc_serial.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
+gimbal\pc_serial.o: ../Config/robot_config.h
 gimbal\pc_serial.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\pc_serial.o: ../Algorithm/inc/kalman_filter.h
 gimbal\pc_serial.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h
@@ -72,7 +73,6 @@ gimbal\pc_serial.o: ../Components/boards/inc/bsp_dwt.h
 gimbal\pc_serial.o: ../Components/tools/inc/debug.h
 gimbal\pc_serial.o: ../Application/inc/ChassisGet.h
 gimbal\pc_serial.o: ../Application/inc/Gimbal.h
-gimbal\pc_serial.o: ../Config/Robot_config.h
 gimbal\pc_serial.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\pc_serial.o: ../Components/motor/inc/GM6020.h
 gimbal\pc_serial.o: ../Components/tools/inc/ZeroCheck.h
@@ -93,7 +93,6 @@ gimbal\pc_serial.o: ..\Lift\Inc\lifting_types.h
 gimbal\pc_serial.o: ../Components/motor/inc/M2006.h
 gimbal\pc_serial.o: ../Application/inc/Gimbal.h
 gimbal\pc_serial.o: ../Algorithm/inc/TD.h
-gimbal\pc_serial.o: ../Application/inc/GimbalSystemID.h
 gimbal\pc_serial.o: ../Algorithm/FastMath/arm_atan2_f32.h
 gimbal\pc_serial.o: ../USB_DEVICE/App/usbd_cdc_if.h
 gimbal\pc_serial.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h
