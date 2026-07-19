@@ -22,7 +22,6 @@
 #include "GM6020.h"
 #include "bsp_can.h"
 
-#include "robot_config.h"
 #include "mecanum.h"
 #include "omni.h"
 #include "steer.h"

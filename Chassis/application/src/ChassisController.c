@@ -1,5 +1,6 @@
 #include "ChassisController.h"
 #include "debug.h"
+#include "robot_config.h"
 
 Infantry infantry;
 
@@ -184,6 +185,7 @@ float test_power = 70; // 不用或者没有超电就手动设置功率
 void set_robot_speed(Infantry *infantry)
 {
     // 没有裁判系统时，超电设定power为0，改为默认80w
+		//todo 有超电，设定功率比referee大10w
     if (cap_controller.cap_vol_state != CapVol_Low && cap_controller.set_power > 45.0f)
     {
         infantry->set_power = cap_controller.set_power; // 超电设定80w
@@ -215,20 +217,36 @@ void set_robot_speed(Infantry *infantry)
 //            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.008f + 1.4f;
 //            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.008f + 1.0f;
 //        }
-			//地胶地形
+//地胶地形			
+#if ROBOT == OLD
         if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
         {
             // 这里的speed不要超过10
-            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.008f + 0.9f;
-            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.008f + 0.0f;
-            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.07f + 4.2f;
+            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 0.5f;
+            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 0.5f;
+            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.06f + 3.7f;
         }
         else
         {
-            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.008f + 1.2f;
-            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.008f + 1.2f;
-            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.008f + 5.0f;
-        }			
+            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 1.0f;
+            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 1.0f;
+            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.007f + 5.0f;
+        }	
+#elif ROBOT == NEW
+        if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
+        {
+            // 这里的speed不要超过10
+            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 0.3f;
+            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 0.3f;
+            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.06f + 3.9f;
+        }
+        else
+        {
+            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 1.1f;
+            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 1.1f;
+            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.007f + 5.0f;
+        }	
+#endif	
     }
 }
 

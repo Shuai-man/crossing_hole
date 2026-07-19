@@ -5,7 +5,7 @@
 #define NEW 1 // 新云台：外置绝对编码器作为升降位置传感器
 
 #ifndef ROBOT_SELECT
-#define ROBOT_SELECT NEW
+#define ROBOT_SELECT OLD
 #endif
 
 
