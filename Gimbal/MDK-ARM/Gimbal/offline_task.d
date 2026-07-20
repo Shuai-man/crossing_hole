@@ -60,8 +60,8 @@ gimbal\offline_task.o: ../Core/Inc/usart.h
 gimbal\offline_task.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\offline_task.o: ../Components/boards/inc/bsp_DT7.h
 gimbal\offline_task.o: ../Task/inc/Offline_Task.h
-gimbal\offline_task.o: ..\Lift\Inc\lifting_control.h
-gimbal\offline_task.o: ..\Lift\Inc\lifting_types.h
+gimbal\offline_task.o: ../Lift/Inc/lifting_control.h
+gimbal\offline_task.o: ../Lift/Inc/lifting_types.h
 gimbal\offline_task.o: ../Config/Robot_config.h
 gimbal\offline_task.o: ../Algorithm/inc/pid.h
 gimbal\offline_task.o: ../Algorithm/inc/user_lib.h

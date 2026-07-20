@@ -64,8 +64,8 @@ gimbal\keymouse.o: ../Application/inc/remote_control.h
 gimbal\keymouse.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\keymouse.o: ../Core/Inc/tim.h
 gimbal\keymouse.o: ../Components/boards/inc/bsp_led.h
-gimbal\keymouse.o: ..\Lift\Inc\lifting_control.h
-gimbal\keymouse.o: ..\Lift\Inc\lifting_types.h
+gimbal\keymouse.o: ../Lift/Inc/lifting_control.h
+gimbal\keymouse.o: ../Lift/Inc/lifting_types.h
 gimbal\keymouse.o: ../Config/Robot_config.h
 gimbal\keymouse.o: ../Algorithm/inc/pid.h
 gimbal\keymouse.o: ../Algorithm/inc/user_lib.h

@@ -20,10 +20,10 @@
 
 
 // M3508电机
-#define M3508_R 0.0
-#define M3508_B 0.0
-#define M3508_K 0.3  	//0.3N/A
-#define M3508_P0 0.0 
+#define M3508_R 0.434462309f
+#define M3508_B 0.0344156735f
+#define M3508_K 0.3f  	//0.3N/A
+#define M3508_P0 4.0f/4.0f 
 
 
 typedef enum Power_Arrange

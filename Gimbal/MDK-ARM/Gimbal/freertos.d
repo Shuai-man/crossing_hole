@@ -79,8 +79,8 @@ gimbal\freertos.o: ../Core/Inc/usart.h
 gimbal\freertos.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_DT7.h
 gimbal\freertos.o: ../Task/inc/Offline_Task.h
-gimbal\freertos.o: ..\Lift\Inc\lifting_control.h
-gimbal\freertos.o: ..\Lift\Inc\lifting_types.h
+gimbal\freertos.o: ../Lift/Inc/lifting_control.h
+gimbal\freertos.o: ../Lift/Inc/lifting_types.h
 gimbal\freertos.o: ../Components/motor/inc/M2006.h
 gimbal\freertos.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\freertos.o: ../Algorithm/inc/my_filter.h
@@ -102,7 +102,7 @@ gimbal\freertos.o: ../Config/can_config.h
 gimbal\freertos.o: ../Components/boards/inc/bsp_can.h
 gimbal\freertos.o: ../Config/Motor_Typdef.h
 gimbal\freertos.o: ../Application/inc/ToggleBullet.h
-gimbal\freertos.o: ..\Lift\Inc\encoder.h
+gimbal\freertos.o: ../Lift/Inc/encoder.h
 gimbal\freertos.o: ../Application/inc/KeyMouse.h
 gimbal\freertos.o: ../Application/inc/DT7_Controller.h
 gimbal\freertos.o: ../Application/inc/KeyMouse.h

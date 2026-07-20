@@ -90,7 +90,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         {
             if (vtm_remote.sw[Pause] == 1)
             {
-                State_Clear(); // 不能加VTM_Init 否则pause会重置
+                setGameModeAction(OFF_MODE); // 不能加VTM_Init 否则pause会重置
             }
             else if (vtm_remote.sw[Left_up] == 1) // 启动按键
             {
@@ -127,7 +127,6 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_V:
             break;
         case KEY_SHIFT:
-            setSuperPower(POWER_TO_SuperPower);
             break;
         case KEY_CTRL:
             break;
@@ -179,6 +178,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_V:
             break;
         case KEY_SHIFT:
+					  setSuperPower(POWER_TO_SuperPower);
             break;
         case KEY_CTRL:
 

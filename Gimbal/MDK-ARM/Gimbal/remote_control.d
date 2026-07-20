@@ -63,8 +63,8 @@ gimbal\remote_control.o: ../Application/inc/remote_control.h
 gimbal\remote_control.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\remote_control.o: ../Core/Inc/tim.h
 gimbal\remote_control.o: ../Components/boards/inc/bsp_led.h
-gimbal\remote_control.o: ..\Lift\Inc\lifting_control.h
-gimbal\remote_control.o: ..\Lift\Inc\lifting_types.h
+gimbal\remote_control.o: ../Lift/Inc/lifting_control.h
+gimbal\remote_control.o: ../Lift/Inc/lifting_types.h
 gimbal\remote_control.o: ../Config/Robot_config.h
 gimbal\remote_control.o: ../Algorithm/inc/pid.h
 gimbal\remote_control.o: ../Algorithm/inc/user_lib.h

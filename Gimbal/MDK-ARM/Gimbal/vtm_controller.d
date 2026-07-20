@@ -61,8 +61,8 @@ gimbal\vtm_controller.o: ../Application/inc/ChassisGet.h
 gimbal\vtm_controller.o: ../Application/inc/remote_control.h
 gimbal\vtm_controller.o: ../Components/boards/inc/bsp_DT7.h
 gimbal\vtm_controller.o: ../Task/inc/Offline_Task.h
-gimbal\vtm_controller.o: ..\Lift\Inc\lifting_control.h
-gimbal\vtm_controller.o: ..\Lift\Inc\lifting_types.h
+gimbal\vtm_controller.o: ../Lift/Inc/lifting_control.h
+gimbal\vtm_controller.o: ../Lift/Inc/lifting_types.h
 gimbal\vtm_controller.o: ../Config/Robot_config.h
 gimbal\vtm_controller.o: ../Algorithm/inc/pid.h
 gimbal\vtm_controller.o: ../Algorithm/inc/user_lib.h

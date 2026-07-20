@@ -64,8 +64,8 @@ gimbal\gimbaltask.o: ../Application/inc/remote_control.h
 gimbal\gimbaltask.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\gimbaltask.o: ../Core/Inc/tim.h
 gimbal\gimbaltask.o: ../Components/boards/inc/bsp_led.h
-gimbal\gimbaltask.o: ..\Lift\Inc\lifting_control.h
-gimbal\gimbaltask.o: ..\Lift\Inc\lifting_types.h
+gimbal\gimbaltask.o: ../Lift/Inc/lifting_control.h
+gimbal\gimbaltask.o: ../Lift/Inc/lifting_types.h
 gimbal\gimbaltask.o: ../Config/Robot_config.h
 gimbal\gimbaltask.o: ../Algorithm/inc/pid.h
 gimbal\gimbaltask.o: ../Algorithm/inc/user_lib.h
@@ -99,7 +99,7 @@ gimbal\gimbaltask.o: ../Config/can_config.h
 gimbal\gimbaltask.o: ../Components/boards/inc/bsp_can.h
 gimbal\gimbaltask.o: ../Config/Motor_Typdef.h
 gimbal\gimbaltask.o: ../Application/inc/ToggleBullet.h
-gimbal\gimbaltask.o: ..\Lift\Inc\encoder.h
+gimbal\gimbaltask.o: ../Lift/Inc/encoder.h
 gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h
 gimbal\gimbaltask.o: ../Application/inc/DT7_Controller.h
 gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h

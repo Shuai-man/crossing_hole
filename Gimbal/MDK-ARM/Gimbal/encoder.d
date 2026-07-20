@@ -1,5 +1,5 @@
 gimbal\encoder.o: ..\Lift\Src\encoder.c
-gimbal\encoder.o: ..\Lift\Inc\encoder.h
+gimbal\encoder.o: ../Lift/Inc/encoder.h
 gimbal\encoder.o: ../Core/Inc/main.h
 gimbal\encoder.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 gimbal\encoder.o: ../Core/Inc/stm32f4xx_hal_conf.h

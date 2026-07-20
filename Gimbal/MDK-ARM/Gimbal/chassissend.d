@@ -64,8 +64,8 @@ gimbal\chassissend.o: ../Application/inc/remote_control.h
 gimbal\chassissend.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\chassissend.o: ../Core/Inc/tim.h
 gimbal\chassissend.o: ../Components/boards/inc/bsp_led.h
-gimbal\chassissend.o: ..\Lift\Inc\lifting_control.h
-gimbal\chassissend.o: ..\Lift\Inc\lifting_types.h
+gimbal\chassissend.o: ../Lift/Inc/lifting_control.h
+gimbal\chassissend.o: ../Lift/Inc/lifting_types.h
 gimbal\chassissend.o: ../Config/Robot_config.h
 gimbal\chassissend.o: ../Algorithm/inc/pid.h
 gimbal\chassissend.o: ../Algorithm/inc/user_lib.h

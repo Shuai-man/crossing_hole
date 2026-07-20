@@ -88,8 +88,8 @@ gimbal\pc_serial.o: ../Task/inc/Offline_Task.h
 gimbal\pc_serial.o: ../Application/inc/remote_control.h
 gimbal\pc_serial.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\pc_serial.o: ../Components/boards/inc/bsp_led.h
-gimbal\pc_serial.o: ..\Lift\Inc\lifting_control.h
-gimbal\pc_serial.o: ..\Lift\Inc\lifting_types.h
+gimbal\pc_serial.o: ../Lift/Inc/lifting_control.h
+gimbal\pc_serial.o: ../Lift/Inc/lifting_types.h
 gimbal\pc_serial.o: ../Components/motor/inc/M2006.h
 gimbal\pc_serial.o: ../Application/inc/Gimbal.h
 gimbal\pc_serial.o: ../Algorithm/inc/TD.h

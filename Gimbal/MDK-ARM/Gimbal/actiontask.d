@@ -65,8 +65,8 @@ gimbal\actiontask.o: ../Application/inc/remote_control.h
 gimbal\actiontask.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\actiontask.o: ../Core/Inc/tim.h
 gimbal\actiontask.o: ../Components/boards/inc/bsp_led.h
-gimbal\actiontask.o: ..\Lift\Inc\lifting_control.h
-gimbal\actiontask.o: ..\Lift\Inc\lifting_types.h
+gimbal\actiontask.o: ../Lift/Inc/lifting_control.h
+gimbal\actiontask.o: ../Lift/Inc/lifting_types.h
 gimbal\actiontask.o: ../Config/Robot_config.h
 gimbal\actiontask.o: ../Algorithm/inc/pid.h
 gimbal\actiontask.o: ../Algorithm/inc/user_lib.h

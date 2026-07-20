@@ -65,8 +65,8 @@ gimbal\dt7_controller.o: ../Application/inc/remote_control.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\dt7_controller.o: ../Core/Inc/tim.h
 gimbal\dt7_controller.o: ../Components/boards/inc/bsp_led.h
-gimbal\dt7_controller.o: ..\Lift\Inc\lifting_control.h
-gimbal\dt7_controller.o: ..\Lift\Inc\lifting_types.h
+gimbal\dt7_controller.o: ../Lift/Inc/lifting_control.h
+gimbal\dt7_controller.o: ../Lift/Inc/lifting_types.h
 gimbal\dt7_controller.o: ../Config/Robot_config.h
 gimbal\dt7_controller.o: ../Algorithm/inc/pid.h
 gimbal\dt7_controller.o: ../Algorithm/inc/user_lib.h

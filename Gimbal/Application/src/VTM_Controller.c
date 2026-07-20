@@ -141,7 +141,6 @@ void VTM_Update(float delta_t)
 			if(vtm_remote.sw[Pause]==1)
 			{
 				setGameModeAction(OFF_MODE);
-				VTM_Init();
 			}					
 			else if(vtm_remote.sw[Left_up]==1)
 			{

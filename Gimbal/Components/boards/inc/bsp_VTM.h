@@ -14,7 +14,7 @@
 #define VTM_DATA_LEN         19    // CRC前19字节
 
 // ==================== VTM帧DMA接收缓冲区 ====================
-#define VTM_RX_BUF_NUM    VTM_FRAME_LEN  // 21字节
+#define VTM_RX_BUF_NUM    (VTM_FRAME_LEN * 2U)  // 42字节，避免单帧接收完成时DMA自动切换缓冲区
 extern uint8_t vtm_rx_buf[2][VTM_RX_BUF_NUM];  //[0]/[1]双缓冲区
 
 #pragma pack(1)

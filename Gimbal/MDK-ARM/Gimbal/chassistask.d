@@ -65,8 +65,8 @@ gimbal\chassistask.o: ../Application/inc/remote_control.h
 gimbal\chassistask.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\chassistask.o: ../Core/Inc/tim.h
 gimbal\chassistask.o: ../Components/boards/inc/bsp_led.h
-gimbal\chassistask.o: ..\Lift\Inc\lifting_control.h
-gimbal\chassistask.o: ..\Lift\Inc\lifting_types.h
+gimbal\chassistask.o: ../Lift/Inc/lifting_control.h
+gimbal\chassistask.o: ../Lift/Inc/lifting_types.h
 gimbal\chassistask.o: ../Config/Robot_config.h
 gimbal\chassistask.o: ../Algorithm/inc/pid.h
 gimbal\chassistask.o: ../Algorithm/inc/user_lib.h
@@ -103,5 +103,5 @@ gimbal\chassistask.o: ../Components/motor/inc/M3508.h
 gimbal\chassistask.o: ../Components/boards/inc/bsp_can.h
 gimbal\chassistask.o: ../Config/can_config.h
 gimbal\chassistask.o: ../Config/Motor_Typdef.h
-gimbal\chassistask.o: ..\Lift\Inc\encoder.h
+gimbal\chassistask.o: ../Lift/Inc/encoder.h
 gimbal\chassistask.o: ../Application/inc/ChassisSend.h

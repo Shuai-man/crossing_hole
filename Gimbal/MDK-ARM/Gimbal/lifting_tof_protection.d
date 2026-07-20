@@ -1,11 +1,11 @@
 gimbal\lifting_tof_protection.o: ..\Lift\Src\lifting_tof_protection.c
-gimbal\lifting_tof_protection.o: ..\Lift\Inc\lifting_tof_protection.h
-gimbal\lifting_tof_protection.o: ..\Lift\Inc\lifting_types.h
+gimbal\lifting_tof_protection.o: ../Lift/Inc/lifting_tof_protection.h
+gimbal\lifting_tof_protection.o: ../Lift/Inc/lifting_types.h
 gimbal\lifting_tof_protection.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\lifting_tof_protection.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
 gimbal\lifting_tof_protection.o: ../Config/Robot_config.h
 gimbal\lifting_tof_protection.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
-gimbal\lifting_tof_protection.o: ..\Lift\Inc\lifting_config.h
+gimbal\lifting_tof_protection.o: ../Lift/Inc/lifting_config.h
 gimbal\lifting_tof_protection.o: ../Components/motor/inc/M2006.h
 gimbal\lifting_tof_protection.o: ../Core/Inc/main.h
 gimbal\lifting_tof_protection.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
@@ -49,7 +49,7 @@ gimbal\lifting_tof_protection.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 gimbal\lifting_tof_protection.o: ../Components/tools/inc/ZeroCheck.h
 gimbal\lifting_tof_protection.o: ../Components/tools/inc/tools.h
 gimbal\lifting_tof_protection.o: ../Algorithm/inc/my_filter.h
-gimbal\lifting_tof_protection.o: ..\Lift\Inc\lifting_control.h
+gimbal\lifting_tof_protection.o: ../Lift/Inc/lifting_control.h
 gimbal\lifting_tof_protection.o: ../Algorithm/inc/pid.h
 gimbal\lifting_tof_protection.o: ../Algorithm/inc/user_lib.h
 gimbal\lifting_tof_protection.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -70,6 +70,6 @@ gimbal\lifting_tof_protection.o: ../Middlewares/ST/ARM/DSP/Inc/arm_math.h
 gimbal\lifting_tof_protection.o: D:\keil\ARM\ARMCC\Bin\..\include\float.h
 gimbal\lifting_tof_protection.o: D:\keil\ARM\ARMCC\Bin\..\include\limits.h
 gimbal\lifting_tof_protection.o: ../Components/boards/inc/bsp_dwt.h
-gimbal\lifting_tof_protection.o: ..\Lift\Inc\tof.h
+gimbal\lifting_tof_protection.o: ../Lift/Inc/tof.h
 gimbal\lifting_tof_protection.o: ../Core/Inc/usart.h
 gimbal\lifting_tof_protection.o: ../Components/tools/inc/debug.h

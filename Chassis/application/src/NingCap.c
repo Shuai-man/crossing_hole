@@ -19,6 +19,7 @@ void CapControllerInit()
 void SendCapPack(SuperCapSendData *send_data, uint16_t P_ref)
 {
     send_data->P_ref = P_ref * 100.0f;
+    send_data->wireless_start = 0;
 }
 
 void ReceiveCapDecode(uint8_t *recv_data, SuperCapRecvData *cap_recv_data)

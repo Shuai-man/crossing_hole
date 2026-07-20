@@ -1,6 +1,7 @@
 #include "ChassisController.h"
 #include "debug.h"
 #include "robot_config.h"
+#include "remote_control.h"
 
 Infantry infantry;
 
@@ -179,45 +180,42 @@ void wheels_power_limit(Infantry *infantry)
     }
 }
 
-float test_power = 70; // 不用或者没有超电就手动设置功率
+float test_power = 60.0f; // 不用或者没有超电就手动设置功率
 
 // 设置机器人功率以及控制其速度
 void set_robot_speed(Infantry *infantry)
 {
     // 没有裁判系统时，超电设定power为0，改为默认80w
-		//todo 有超电，设定功率比referee大10w
-    if (cap_controller.cap_vol_state != CapVol_Low && cap_controller.set_power > 45.0f)
+    // todo 有超电，设定功率比referee大10w
+
+    if (global_debugger.referee_debugger.state == ON)
     {
-        infantry->set_power = cap_controller.set_power; // 超电设定80w
-    }
-    else if(global_debugger.referee_debugger.state == ON)
-    {
-        infantry->set_power = Robot_Status.chassis_power_limit; //使用裁判系统设定功率
+        if (cap_controller.cap_vol_state != CapVol_Low && remote_controller.super_power_state == POWER_TO_SuperPower)
+        {
+            infantry->set_power = Robot_Status.chassis_power_limit + 60.0f;
+        }
+        else
+        {
+            infantry->set_power = Robot_Status.chassis_power_limit;
+        }
     }
     else
     {
-        infantry->set_power = test_power; // 调试模式
+        if (cap_controller.cap_vol_state != CapVol_Low && remote_controller.super_power_state == POWER_TO_SuperPower)
+        {
+            infantry->set_power = test_power + 60.0f;
+        }
+        else
+        {
+            infantry->set_power = test_power;
+        }
     }
-    // 根据设置的功率计算出设定速度，注意保持speed_x_max 与 speed_y_max 与 speed_yaw_max * wheel_radius基本同值
-    // 因为该参数需要关联到功率控制部分，所以要保证在跑满功率的前提下给大，但过大会导致部分机器人轮子打滑，所以需要控制
 
+    // 无超电时，小陀螺，平移，缓冲能量消耗速度=恢复速度
+    //  节能模式35w时，速度也不会出现负数
+    //  地胶地形
     if (infantry->chassis_type == MECANUM_WHEEL)
     {
-			//光滑地形
-//        if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
-//        {
-//            // 这里的speed不要超过10
-//            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.008f + 0.5f;
-//            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.008f + 0.5f;
-//            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.07f + 5.2f;
-//        }
-//        else
-//        {
-//            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.008f + 1.4f;
-//            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.008f + 1.4f;
-//            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.008f + 1.0f;
-//        }
-//地胶地形			
 #if ROBOT == OLD
         if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
         {
@@ -231,7 +229,7 @@ void set_robot_speed(Infantry *infantry)
             infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 1.0f;
             infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 1.0f;
             infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.007f + 5.0f;
-        }	
+        }
 #elif ROBOT == NEW
         if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
         {
@@ -245,8 +243,8 @@ void set_robot_speed(Infantry *infantry)
             infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 1.1f;
             infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 1.1f;
             infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.007f + 5.0f;
-        }	
-#endif	
+        }
+#endif
     }
 }
 

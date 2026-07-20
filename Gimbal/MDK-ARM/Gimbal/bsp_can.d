@@ -92,11 +92,11 @@ gimbal\bsp_can.o: ../Task/inc/Offline_Task.h
 gimbal\bsp_can.o: ../Application/inc/remote_control.h
 gimbal\bsp_can.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\bsp_can.o: ../Components/boards/inc/bsp_led.h
-gimbal\bsp_can.o: ..\Lift\Inc\lifting_control.h
-gimbal\bsp_can.o: ..\Lift\Inc\lifting_types.h
+gimbal\bsp_can.o: ../Lift/Inc/lifting_control.h
+gimbal\bsp_can.o: ../Lift/Inc/lifting_types.h
 gimbal\bsp_can.o: ../Application/inc/Gimbal.h
 gimbal\bsp_can.o: ../Application/inc/pc_serial.h
 gimbal\bsp_can.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\bsp_can.o: ../Algorithm/inc/TD.h
 gimbal\bsp_can.o: ../Application/inc/ToggleBullet.h
-gimbal\bsp_can.o: ..\Lift\Inc\encoder.h
+gimbal\bsp_can.o: ../Lift/Inc/encoder.h

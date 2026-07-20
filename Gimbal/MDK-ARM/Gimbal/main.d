@@ -99,12 +99,12 @@ gimbal\main.o: ../Task/inc/Offline_Task.h
 gimbal\main.o: ../Application/inc/remote_control.h
 gimbal\main.o: ../Components/boards/inc/bsp_buzzer.h
 gimbal\main.o: ../Components/boards/inc/bsp_led.h
-gimbal\main.o: ..\Lift\Inc\lifting_control.h
-gimbal\main.o: ..\Lift\Inc\lifting_types.h
+gimbal\main.o: ../Lift/Inc/lifting_control.h
+gimbal\main.o: ../Lift/Inc/lifting_types.h
 gimbal\main.o: ../Application/inc/Gimbal.h
 gimbal\main.o: ../Application/inc/pc_serial.h
 gimbal\main.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\main.o: ../Algorithm/inc/TD.h
 gimbal\main.o: ../Application/inc/ToggleBullet.h
-gimbal\main.o: ..\Lift\Inc\encoder.h
-gimbal\main.o: ..\Lift\Inc\tof.h
+gimbal\main.o: ../Lift/Inc/encoder.h
+gimbal\main.o: ../Lift/Inc/tof.h

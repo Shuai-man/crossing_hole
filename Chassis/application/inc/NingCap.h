@@ -49,8 +49,8 @@ typedef struct SuperCapSendData
 {
     uint16_t buffer_energy; // 缓冲能量
     uint16_t P_ref;         // 参考给定电压
-    uint16_t cap_start; 		//超电开关
-    uint16_t ___;
+    uint16_t reverse; 		//保留位
+    uint16_t wireless_start;//无线充电开关，开了会关闭超电
 } SuperCapSendData;
 #pragma pack(pop) // 不进行字节对齐
 

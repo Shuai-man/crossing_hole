@@ -138,27 +138,36 @@ void VTM_Frame_Parse(uint8_t *buf, VTM_Remote *data)
     data->keyboard = (uint16_t)VTM_Bit_Extract(buf, 136, 16);
 
     // 调试信息
-		LossUpdate(&global_debugger.VTM_debugger,0.05f);
+		LossUpdate(&global_debugger.VTM_debugger,0.02f);
 }
 
 // ==================== 初始化UART6 DMA接收和空闲中断 ====================
 void remote_VTM_init(void)
 {
-    // 1. 使能UART6 DMA接收
+    // 使能UART6 DMA接收
     SET_BIT(huart6.Instance->CR3, USART_CR3_DMAR);
+
     // 使能UART6空闲中断
     __HAL_UART_ENABLE_IT(&huart6, UART_IT_IDLE);
 
-    // 2. 先禁用DMA，确保寄存器可安全配置
+    // 禁用DMA，确保寄存器可安全配置
     __HAL_DMA_DISABLE(&hdma_usart6_rx);
-    while (hdma_usart6_rx.Instance->CR & DMA_SxCR_EN);
+    while (hdma_usart6_rx.Instance->CR & DMA_SxCR_EN)
+    {
+        __HAL_DMA_DISABLE(&hdma_usart6_rx);
+    }
 
-    // 3. 配置DMA参数
-    hdma_usart6_rx.Instance->PAR = (uint32_t)&(USART6->DR);  // 外设地址：UART6数据寄存器
-    hdma_usart6_rx.Instance->M0AR = (uint32_t)vtm_rx_buf[0]; // 内存地址0
-    hdma_usart6_rx.Instance->M1AR = (uint32_t)vtm_rx_buf[1]; // 内存地址1
-    hdma_usart6_rx.Instance->NDTR = VTM_RX_BUF_NUM;          // 传输数据长度
-    SET_BIT(hdma_usart6_rx.Instance->CR, DMA_SxCR_DBM);     // 开启双缓冲模式
+    // 配置DMA外设地址：UART6数据寄存器
+    hdma_usart6_rx.Instance->PAR = (uint32_t)&(USART6->DR);
+    // 配置DMA双缓冲内存地址
+    hdma_usart6_rx.Instance->M0AR = (uint32_t)vtm_rx_buf[0];
+    hdma_usart6_rx.Instance->M1AR = (uint32_t)vtm_rx_buf[1];
+    // 配置DMA接收数据长度
+    hdma_usart6_rx.Instance->NDTR = VTM_RX_BUF_NUM;
+    // 从缓冲区0开始接收并开启DMA双缓冲模式
+    CLEAR_BIT(hdma_usart6_rx.Instance->CR, DMA_SxCR_CT);
+    SET_BIT(hdma_usart6_rx.Instance->CR, DMA_SxCR_DBM);
+
     // 使能DMA
     __HAL_DMA_ENABLE(&hdma_usart6_rx);
 }
@@ -166,40 +175,50 @@ void remote_VTM_init(void)
 
 void VTM_RC_Receive(void)
 {
-		uint8_t *pBuf = NULL;
-    // 1. 检测UART6空闲中断（一帧数据接收完成）
-    if(__HAL_UART_GET_FLAG(&huart6, UART_FLAG_IDLE))  
+    // 接收到单个字节（清除校验错误标志）
+    if (huart6.Instance->SR & UART_FLAG_RXNE)
     {
-        // 清除空闲中断标志（读取SR和DR寄存器）
-        (void)USART6->SR;
-        (void)USART6->DR;
+        __HAL_UART_CLEAR_PEFLAG(&huart6);
+    }
+    // 一帧数据接收完成（空闲中断触发）
+    else if (USART6->SR & UART_FLAG_IDLE)
+    {
+        static uint16_t this_time_rx_len = 0;
 
-        // 2. 判断当前使用的缓冲数组
-        if((hdma_usart6_rx.Instance->CR & DMA_SxCR_CT) == RESET)
+        __HAL_UART_CLEAR_PEFLAG(&huart6);
+
+        // 当前使用缓冲区0
+        if ((hdma_usart6_rx.Instance->CR & DMA_SxCR_CT) == RESET)
         {
-			pBuf = vtm_rx_buf[0];
+            // 禁用DMA后读取NDTR并切换缓冲区
+            __HAL_DMA_DISABLE(&hdma_usart6_rx);
+            this_time_rx_len = VTM_RX_BUF_NUM - hdma_usart6_rx.Instance->NDTR;
+            hdma_usart6_rx.Instance->NDTR = VTM_RX_BUF_NUM;
             hdma_usart6_rx.Instance->CR |= DMA_SxCR_CT;
+            __HAL_DMA_ENABLE(&hdma_usart6_rx);
+
+            // 数据长度正确，解析刚接收完成的缓冲区0
+            if (this_time_rx_len == VTM_FRAME_LEN)
+            {
+                VTM_Frame_Parse(vtm_rx_buf[0], &vtm_remote);
+            }
         }
         else
         {
-			pBuf = vtm_rx_buf[1];
+            // 当前使用缓冲区1
+            __HAL_DMA_DISABLE(&hdma_usart6_rx);
+            this_time_rx_len = VTM_RX_BUF_NUM - hdma_usart6_rx.Instance->NDTR;
+            hdma_usart6_rx.Instance->NDTR = VTM_RX_BUF_NUM;
             hdma_usart6_rx.Instance->CR &= ~(DMA_SxCR_CT);
-        }
+            __HAL_DMA_ENABLE(&hdma_usart6_rx);
 
-        // 3. 帧头匹配并解析VTM数据
-        for(uint8_t i=0; i<VTM_RX_BUF_NUM-1; i++)
-        {
-            if(pBuf[i] == VTM_FRAME_HEADER1 && pBuf[i+1] == VTM_FRAME_HEADER2)
+            // 数据长度正确，解析刚接收完成的缓冲区1
+            if (this_time_rx_len == VTM_FRAME_LEN)
             {
-                // 解析VTM数据帧
-                VTM_Frame_Parse(&pBuf[i], &vtm_remote);
-                break;
+                VTM_Frame_Parse(vtm_rx_buf[1], &vtm_remote);
             }
         }
     }
-
-    // 清除校验位中断标志
-    __HAL_UART_CLEAR_PEFLAG(&huart6);
 }
 
 

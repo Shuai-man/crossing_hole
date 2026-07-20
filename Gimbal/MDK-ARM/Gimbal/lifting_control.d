@@ -1,7 +1,7 @@
 gimbal\lifting_control.o: ..\Lift\Src\lifting_control.c
-gimbal\lifting_control.o: ..\Lift\Inc\lifting_control.h
+gimbal\lifting_control.o: ../Lift/Inc/lifting_control.h
 gimbal\lifting_control.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
-gimbal\lifting_control.o: ..\Lift\Inc\lifting_types.h
+gimbal\lifting_control.o: ../Lift/Inc/lifting_types.h
 gimbal\lifting_control.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\lifting_control.o: ../Config/Robot_config.h
 gimbal\lifting_control.o: ../Algorithm/inc/pid.h
@@ -93,8 +93,8 @@ gimbal\lifting_control.o: ../Application/inc/Gimbal.h
 gimbal\lifting_control.o: ../Application/inc/pc_serial.h
 gimbal\lifting_control.o: ../Algorithm/inc/algorithmOfCRC.h
 gimbal\lifting_control.o: ../Algorithm/inc/TD.h
-gimbal\lifting_control.o: ..\Lift\Inc\encoder.h
-gimbal\lifting_control.o: ..\Lift\Inc\lifting_config.h
-gimbal\lifting_control.o: ..\Lift\Inc\lifting_encoder_protection.h
-gimbal\lifting_control.o: ..\Lift\Inc\lifting_tof_protection.h
-gimbal\lifting_control.o: ..\Lift\Inc\tof.h
+gimbal\lifting_control.o: ../Lift/Inc/encoder.h
+gimbal\lifting_control.o: ../Lift/Inc/lifting_config.h
+gimbal\lifting_control.o: ../Lift/Inc/lifting_encoder_protection.h
+gimbal\lifting_control.o: ../Lift/Inc/lifting_tof_protection.h
+gimbal\lifting_control.o: ../Lift/Inc/tof.h

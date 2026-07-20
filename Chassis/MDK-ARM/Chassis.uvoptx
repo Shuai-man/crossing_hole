@@ -245,6 +245,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>UI_Graph7</ItemText>
         </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\Chassis\../application/src/ChassisController.c\infantry.power_limiter.power_k</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
@@ -1268,7 +1273,7 @@
       <GroupNumber>11</GroupNumber>
       <FileNumber>73</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\Components\tools\src\tools.c</PathWithFileName>
