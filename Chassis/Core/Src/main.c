@@ -29,7 +29,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "robot_config.h"
-#include "ChassisController.h" 
+#include "ChassisController.h"
+#include "bsp_can.h"
+#include "debug.h"
+#include "remote_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -186,13 +189,7 @@ void Is_Motor_On_Check(void)
 					global_debugger.wheels_comm_debugger[0].recv_msgs_num > 5		&&
 					global_debugger.wheels_comm_debugger[1].recv_msgs_num > 5		&&
 					global_debugger.wheels_comm_debugger[2].recv_msgs_num > 5		&&
-					global_debugger.wheels_comm_debugger[3].recv_msgs_num > 5		
-#if ROBOT == NIU_MO_SON					
-			&&	global_debugger.steers_comm_debugger[0].recv_msgs_num > 5		&&
-					global_debugger.steers_comm_debugger[1].recv_msgs_num > 5		&&
-					global_debugger.steers_comm_debugger[2].recv_msgs_num > 5		&&
-					global_debugger.steers_comm_debugger[3].recv_msgs_num > 5
-#endif
+					global_debugger.wheels_comm_debugger[3].recv_msgs_num > 5
 			)
 				{
 					infantry.All_Motor_On = TRUE;

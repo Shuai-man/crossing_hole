@@ -14,13 +14,16 @@
 #include "pc_serial.h"
 #include "FrictionWheel.h"
 
+#define CHASSIS_FOLLOW_YAW_SPEED_FF_COEF 0.35f
+#define CHASSIS_THROUGH_HOLE_YAW_SPEED_FF_COEF 1.0f
+
 #pragma pack(push, 1)
 
 
 typedef struct ChassisSendPack2 //bocchi58: 图传UI额外补丁
 {
  int16_t gimbal_pitch;    // 云台pitch角度
-//  int16_t gimbal_yaw_speed;
+ int16_t turn_yaw_speed;//转向yaw目标速度，deg/s * 100
 
 //	uint16_t super_power : 1;	
 //	uint16_t fly_state : 1;	
@@ -29,7 +32,7 @@ typedef struct ChassisSendPack2 //bocchi58: 图传UI额外补丁
 //	uint8_t if_shoot;
 //	uint8_t shoot_aim_mode;
 //	uint8_t wireless_start_flag;	
-	uint8_t reverse[7]; 
+	uint8_t reverse[4]; 
 } ChassisSendPack2;
 
 typedef struct ChassisSendPack1

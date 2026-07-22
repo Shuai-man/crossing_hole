@@ -2,6 +2,56 @@
 
 ToggleController toggle_controller;
 
+static void Toggle_RemovePendingBullets(uint8_t num)
+{
+    if (num >= toggle_controller.pending_bullets)
+    {
+        toggle_controller.pending_bullets = 0;
+        return;
+    }
+
+    toggle_controller.pending_bullets -= num;
+    for (uint8_t i = 0; i < toggle_controller.pending_bullets; i++)
+    {
+        toggle_controller.pending_bullet_time[i] = toggle_controller.pending_bullet_time[i + num];
+    }
+}
+
+static void Toggle_UpdateRemainingByPending(void)
+{
+    if (toggle_controller.receive_bullets > toggle_controller.pending_bullets)
+    {
+        toggle_controller.remaining_bullets = toggle_controller.receive_bullets - toggle_controller.pending_bullets;
+    }
+    else
+    {
+        toggle_controller.remaining_bullets = 0;
+    }
+    toggle_controller.predict_bullets = toggle_controller.remaining_bullets;
+}
+
+static void Toggle_UpdatePendingTimeout(float dt)
+{
+    uint8_t timeout_bullets = 0;
+
+    for (uint8_t i = 0; i < toggle_controller.pending_bullets; i++)
+    {
+        toggle_controller.pending_bullet_time[i] += dt;
+    }
+
+    while (timeout_bullets < toggle_controller.pending_bullets &&
+           toggle_controller.pending_bullet_time[timeout_bullets] >= FIRE_TIME_DIFF)
+    {
+        timeout_bullets++;
+    }
+
+    if (timeout_bullets > 0)
+    {
+        Toggle_RemovePendingBullets(timeout_bullets);
+        Toggle_UpdateRemainingByPending();
+    }
+}
+
 /* 根据机器人等级以及增益来确定射频 */
 void Toggle_SelectShootFreq(void)
 {
@@ -61,11 +111,15 @@ void Toggle_AddGrid(ToggleController *controller, uint8_t num)
     if (controller->remaining_bullets > num)
     {
         controller->set_pos = controller->set_pos + ONE_GRID_ANGLE * num * SIGN_ROTATE;
-        controller->predict_bullets -= num;
-        if (controller->predict_bullets < 0)
+        for (uint8_t i = 0; i < num; i++)
         {
-            controller->predict_bullets = 0;
+            if (controller->pending_bullets < PENDING_BULLET_MAX)
+            {
+                controller->pending_bullet_time[controller->pending_bullets] = 0.0f;
+                controller->pending_bullets++;
+            }
         }
+        Toggle_UpdateRemainingByPending();
     }
     else
     {
@@ -98,23 +152,22 @@ static void Toggle_BulletPrediction(void)
     // 不开火时清空预测值、剩余量和时间累计
     if (toggle_controller.is_shoot == 0)
     {
+        toggle_controller.pending_bullets = 0;
         toggle_controller.predict_bullets = toggle_controller.receive_bullets;
         toggle_controller.remaining_bullets = toggle_controller.receive_bullets;
         toggle_controller.dt_accumulated = 0;
         Toggle_Calculate(TOGGLE_STOP, 0.0f);
         return;
     }
-    // 开火
-    // 热量恢复，更新剩余弹量，避免预测弹量用完打不出弹
-    if (toggle_controller.last_receive_bullets >= toggle_controller.receive_bullets)
+
+    // 开火时，裁判回传有延迟：已下发但未确认的弹量需要先占住额度
+    if (toggle_controller.receive_bullets < toggle_controller.last_receive_bullets)
     {
-        toggle_controller.predict_bullets = toggle_controller.receive_bullets;
-        toggle_controller.remaining_bullets = toggle_controller.receive_bullets;
+        uint8_t confirmed_bullets = toggle_controller.last_receive_bullets - toggle_controller.receive_bullets;
+        Toggle_RemovePendingBullets(confirmed_bullets);
     }
-    else
-    {
-        toggle_controller.remaining_bullets = toggle_controller.predict_bullets;
-    }
+
+    Toggle_UpdateRemainingByPending();
 }
 
 /* 拨弹间隔计算 */
@@ -129,6 +182,7 @@ static bool Toggle_Scheduler(void)
     }
     toggle_controller.dt_current = DWT_GetDeltaT(&toggle_controller.current_cnt);
     toggle_controller.dt_accumulated += toggle_controller.dt_current;
+    Toggle_UpdatePendingTimeout(toggle_controller.dt_current);
 
     if (toggle_controller.dt_accumulated >= toggle_controller.freq_time)
     {

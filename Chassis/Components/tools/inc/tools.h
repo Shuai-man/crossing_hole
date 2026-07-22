@@ -17,7 +17,7 @@
 
 #define SQRT_2 1.41421356f
 #define _DIVIDE_SQRT_2 0.70710678f
-#define MIN(a, b) ((a) < (b)) ? (a) : (b)
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 /* 普通延时 */
 void delay_ms(unsigned long t);

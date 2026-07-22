@@ -9,8 +9,9 @@
 
 typedef struct GimbalReceivePack2 // 云台yaw和pitch角度
 {
-	int16_t gimbal_pitch;    // 云台pitch角度
-	uint8_t reverse[7]; 
+	int16_t gimbal_pitch;    // 云台pitch角度（角度制）
+	int16_t turn_yaw_speed;//云台yaw目标速度，deg/s * 100
+	uint8_t reverse[4]; 
 } GimbalReceivePack2;
 
 

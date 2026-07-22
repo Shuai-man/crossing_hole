@@ -1,81 +1,167 @@
 #include "PowerControlTask.h"
-#include "tools.h"
-float Interval;
-uint32_t timtim;
 
-static void Check_Energy_State(void)
+#include <math.h>
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "NingCap.h"
+#include "Referee.h"
+#include "bsp_can.h"
+#include "can_config.h"
+#include "debug.h"
+
+#define REFEREE_POWER_LIMIT_MAX 125.0f      /* 接受的裁判底盘功率上限最大值，单位 W */
+#define REFEREE_POWER_LIMIT_MIN 35.0f       /* 接受的裁判底盘功率上限最小值，单位 W */
+#define REFEREE_POWER_LIMIT_DEFAULT 60.0f   /* 尚未收到裁判数据时的默认功率，单位 W */
+#define REFEREE_BUFFER_ENERGY_MAX 60.0f     /* 裁判底盘缓冲能量最大有效值，单位 J */
+#define REFEREE_BUFFER_ENERGY_TARGET 40.0f  /* 缓冲能量闭环的目标值，单位 J */
+#define REFEREE_BUFFER_POWER_KP 12.0f       /* 缓冲能量偏差转换成功率修正的比例系数 */
+#define REFEREE_BUFFER_MAX_BONUS 20.0f      /* 无超电时缓冲能量最多额外提供的功率，单位 W */
+#define REFEREE_BUFFER_MIN_POWER_COEF 0.75f /* 缓冲不足时最低功率占裁判上限的比例 */
+#define REFEREE_OFFLINE_POWER_COEF 0.85f    /* 裁判掉线后使用最近有效上限的保守比例 */
+#define BUFFER_ADJUST_RISE_ALPHA 0.01f      /* 功率上调滤波系数：小值使功率缓慢恢复 */
+#define BUFFER_ADJUST_FALL_ALPHA 0.20f      /* 功率下调滤波系数：大值使功率快速收紧 */
+#define SUPER_CAP_POWER_BONUS 60.0f         /* 超电正常且启用时允许增加的功率，单位 W */
+
+ChassisPowerStatus chassis_power_status;
+
+static float clamp_float(float value, float minimum, float maximum)
 {
-	// 底盘总能量
-	if (Buff.remaining_energy & 0x01)
-	{
-		infantry.energy_state = ENERGY_125; //>125
-	}
-	else if (Buff.remaining_energy & 0x02)
-	{
-		infantry.energy_state = ENERGY_100; //>100
-	}
-	else if (Buff.remaining_energy & 0x04)
-	{
-		infantry.energy_state = ENERGY_50; //>50
-	}
-	else if (Buff.remaining_energy & 0x08)
-	{
-		infantry.energy_state = ENERGY_30; //>30
-	}
-	else if (Buff.remaining_energy & 0x010)
-	{
-		infantry.energy_state = ENERGY_15; //>15
-	}
-	else if (Buff.remaining_energy & 0x020)
-	{
-		infantry.energy_state = ENERGY_5; //>5
-	}
-	else if (Buff.remaining_energy & 0x040)
-	{
-		infantry.energy_state = ENERGY_1; //>1
-	}
-	else
-	{
-		infantry.energy_state = ENERGY_0; // 耗尽
-	}
+    if (value < minimum)
+    {
+        return minimum;
+    }
+    if (value > maximum)
+    {
+        return maximum;
+    }
+    return value;
+}
+
+static void ChassisPowerControllerInit(void)
+{
+    chassis_power_status.referee_power_limit = REFEREE_POWER_LIMIT_DEFAULT;
+    chassis_power_status.referee_buffer_energy = 0.0f;
+    chassis_power_status.buffer_power_adjustment =
+        REFEREE_POWER_LIMIT_DEFAULT * (REFEREE_OFFLINE_POWER_COEF - 1.0f);
+    chassis_power_status.buffer_limited_power =
+        REFEREE_POWER_LIMIT_DEFAULT * REFEREE_OFFLINE_POWER_COEF;
+    chassis_power_status.chassis_power_limit = chassis_power_status.buffer_limited_power;
+    chassis_power_status.referee_online = 0U;
+    chassis_power_status.super_cap_online = 0U;
+    chassis_power_status.super_cap_active = 0U;
+}
+
+static void UpdateBufferPowerLoop(uint8_t referee_online)
+{
+    float target_adjustment;
+    float minimum_adjustment;
+    float filter_alpha;
+
+    chassis_power_status.referee_online = referee_online;
+    if (referee_online == 0U)
+    {
+        chassis_power_status.referee_buffer_energy = 0.0f;
+        chassis_power_status.buffer_power_adjustment =
+            chassis_power_status.referee_power_limit * (REFEREE_OFFLINE_POWER_COEF - 1.0f);
+        chassis_power_status.buffer_limited_power =
+            chassis_power_status.referee_power_limit * REFEREE_OFFLINE_POWER_COEF;
+        return;
+    }
+
+    chassis_power_status.referee_power_limit =
+        clamp_float((float)Robot_Status.chassis_power_limit, REFEREE_POWER_LIMIT_MIN, REFEREE_POWER_LIMIT_MAX);
+    chassis_power_status.referee_buffer_energy =
+        clamp_float((float)Power_Heat_Data.buffer_energy, 0.0f, REFEREE_BUFFER_ENERGY_MAX);
+
+    target_adjustment =
+        REFEREE_BUFFER_POWER_KP *
+        (sqrtf(chassis_power_status.referee_buffer_energy) - sqrtf(REFEREE_BUFFER_ENERGY_TARGET));
+    minimum_adjustment =
+        chassis_power_status.referee_power_limit * (REFEREE_BUFFER_MIN_POWER_COEF - 1.0f);
+    target_adjustment =
+        clamp_float(target_adjustment, minimum_adjustment, REFEREE_BUFFER_MAX_BONUS);
+
+    /*
+     * 缓冲下降时快速收功率，缓冲恢复时缓慢放开，避免裁判数据阶跃
+     * 导致底盘功率上限突然上升。
+     */
+    filter_alpha =
+        target_adjustment < chassis_power_status.buffer_power_adjustment
+            ? BUFFER_ADJUST_FALL_ALPHA
+            : BUFFER_ADJUST_RISE_ALPHA;
+    chassis_power_status.buffer_power_adjustment +=
+        filter_alpha * (target_adjustment - chassis_power_status.buffer_power_adjustment);
+
+    chassis_power_status.buffer_limited_power =
+        clamp_float(chassis_power_status.referee_power_limit + chassis_power_status.buffer_power_adjustment,
+                    chassis_power_status.referee_power_limit * REFEREE_BUFFER_MIN_POWER_COEF,
+                    chassis_power_status.referee_power_limit + REFEREE_BUFFER_MAX_BONUS);
+}
+
+float GetChassisPowerLimit(uint8_t super_cap_active)
+{
+    float power_limit;
+
+    chassis_power_status.super_cap_active = super_cap_active;
+    if (super_cap_active != 0U)
+    {
+        /*
+         * 超电提供正向额外功率；裁判缓冲只允许降低该上限，避免两个
+         * 能量源同时给出正向奖励。
+         */
+        power_limit =
+            chassis_power_status.referee_power_limit +
+            SUPER_CAP_POWER_BONUS +
+            (chassis_power_status.buffer_power_adjustment < 0.0f
+                 ? chassis_power_status.buffer_power_adjustment
+                 : 0.0f);
+    }
+    else
+    {
+        power_limit = chassis_power_status.buffer_limited_power;
+    }
+
+    chassis_power_status.chassis_power_limit =
+        clamp_float(power_limit,
+                    REFEREE_POWER_LIMIT_MIN * REFEREE_BUFFER_MIN_POWER_COEF,
+                    REFEREE_POWER_LIMIT_MAX + SUPER_CAP_POWER_BONUS);
+    return chassis_power_status.chassis_power_limit;
 }
 
 void PowerControlTask(void const *argument)
 {
-	portTickType xLastWakeTime;
+    portTickType last_wake_time;
+    uint8_t send_divider = 0U;
+    uint8_t referee_online;
+    uint8_t super_cap_online;
 
-	static int i = 0;
+    (void)argument;
+    CapControllerInit();
+    ChassisPowerControllerInit();
 
-	CapControllerInit();
+    while (1)
+    {
+        last_wake_time = xTaskGetTickCount();
 
-	float referee_power;
+        referee_online =
+            (uint8_t)(global_debugger.referee_debugger.state == ON);
+        super_cap_online =
+            (uint8_t)(global_debugger.super_power_debugger.state == ON);
 
-	while (1)
-	{
-		xLastWakeTime = xTaskGetTickCount();
+        UpdateBufferPowerLoop(referee_online);
+        NingCapUpdateState(super_cap_online);
+        chassis_power_status.super_cap_online = super_cap_online;
 
-		// TODO:首先进行异常处理，万一不能收到裁判系统数据或者裁判系统数据离线
-		Check_Energy_State();
-		if (infantry.energy_state == ENERGY_0)
-		{
-			referee_power = LIMIT_MAX_MIN(Robot_Status.chassis_power_limit, POWER_LIMIT_MAX, POWER_LIMIT_MIN);
-		}
-		else
-		{
-			referee_power = LIMIT_MAX_MIN(Robot_Status.chassis_power_limit, POWER_LIMIT_MAX, POWER_LIMIT_MIN);
-		}
+        if (send_divider == 0U)
+        {
+            /* 超电始终只接收裁判系统的基础功率上限。 */
+            SendCapPack(&cap_send_data, chassis_power_status.referee_power_limit);
+            CanSend(SUPER_POWER_CAN, (uint8_t *)&cap_send_data, SEND_TO_SUPER_POWER_CAN_ID, sizeof(cap_send_data));
+        }
 
-		NingCapControl(Power_Heat_Data.buffer_energy, referee_power, referee_power); // 一般进入这
-
-		if (i % 4 == 0) // 250HZ
-		{
-			SendCapPack(&cap_send_data, cap_controller.cap_power);
-			Interval = DWT_GetDeltaT(&timtim);
-			CanSend(SUPER_POWER_CAN, (uint8_t *)(&cap_send_data), SEND_TO_SUPER_POWER_CAN_ID, 8);
-		}
-
-		i++;
-
-		vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
-	}
+        send_divider = (uint8_t)((send_divider + 1U) % 4U);
+        vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(1));
+    }
 }

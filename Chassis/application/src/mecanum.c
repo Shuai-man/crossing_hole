@@ -1,17 +1,13 @@
 #include "mecanum.h"
-#include "PowerLimit.h"
+#include "mecanum.h"
 #include "ChassisController.h"
+
+#include <math.h>
 
 void mecanum_pid_init()
 {
     // 转向PID初始化
     PID_Init(&infantry.turn_pos_pid, 20, 0, 0.0, 0.3, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
-    PID_Init(&infantry.turn_speed_pid, 8, 0, 0.0, 1.0, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
-    // 底盘跟随前馈初始化
-    infantry.Mecanum_Follow_FF_Coefficient[0] = -0.9f;
-    infantry.Mecanum_Follow_FF_Coefficient[1] = -0.0f;
-    infantry.Mecanum_Follow_FF_Coefficient[2] = -0.0f;
-    Feedforward_Init(&infantry.Mecanum_Follow_FF, 1.0f, infantry.Mecanum_Follow_FF_Coefficient, 0.01, 0, 0);
 
     // 轮子控制PID
     PID_Init(&infantry.wheels_pid[LEFT_UP_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 10.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
@@ -48,6 +44,11 @@ void mecanum_inv_kinematics()
 // 底盘跟随策略
 void mecanum_follow_control()
 {
+    float follow_angle_feedback;
+    float abs_error_angle;
+    const float follow_deadband = 0.2f;
+    const float follow_soft_zone = 1.0f;
+
     // 正运动学解算
     mecanum_pos_kinematics();
 
@@ -55,11 +56,23 @@ void mecanum_follow_control()
     infantry.set_x_v = infantry.target_x_v * infantry.cos_dir - infantry.target_y_v * infantry.sin_dir;
     infantry.set_y_v = infantry.target_y_v * infantry.cos_dir + infantry.target_x_v * infantry.sin_dir;
 
-    // 转向计算，角度环 + 前馈
-		infantry.turn_speed_pid.Ref = GIMBAL_MOTOR_SIGN * PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
-		infantry.target_pid_yaw_v = PID_Calculate(&infantry.turn_speed_pid, infantry.yaw_v, infantry.turn_speed_pid.Ref);
-		//		infantry.target_pid_yaw_v = GIMBAL_MOTOR_SIGN *PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
-		infantry.set_yaw_v = infantry.target_pid_yaw_v + infantry.target_yaw_v;
+    // 转向计算：云台目标角速度前馈 + 底盘/云台夹角反馈
+    follow_angle_feedback = PID_Calculate(&infantry.turn_pos_pid, infantry.error_angle, 0);
+    abs_error_angle = fabsf(infantry.error_angle);
+    if (abs_error_angle < follow_deadband)
+    {
+        follow_angle_feedback = 0.0f;
+    }
+    else if (abs_error_angle < follow_soft_zone)
+    {
+        follow_angle_feedback *=
+            (abs_error_angle - follow_deadband) / (follow_soft_zone - follow_deadband);
+    }
+
+    infantry.target_pid_yaw_v = GIMBAL_MOTOR_SIGN * follow_angle_feedback;
+    infantry.set_yaw_v = LIMIT_MAX_MIN(infantry.target_pid_yaw_v + infantry.follow_yaw_v,
+                                       infantry.speed_yaw_max,
+                                       -infantry.speed_yaw_max);
     
 
     // 逆运动学解算

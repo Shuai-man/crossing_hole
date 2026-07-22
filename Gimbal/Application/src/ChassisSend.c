@@ -31,6 +31,20 @@ void Pack_InfantryMode()
 
 void Pack_Chassis2(void)
 {
- chassis_send_pack2.gimbal_pitch = (int16_t)(gimbal_controller.gyro_pitch_angle * 100.0f);
-//  chassis_send_pack2.gimbal_yaw_speed = (int16_t)(gimbal_controller.gyro_yaw_speed * 100.0f);
+  float yaw_speed_target = 0.0f;
+
+  if (remote_controller.chassis_mode_action == FOLLOW_GIMBAL)
+  {
+    if (remote_controller.gimbal_position == DOWN)
+    {
+      yaw_speed_target = CHASSIS_THROUGH_HOLE_YAW_SPEED_FF_COEF * gimbal_controller.pos_yaw_td.dx;
+    }
+    else
+    {
+      yaw_speed_target = CHASSIS_FOLLOW_YAW_SPEED_FF_COEF * gimbal_controller.pos_yaw_td.dx;
+    }
+  }
+
+  chassis_send_pack2.gimbal_pitch = (int16_t)(gimbal_controller.gyro_pitch_angle * 100.0f);
+  chassis_send_pack2.turn_yaw_speed = (int16_t)(yaw_speed_target * 100.0f);
 }

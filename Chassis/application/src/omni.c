@@ -4,11 +4,11 @@
 
 void omni_pid_init()
 {
-#if ROBOT == QI_TIAN_DA_SHENG
+#if defined(ROBOT) && defined(QI_TIAN_DA_SHENG) && ROBOT == QI_TIAN_DA_SHENG
     // 转向PID初始化
     PID_Init(&infantry.turn_pid, 50, 0, 0, 5.0, 0, 0.0, 0, 0, 0.000, 0.0, 1, NONE);
 //	PID_Init(&infantry.turn_pid, 50, 0, 0, 5.0, 0, 0, 0, 0, 0.000, 0.0, 1, DerivativeFilter);
-#elif ROBOT == NIUNIU
+#elif defined(ROBOT) && defined(NIUNIU) && ROBOT == NIUNIU
 	PID_Init(&infantry.turn_pid, 50, 0, 0, 10, 0, 0.0, 0, 0, 0.00, 0.0, 1, NONE);	//底盘跟随要用
 
     // 轮子控制PID
@@ -22,7 +22,7 @@ void omni_pid_init()
 // 正运动学
 void omni_pos_kinematics()
 {
-	#if ROBOT == QI_TIAN_DA_SHENG || ROBOT == NIUNIU
+	#if defined(ROBOT) && ((defined(QI_TIAN_DA_SHENG) && ROBOT == QI_TIAN_DA_SHENG) || (defined(NIUNIU) && ROBOT == NIUNIU))
 	{
     // 计算正运动学，并转到m/s为单位
     float speed1 = infantry.sensors_info.wheels_decode[LEFT_UP_OMNI_WHEEL].speed;
@@ -41,7 +41,7 @@ void omni_pos_kinematics()
 // 逆运动学 X型
 void omni_inv_kinematics()
 {
-	#if ROBOT == QI_TIAN_DA_SHENG || ROBOT == NIUNIU
+	#if defined(ROBOT) && ((defined(QI_TIAN_DA_SHENG) && ROBOT == QI_TIAN_DA_SHENG) || (defined(NIUNIU) && ROBOT == NIUNIU))
     // 逆运动学解算,统一到度/s的单位
     infantry.wheels_set_v[LEFT_UP_OMNI_WHEEL] = (-infantry.set_x_v * SQRT_2 - infantry.set_y_v * SQRT_2 + infantry.set_yaw_v * OMNI_RADIUS) * OMNI_SPEED_TO_DEGEREE_S;
     infantry.wheels_set_v[RIGHT_UP_OMNI_WHEEL] = (-infantry.set_x_v * SQRT_2 + infantry.set_y_v * SQRT_2 + infantry.set_yaw_v * OMNI_RADIUS) * OMNI_SPEED_TO_DEGEREE_S;

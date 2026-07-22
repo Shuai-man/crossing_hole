@@ -13,10 +13,10 @@ void wireless_init(void)
 
 void SendWirelessPack(void)
 {
-	if(wireless_charge.state == WIRELESS_DOWN)//ÏÂ½µ
+	if(wireless_charge.state == WIRELESS_DOWN)//ä¸‹é™
 	{
 		wireless_send_data.startflag = 0;
-	}else{ //ÉÏÉı
+	}else{ //ä¸Šå‡
 		wireless_send_data.startflag = 1;
 	}
 }

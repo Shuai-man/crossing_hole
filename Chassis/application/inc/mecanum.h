@@ -1,8 +1,6 @@
 #ifndef _MECANUM_H
 #define _MECANUM_H
 
-#include "accel.h"
-#include "math.h"
 #include "tools.h"
 
 // 麦克纳姆轮组件

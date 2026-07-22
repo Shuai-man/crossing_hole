@@ -1,97 +1,102 @@
-#ifndef _POWER_LIMIT_H
-#define _POWER_LIMIT_H
+#ifndef POWER_LIMIT_H
+#define POWER_LIMIT_H
+
+#include <stdint.h>
 
 #include "Motor_Typdef.h"
-#include "RLS_Identification.h"
-#include "robot_config.h"
 
-// 预测功率 P = I^2*R +B*W^2 +K*W*I + P0
+#define POWER_LIMIT_MOTOR_COUNT 4U /* 参与底盘功率分配的轮电机数量 */
 
-// MF9025电机
-#define MF9025_R 0.0f
-#define MF9025_K 0.0f
-#define MF9025_B 0.0f
-#define MF9025_P0 0.0f
+/* P = R * I^2 + K * w * I + B * |w| + P0 */
 
-#define I2 0
-#define W2 1
-#define WI 2
-#define P0 3
+#define M3508_R 0.124462309f /* M3508 电流平方损耗系数 */
+#define M3508_K 0.3f /* M3508 转速与电流乘积系数 */
+#define M3508_B 0.1004156735f /* M3508 随绝对转速变化的损耗系数 */
+#define M3508_P0 2.4f/4.0f /* M3508 单电机固定损耗，单位 W */
 
-
-// M3508电机
-#define M3508_R 0.434462309f
-#define M3508_B 0.0344156735f
-#define M3508_K 0.3f  	//0.3N/A
-#define M3508_P0 4.0f/4.0f 
-
-
-typedef enum Power_Arrange
+typedef enum
 {
-	NOT_ARRANGE,	// 未进行功率分配
-	NEG_ARRANGE,	// 负功率分配
-	NEED_ARRANGE,	// 需要功率分配
-	NORMAL_ARRANGE, // 正常分配
-	ARRANGE_ERROR,	// 功率分配错误
+    POWER_COEFF_CURRENT_SQUARED = 0,
+    POWER_COEFF_ABS_SPEED,
+    POWER_COEFF_SPEED_CURRENT,
+    POWER_COEFF_STATIC_LOSS,
+    POWER_COEFF_COUNT
+} PowerModelCoefficient;
+
+typedef enum
+{
+    NOT_ARRANGE = 0,
+    NEG_ARRANGE,
+    NEED_ARRANGE,
+    NORMAL_ARRANGE,
+    ARRANGE_ERROR
 } Power_Arrange;
 
-typedef enum PowerLimitMethod
+typedef enum
 {
-	TORQUE_REDUCE_METHOD, // 转矩缩减方法
-	SPEED_ERROR_METHOD,	  // 转速误差方法
+    TORQUE_REDUCE_METHOD = 0,
+    SPEED_ERROR_METHOD
 } PowerLimitMethod;
 
 typedef struct
 {
-	// 需要先赋值
-	float motor_w[4];
-	float motor_I[4];
-	float I_collect[4];
-	
-	float motor_a[4]; // 中间计算参量
-	float motor_b[4];
-	float motor_c[4];
+    /* 影子 RLS 仅用于识别参数，不会覆盖当前功控系数。 */
+    float identified_R;
+    float identified_B;
+    float measured_power;
+    float predicted_power;
+    float residual;
+    float current_squared_sum;
+    float speed_current_sum;
+    float absolute_speed_sum;
+    float covariance[2][2];
+    float window_current_squared_sum;
+    float window_absolute_speed_sum;
+    float window_loss_power_sum;
+    uint32_t last_measurement_sequence;
+    uint32_t update_count;
+    uint32_t rejected_sample_count;
+    uint8_t window_sample_count;
+    uint8_t latest_sample_valid;
+    uint8_t enabled;
+} PowerModelRLS;
 
-	Power_Arrange power_arrange_state[4];
+typedef struct
+{
+    /* 每次调用前由底盘控制器更新，单位分别为 rad/s 和 A。 */
+    float motor_w[POWER_LIMIT_MOTOR_COUNT];
+    float motor_I[POWER_LIMIT_MOTOR_COUNT];
+    float I_collect[POWER_LIMIT_MOTOR_COUNT];
+    float motor_w_error[POWER_LIMIT_MOTOR_COUNT];
+    uint8_t motor_online[POWER_LIMIT_MOTOR_COUNT];
 
-	float motor_P[4];				  // 计算预测功率
-	float send_torque_lower_scale[4]; // 功率限制之后电机缩放系数
-	int8_t is_arrange_power[4];		  // 是否已经进行功率分配
+    /* 输出和诊断信息。 */
+    float motor_P[POWER_LIMIT_MOTOR_COUNT];
+    float allocated_power[POWER_LIMIT_MOTOR_COUNT];
+    float send_torque_lower_scale[POWER_LIMIT_MOTOR_COUNT];
+    Power_Arrange power_arrange_state[POWER_LIMIT_MOTOR_COUNT];
+    float predict_send_power;
+    float now_power_predict;
+    float set_power;
 
-	float actual_ina260_power;	// 电流计获得的实际电机功率
-	float actual_referee_power; // 裁判系统反馈功率（若连接超级电容，不能代表电机）
-	float predict_send_power;	// 发送转矩电流会造成电机的总输出功率
+    float power_k[POWER_COEFF_COUNT];
+    PowerModelRLS rls;
+    uint8_t motor_num;
+    MOTOR_TYPE motor_type;
+    PowerLimitMethod power_limit_method;
 
-	float can_arrange_power;  // 计算除了负功率外需要分配的功率值
-	float need_arrange_power; // 需要分配的功率(功率分配模式)
-
-	float need_arrange_w; // 转速误差分配模式
-
-	float set_power;  // 预期最大功率值
-	int8_t motor_num; // 电机数
-	MOTOR_TYPE motor_type;
-
-	// sum_w_i sum_i_2
-	float sum_w_i;
-	float sum_i_2;
-	float sum_w_2;
-
-	float sum_w_i_collect;
-	float sum_i_2_collect;
-
-
-	float motor_w_error[4];
-
-	float power_k[4];
-	float now_power_predict;
-	
-	PowerLimitMethod power_limit_method;
 } PowerLimiter;
 
-extern RLS power_rls;
-// 限制最高四个电机
-void PowerLimit(PowerLimiter *limitter, float set_power);
-void PowerLimitInit(PowerLimiter *limitter, int motor_num, MOTOR_TYPE motor_type, PowerLimitMethod method);
-void power_fit_init(PowerLimiter *limitter);
-void power_fitting(PowerLimiter *limitter);
-#endif // !_POWER_LIMIT_H
+void PowerLimitInit(PowerLimiter *limiter,
+                    uint8_t motor_num,
+                    MOTOR_TYPE motor_type,
+                    PowerLimitMethod method);
+
+void PowerLimit(PowerLimiter *limiter, float set_power);
+
+void PowerModelRLSUpdate(PowerLimiter *limiter,
+                         float measured_chassis_power,
+                         uint32_t measurement_sequence,
+                         uint8_t measurement_valid);
+
+#endif

@@ -45,5 +45,3 @@ chassis\bsp_referee.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 chassis\bsp_referee.o: ../Judge/Inc/fifo.h
 chassis\bsp_referee.o: ../Judge/Inc/protocol.h
 chassis\bsp_referee.o: ../Components/tools/inc/debug.h
-chassis\bsp_referee.o: ../Components/tools/inc/tools.h
-chassis\bsp_referee.o: ../boards/inc/bsp_dwt.h

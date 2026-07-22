@@ -1,5 +1,15 @@
 #include "GimbalTask.h"
 
+#include <string.h>
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "Gimbalreceive.h"
+#include "GimbalSend.h"
+#include "bsp_can.h"
+#include "can_config.h"
+
 uint8_t send_to_gimbal_data_1[8];
 uint8_t send_to_gimbal_data_2[8];
 

@@ -44,6 +44,3 @@ chassis\gimbalsend.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 chassis\gimbalsend.o: ../application/inc/HeatControl.h
 chassis\gimbalsend.o: ../boards/inc/bsp_dwt.h
 chassis\gimbalsend.o: ../Components/tools/inc/debug.h
-chassis\gimbalsend.o: ../Core/Inc/main.h
-chassis\gimbalsend.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
-chassis\gimbalsend.o: ../Components/tools/inc/tools.h

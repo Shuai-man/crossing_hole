@@ -21,6 +21,7 @@
 #define BULLET_LOW_THRESHOLD     10 // 最低弹量阈值
 #define BULLET_DEFAULT_REMAINING 20 // 默认剩余发弹量
 #define BULLET_MAX_VALID 40 // 最大有效弹量
+#define PENDING_BULLET_MAX BULLET_MAX_VALID // 最大未确认弹量记录数
 
 /* 射频常量 */
 #define FREQ_LOW     5.0f //hz
@@ -55,6 +56,8 @@ typedef struct ToggleController
   int8_t predict_bullets;      // 预测剩余发弹量  
   uint8_t receive_bullets;     // 接收发弹量
   uint8_t last_receive_bullets;// 上一次接收发弹量
+  uint8_t pending_bullets;     // 已下发但裁判系统未确认的弹量
+  float pending_bullet_time[PENDING_BULLET_MAX]; // 未确认弹量的等待时间
 
   uint32_t current_cnt;        // 拨盘计数器
   float dt_current;            // 当前时间间隔

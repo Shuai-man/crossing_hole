@@ -281,14 +281,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
     gimbal_controller.target_pitch_angle += chassis_solver.mouse_y_td.x * MOUSE_PITCH_SENSITIVITY;
     gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.z * MOUSE_SCROLL_SENSITIVITY;
 
-    if (remote_controller.gimbal_position == DOWN)
-    {
-        chassis_solver.chassis_speed_w = gimbal_controller.pos_yaw_td.dx * MOUSE_YAW_SPEED;
-    }
-    else
-    {
-        chassis_solver.chassis_speed_w = speed_smoother_update(&chassis_solver.speed_w_smoother, speed_w, chassis_solver.delta_t);
-    }
+    chassis_solver.chassis_speed_w = speed_smoother_update(&chassis_solver.speed_w_smoother, speed_w, chassis_solver.delta_t); 
     chassis_solver.chassis_speed_x = speed_smoother_update(&chassis_solver.speed_x_smoother, speed_x, chassis_solver.delta_t);
     chassis_solver.chassis_speed_y = speed_smoother_update(&chassis_solver.speed_y_smoother, speed_y, chassis_solver.delta_t);
 
@@ -448,24 +441,40 @@ float speed_smoother_update(SpeedSmoother *sm, float target, float dt)
         return sm->current_speed;
     }
 
-    // -------- 3. 目标非 0：处理起步和加速 ----------
-    // 3.1 判断当前是否处于“静止”或“接近静止”
+    // -------- 3. 目标非 0：处理反向、起步和加速 ----------
+    // 3.1 方向切换时，先按减速度快速刹到 0，避免继续沿旧方向滑行太久
+    if ((sm->current_speed > 0.001f && target < -0.001f) ||
+        (sm->current_speed < -0.001f && target > 0.001f))
+    {
+        float step = sm->decel * dt;
+        if (sm->current_speed > 0)
+        {
+            sm->current_speed = (sm->current_speed - step > 0) ? (sm->current_speed - step) : 0.0f;
+        }
+        else
+        {
+            sm->current_speed = (sm->current_speed + step < 0) ? (sm->current_speed + step) : 0.0f;
+        }
+        return sm->current_speed;
+    }
+
+    // 3.2 判断当前是否处于“静止”或“接近静止”
     if (fabsf(sm->current_speed) < 0.001f)
     {
-        // 3.1.1 目标速度 <= 冲击阈值：直接透传（保证微操不窜）
+        // 3.2.1 目标速度 <= 冲击阈值：直接透传（保证微操不窜）
         if (fabsf(target) <= sm->start_speed)
         {
             sm->current_speed = target;
         }
         else
         {
-            // 3.1.2 目标速度 > 冲击阈值：瞬间给一个冲击速度突破静摩擦
+            // 3.2.2 目标速度 > 冲击阈值：瞬间给一个冲击速度突破静摩擦
             sm->current_speed = (target > 0) ? sm->start_speed : -sm->start_speed;
         }
         return sm->current_speed;
     }
 
-    // 3.2 车辆已在运动中：执行加速度限幅（速率限制）
+    // 3.3 车辆已在运动中：执行加速度限幅（速率限制）
     float delta = target - sm->current_speed;
     float max_delta = sm->accel * dt;
 
@@ -477,7 +486,7 @@ float speed_smoother_update(SpeedSmoother *sm, float target, float dt)
 
     sm->current_speed += delta;
 
-    // 3.3 防止超调
+    // 3.4 防止超调
     if ((delta > 0 && sm->current_speed > target) || (delta < 0 && sm->current_speed < target))
     {
         sm->current_speed = target;

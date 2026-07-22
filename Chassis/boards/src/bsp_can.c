@@ -1,16 +1,22 @@
 #include "bsp_can.h"
 
+#include <string.h>
+
+#include "ChassisController.h"
+#include "Gimbalreceive.h"
+#include "NingCap.h"
+#include "can_config.h"
+#include "debug.h"
+
 /**********************************************************************************************************
- *�� �� ��: can_filter_init
- *����˵��: can����
- *��    ��: ��
- *�� �� ֵ: ��
+ * 函数名: can_filter_init
+ * 说明: 配置 CAN 接收过滤器和中断
  **********************************************************************************************************/
 
 void can_filter_init(void)
 {
     CAN_FilterTypeDef can_filter_st;
-    // CAN 1 FIFO0 �����ж�
+    // CAN 1 FIFO0 接收中断
     can_filter_st.FilterBank = 0;
     can_filter_st.FilterActivation = ENABLE;
     can_filter_st.FilterMode = CAN_FILTERMODE_IDLIST;
@@ -24,7 +30,7 @@ void can_filter_init(void)
     HAL_CAN_ConfigFilter(&hcan1, &can_filter_st);
     HAL_CAN_Start(&hcan1);
     HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
-    // CAN 1 FIFO1 �����ж�
+    // CAN 1 FIFO1 接收中断
     can_filter_st.FilterBank = 2;
     can_filter_st.FilterActivation = ENABLE;
     can_filter_st.FilterMode = CAN_FILTERMODE_IDLIST;
@@ -38,7 +44,7 @@ void can_filter_init(void)
     HAL_CAN_ConfigFilter(&hcan1, &can_filter_st);
     HAL_CAN_Start(&hcan1);
     HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO1_MSG_PENDING);
-    // CAN 2 FIFO0 �����ж�
+    // CAN 2 FIFO0 接收中断
     can_filter_st.FilterBank = 15;
     can_filter_st.FilterActivation = ENABLE;
     can_filter_st.FilterMode = CAN_FILTERMODE_IDLIST;
@@ -52,7 +58,7 @@ void can_filter_init(void)
     HAL_CAN_ConfigFilter(&hcan2, &can_filter_st);
     HAL_CAN_Start(&hcan2);
     HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
-    // CAN 2 FIFO1 �����ж�
+    // CAN 2 FIFO1 接收中断
     can_filter_st.FilterBank = 16;
     can_filter_st.FilterActivation = ENABLE;
     can_filter_st.FilterMode = CAN_FILTERMODE_IDLIST;
@@ -66,9 +72,9 @@ void can_filter_init(void)
     HAL_CAN_ConfigFilter(&hcan2, &can_filter_st);
     HAL_CAN_Start(&hcan2);
     HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO1_MSG_PENDING);
-    // CAN 1 �����ж�
+    // CAN 1 发送中断
     HAL_CAN_ActivateNotification(&hcan1, CAN_IT_TX_MAILBOX_EMPTY);
-    // CAN 2 �����ж�
+    // CAN 2 发送中断
     HAL_CAN_ActivateNotification(&hcan2, CAN_IT_TX_MAILBOX_EMPTY);
 }
 
@@ -172,17 +178,15 @@ void CanReceiveAll(CAN_HandleTypeDef *hcan, CAN_RxHeaderTypeDef *rx_header, uint
     {
         if (rx_header->StdId == SUPER_POWER_CAN_ID)
         {
-            memcpy(&cap_recv_data, data, 8);
+            ReceiveCapDecode(data, &cap_recv_data);
             LossUpdate(&global_debugger.super_power_debugger, SUPER_POWER_LOSS_TIME);
         }
     }
 }
 
 /**********************************************************************************************************
- *�� �� ��: HAL_CAN_RxFifo0MsgPendingCallback
- *����˵��:FIFO 0�����жϻص�����
- *��    ��:
- *�� �� ֵ: ��
+ * 函数名: HAL_CAN_RxFifo0MsgPendingCallback
+ * 说明: FIFO 0 接收中断回调
  **********************************************************************************************************/
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -194,12 +198,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     CanReceiveAll(hcan, &rx_header, rx_data);
 }
 /**********************************************************************************************************
- *�� �� ��: HAL_CAN_RxFifo1MsgPendingCallback
- *����˵��:FIFO 1�����жϻص�����
- *��    ��:
- *�� �� ֵ: ��
+ * 函数名: HAL_CAN_RxFifo1MsgPendingCallback
+ * 说明: FIFO 1 接收中断回调
  **********************************************************************************************************/
-void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) // FIFO 1�����жϻص�����
+void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
     CAN_RxHeaderTypeDef rx_header;
     uint8_t rx_data[8];
@@ -209,7 +211,10 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) // FIFO 1���
     CanReceiveAll(hcan, &rx_header, rx_data);
 }
 
-void CanSend(CAN_HandleTypeDef *hcan, uint8_t *data, uint32_t std_id, uint8_t data_length)
+void CanSend(CAN_HandleTypeDef *hcan,
+             const uint8_t *data,
+             uint32_t std_id,
+             uint8_t data_length)
 {
     CAN_TxHeaderTypeDef tx_header;
     uint8_t tx_data[8];

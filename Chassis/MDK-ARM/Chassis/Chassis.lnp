@@ -62,7 +62,6 @@
 "chassis\arm_atan2_f32.o"
 "chassis\pid.o"
 "chassis\td.o"
-"chassis\rls_identification.o"
 "chassis\crc32.o"
 "chassis\quaternionekf.o"
 "chassis\kalman_filter.o"

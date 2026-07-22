@@ -51,9 +51,18 @@ void Gimbal_msgs_Update1(void)
     infantry.target_yaw_v_percent = 0.0f;
     infantry.target_y_v_percent = 0.0f;
     infantry.target_x_v_percent = 0.0f;
+    infantry.follow_yaw_v = 0.0f;
   }
 }
 
 void Gimbal_msgs_Update2(void)
 {
+  if (global_debugger.gimbal_comm_debugger[1].state == ON)
+  {
+    infantry.follow_yaw_v = gimbal_receiver_pack2.turn_yaw_speed * 0.01f * ANGLE_TO_RAD_COEF;
+  }
+  else
+  {
+    infantry.follow_yaw_v = 0.0f;
+  }
 }

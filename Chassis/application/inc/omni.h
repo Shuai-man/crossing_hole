@@ -17,12 +17,12 @@
 */
 
 // 以下序号0表示0x201电机
-#if ROBOT == QI_TIAN_DA_SHENG
+#if defined(ROBOT) && defined(QI_TIAN_DA_SHENG) && ROBOT == QI_TIAN_DA_SHENG
 	#define LEFT_UP_OMNI_WHEEL 0    // 左上电机
 	#define RIGHT_UP_OMNI_WHEEL 1   // 右上电机
 	#define LEFT_DOWN_OMNI_WHEEL 3  // 左下电机
 	#define RIGHT_DOWN_OMNI_WHEEL 2 // 右下电机
-#elif ROBOT == NIUNIU
+#elif defined(ROBOT) && defined(NIUNIU) && ROBOT == NIUNIU
 	#define LEFT_UP_OMNI_WHEEL 0    // 左上电机
 	#define RIGHT_UP_OMNI_WHEEL 1   // 右上电机
 	#define LEFT_DOWN_OMNI_WHEEL 2  // 左下电机

@@ -1,15 +1,7 @@
 #ifndef _DEBUG_H
 #define _DEBUG_H
 
-#include "main.h"
-#include <string.h>
 #include <stdint.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "tools.h"
-#include "bsp_dwt.h"
 
 enum State
 {
@@ -56,7 +48,6 @@ typedef struct GlobalDebugger
 extern GlobalDebugger global_debugger;
 extern float Ozone[8];
 
-int8_t checkIMUOn(void);
 void LossUpdate(Loss_Debugger *loss_debugger, float thresh_t);
 void LossDetect(Loss_Debugger *loss_debugger);
 #endif

@@ -1,131 +1,171 @@
 #include "NingCap.h"
 
-// 不要直接远程使用.改变该变量，但可以远程利用该变量
+#include <string.h>
+
 SuperCapSendData cap_send_data;
 SuperCapRecvData cap_recv_data;
 NingCapController cap_controller;
+static volatile uint32_t cap_recv_sequence;
 
-void CapControllerInit()
+static float clamp_float(float value, float minimum, float maximum)
 {
-    cap_controller.cap_energy_min = 0.5f * CAP_MIN_VOL * CAP_MIN_VOL * CAP_CAPACITY;
-    cap_controller.cap_energy_max = 0.5f * CAP_MAX_VOL * CAP_MAX_VOL * CAP_CAPACITY;
-    cap_controller.buffer_energy_state = BufferEnergy_High;
+    if (value < minimum)
+    {
+        return minimum;
+    }
+    if (value > maximum)
+    {
+        return maximum;
+    }
+    return value;
+}
+
+void CapControllerInit(void)
+{
+    memset(&cap_send_data, 0, sizeof(cap_send_data));
+    memset(&cap_recv_data, 0, sizeof(cap_recv_data));
+    memset(&cap_controller, 0, sizeof(cap_controller));
+    cap_recv_sequence = 0U;
+    cap_controller.cap_energy_min =
+        0.5f * CAP_MIN_VOL * CAP_MIN_VOL * CAP_CAPACITY;
+    cap_controller.cap_energy_max =
+        0.5f * CAP_MAX_VOL * CAP_MAX_VOL * CAP_CAPACITY;
     cap_controller.cap_vol_state = CapVol_Low;
-    cap_controller.set_power = 50.0f;
-    cap_controller.cap_power = 50.0f;
 }
 
-/*  发送数据封装 */
-void SendCapPack(SuperCapSendData *send_data, uint16_t P_ref)
+
+uint8_t not_use_cap = 0;
+void SendCapPack(SuperCapSendData *send_data, float referee_power_limit)
 {
-    send_data->P_ref = P_ref * 100.0f;
-    send_data->wireless_start = 0;
+    float encoded_power;
+
+    if (send_data == 0)
+    {
+        return;
+    }
+
+    encoded_power = clamp_float(referee_power_limit * 100.0f, 0.0f, 125.0f * 100.0f);
+    send_data->buffer_energy = 0U;
+    send_data->P_ref = (uint16_t)encoded_power;
+    send_data->reverse = 0U;
+    send_data->wireless_start = not_use_cap;
 }
 
-void ReceiveCapDecode(uint8_t *recv_data, SuperCapRecvData *cap_recv_data)
+void ReceiveCapDecode(const uint8_t *recv_data, SuperCapRecvData *decoded_data)
 {
-    memcpy((uint8_t *)(cap_recv_data), recv_data, 8);
+    if (recv_data == 0 || decoded_data == 0)
+    {
+        return;
+    }
+    memcpy(decoded_data, recv_data, sizeof(*decoded_data));
+    cap_recv_sequence++;
 }
 
-void getCapEnergy()
+void NingCapUpdateState(uint8_t online)
 {
+    float usable_energy_range;
+
+    if (online == 0U)
+    {
+        cap_controller.cap_vol = 0.0f;
+        cap_controller.cap_energy = 0.0f;
+        cap_controller.cap_energy_pecent = 0.0f;
+        cap_controller.chassis_power = 0.0f;
+        cap_controller.referee_power = 0.0f;
+        cap_controller.cap_vol_state = CapVol_Low;
+        cap_controller.energy_available = 0U;
+        cap_controller.power_data_valid = 0U;
+        return;
+    }
+
     cap_controller.cap_vol = cap_recv_data.cap_vol / 100.0f;
-    cap_controller.cap_energy = 0.5f * cap_controller.cap_vol * cap_controller.cap_vol * CAP_CAPACITY;
-    cap_controller.cap_energy_pecent = cap_controller.cap_energy - cap_controller.cap_energy_min > 0 ? (cap_controller.cap_energy - cap_controller.cap_energy_min) / (cap_controller.cap_energy_max - cap_controller.cap_energy_min) : 0.0f;
-}
-
-// 只跟缓冲能量有关，与其它均无关
-void RefereeOutputControl(float buffer_energy, float max_power)
-{
-    switch (cap_controller.buffer_energy_state)
+    cap_controller.chassis_power = cap_recv_data.chassis_power / 100.0f;
+    cap_controller.referee_power = cap_recv_data.referee_power / 100.0f;
+    cap_controller.power_measurement_sequence = cap_recv_sequence;
+    cap_controller.power_data_valid = 1U;
+    if (cap_controller.cap_vol > CAP_MAX_VOL + 5.0f)
     {
-    case BufferEnergy_High:
-        // 状态机切换判断
-        cap_controller.buffer_energy_state = buffer_energy < BUFFER_ENERGY_MID ? (buffer_energy < BUFFER_ENERGY_LOW ? BufferEnergy_Low : BufferEnergy_Middle) : BufferEnergy_High;
-        break;
-    case BufferEnergy_Middle:
-        cap_controller.buffer_energy_state = buffer_energy > BUFFER_ENERGY_HIGH ? BufferEnergy_High : (buffer_energy < BUFFER_ENERGY_LOW ? BufferEnergy_Low : BufferEnergy_Middle);
-        break;
-    case BufferEnergy_Low:
-        cap_controller.buffer_energy_state = buffer_energy > BUFFER_ENERGY_HIGH ? BufferEnergy_High : (buffer_energy > BUFFER_ENERGY_MID ? BufferEnergy_Middle : BufferEnergy_Low);
-        break;
-    default:
-        cap_controller.buffer_energy_state = BufferEnergy_Low;
-        break;
+        cap_controller.cap_energy = 0.0f;
+        cap_controller.cap_energy_pecent = 0.0f;
+        cap_controller.chassis_power = 0.0f;
+        cap_controller.referee_power = 0.0f;
+        cap_controller.cap_vol_state = CapVol_Low;
+        cap_controller.energy_available = 0U;
+        cap_controller.power_data_valid = 0U;
+        return;
     }
 
-    // 不同状态的冲电判断
-    switch (cap_controller.buffer_energy_state)
+    cap_controller.cap_energy =
+        0.5f * cap_controller.cap_vol * cap_controller.cap_vol * CAP_CAPACITY;
+    usable_energy_range =
+        cap_controller.cap_energy_max - cap_controller.cap_energy_min;
+    if (usable_energy_range > 0.0f)
     {
-			//发给电容的，让裁判端最大的功率
-    case BufferEnergy_High:
-        cap_controller.cap_power = max_power;
-        break;
-    case BufferEnergy_Middle:
-        cap_controller.cap_power = max_power * 0.8f;
-        break;
-    default:
-        cap_controller.cap_power = max_power * 0.6f;
-        break;
+        cap_controller.cap_energy_pecent =
+            clamp_float((cap_controller.cap_energy - cap_controller.cap_energy_min) /
+                            usable_energy_range,
+                        0.0f,
+                        1.0f);
     }
-	
-}
+    else
+    {
+        cap_controller.cap_energy_pecent = 0.0f;
+    }
 
-void ChassisOutputControl(float need_power, float max_power)
-{
+    if (cap_controller.energy_available != 0U)
+    {
+        if (cap_controller.cap_vol < CAP_USE_DISABLE_VOL)
+        {
+            cap_controller.energy_available = 0U;
+        }
+    }
+    else if (cap_controller.cap_vol > CAP_USE_ENABLE_VOL)
+    {
+        cap_controller.energy_available = 1U;
+    }
+
     switch (cap_controller.cap_vol_state)
     {
     case CapVol_Low:
-        // 状态机切换判断
-        cap_controller.cap_vol_state = cap_controller.cap_vol > CAP_VOL_MID ? (cap_controller.cap_vol > CAP_VOL_HIGH ? CapVol_High : CapVol_Middle) : CapVol_Low;
+        if (cap_controller.cap_vol > CAP_VOL_HIGH)
+        {
+            cap_controller.cap_vol_state = CapVol_High;
+        }
+        else if (cap_controller.cap_vol > CAP_VOL_MID)
+        {
+            cap_controller.cap_vol_state = CapVol_Middle;
+        }
         break;
+
     case CapVol_Middle:
-        cap_controller.cap_vol_state = cap_controller.cap_vol > CAP_VOL_HIGH ? CapVol_High : (cap_controller.cap_vol < CAP_VOL_LOW ? CapVol_Low : CapVol_Middle);
+        if (cap_controller.cap_vol > CAP_VOL_HIGH)
+        {
+            cap_controller.cap_vol_state = CapVol_High;
+        }
+        else if (cap_controller.cap_vol < CAP_VOL_LOW)
+        {
+            cap_controller.cap_vol_state = CapVol_Low;
+        }
         break;
+
     case CapVol_High:
-        cap_controller.cap_vol_state = cap_controller.cap_vol < CAP_VOL_MID ? (cap_controller.cap_vol < CAP_VOL_LOW ? CapVol_Low : CapVol_Middle) : CapVol_High;
+        if (cap_controller.cap_vol < CAP_VOL_LOW)
+        {
+            cap_controller.cap_vol_state = CapVol_Low;
+        }
+        else if (cap_controller.cap_vol < CAP_VOL_MID)
+        {
+            cap_controller.cap_vol_state = CapVol_Middle;
+        }
         break;
+
     default:
         cap_controller.cap_vol_state = CapVol_Low;
         break;
     }
-
-    switch (cap_controller.cap_vol_state)
-    {
-		//功控的功率限制
-    // 电容能量正常，要多少，给多少
-    case CapVol_Middle:
-			cap_controller.set_power = need_power * 0.85f;
-			break;
-    case CapVol_High:
-				if(cap_controller.buffer_energy_state == BufferEnergy_High )
-				{
-					cap_controller.set_power = need_power ;
-				}
-				else
-				{
-        cap_controller.set_power = need_power * 0.85f;
-				}
-        break;
-    default:
-        // 电容能量低，不能要多少给多少
-        cap_controller.set_power = max_power * 0.7f; // 去除部分能量损耗，确保不超功率
-        break;
-    }
 }
 
-// 输入缓冲能量、底盘最高功率，需要使用的功率，返回发送功率值，潜在返回电容功率发送值
-float NingCapControl(float buffer_energy, float max_power, float need_power)
+uint8_t NingCapHasEnergy(void)
 {
-    // 计算能量
-    getCapEnergy();
-
-    // 根据缓冲能量计算裁判系统输出功率
-    RefereeOutputControl(buffer_energy, max_power);
-
-    // 根据电容电压来判断底盘设置的功率
-    ChassisOutputControl(need_power, max_power);
-
-    // 返回底盘设置功率
-    return cap_controller.set_power;
+    return cap_controller.energy_available;
 }

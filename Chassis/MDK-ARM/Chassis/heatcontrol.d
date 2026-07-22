@@ -43,6 +43,3 @@ chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
 chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 chassis\heatcontrol.o: ../Components/tools/inc/debug.h
-chassis\heatcontrol.o: ../Core/Inc/main.h
-chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
-chassis\heatcontrol.o: ../Components/tools/inc/tools.h

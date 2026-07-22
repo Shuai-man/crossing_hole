@@ -1,20 +1,33 @@
 #include "ChassisController.h"
+
+#include <float.h>
+#include <math.h>
+
+#include "NingCap.h"
+#include "PowerControlTask.h"
+#include "Gimbalreceive.h"
+#include "arm_math.h"
+#include "bsp_can.h"
+#include "can_config.h"
 #include "debug.h"
+#include "mecanum.h"
 #include "robot_config.h"
 #include "remote_control.h"
+#include "tools.h"
 
 Infantry infantry;
 
 float UI_FRONT_ERR, UI_FRONT_SIN, UI_FRONT_COS;
 
+static uint8_t float_is_finite(float value)
+{
+    return (uint8_t)((value == value) && (value <= FLT_MAX) && (value >= -FLT_MAX));
+}
+
 void InfantryInit(Infantry *infantry)
 {
     // 功率控制初始化
     PowerLimitInit(&infantry->power_limiter, 4, M3508, infantry->power_limit_method);
-    power_fit_init(&infantry->power_limiter);
-    TD_Init(&infantry->x_v_td, 20000, 0.01); // 约0.5s上升时间
-    TD_Init(&infantry->y_v_td, 20000, 0.01);
-    TD_Init(&infantry->yaw_v_td, 20000, 0.01);
 }
 
 /**
@@ -166,57 +179,61 @@ void wheels_power_limit(Infantry *infantry)
         // 设置实际轮子转速与设定转速差
         w_error = fabs(infantry->wheels_set_v[i] - infantry->sensors_info.wheels_decode[i].speed) * ANGLE_TO_RAD_COEF;
         infantry->power_limiter.motor_w_error[i] = fabs(w_error);
+        infantry->power_limiter.motor_online[i] =
+            (uint8_t)(global_debugger.wheels_comm_debugger[i].state == ON);
     }
 
     // 限制功率
 
-    PowerLimit(&infantry->power_limiter, infantry->set_power); // 计算出scale，影响set_current
+    PowerLimit(&infantry->power_limiter, infantry->set_power);
+
+    /*
+     * 影子 RLS 只识别 R/B 并输出调试量，不修改当前功控参数。
+     * 超电掉线时由已有 state 判断停止更新。
+     */
+    PowerModelRLSUpdate(
+        &infantry->power_limiter,
+        cap_controller.chassis_power,
+        cap_controller.power_measurement_sequence,
+        (uint8_t)(global_debugger.super_power_debugger.state == ON &&
+                  cap_controller.power_data_valid != 0U));
 
     // 作功率削减
     for (int i = 0; i < 4; i++)
     {
-        infantry->excute_info.wheels_set_current[i] *= infantry->power_limiter.send_torque_lower_scale[i];
+        if (float_is_finite(infantry->excute_info.wheels_set_current[i]) == 0U ||
+            infantry->power_limiter.send_torque_lower_scale[i] <= 0.0f)
+        {
+            infantry->excute_info.wheels_set_current[i] = 0.0f;
+        }
+        else
+        {
+            infantry->excute_info.wheels_set_current[i] *=
+                infantry->power_limiter.send_torque_lower_scale[i];
+        }
         infantry->wheels_send_current[i] = infantry->excute_info.wheels_set_current[i];
     }
 }
 
-float test_power = 60.0f; // 不用或者没有超电就手动设置功率
-
 // 设置机器人功率以及控制其速度
 void set_robot_speed(Infantry *infantry)
 {
-    // 没有裁判系统时，超电设定power为0，改为默认80w
-    // todo 有超电，设定功率比referee大10w
+    const uint8_t super_cap_available =
+        (uint8_t)(global_debugger.super_power_debugger.state == ON &&
+                  NingCapHasEnergy() != 0U);
+    const uint8_t super_cap_active =
+        (uint8_t)(super_cap_available != 0U &&
+                  remote_controller.super_power_state ==
+                      POWER_TO_SuperPower);
 
-    if (global_debugger.referee_debugger.state == ON)
-    {
-        if (cap_controller.cap_vol_state != CapVol_Low && remote_controller.super_power_state == POWER_TO_SuperPower)
-        {
-            infantry->set_power = Robot_Status.chassis_power_limit + 60.0f;
-        }
-        else
-        {
-            infantry->set_power = Robot_Status.chassis_power_limit;
-        }
-    }
-    else
-    {
-        if (cap_controller.cap_vol_state != CapVol_Low && remote_controller.super_power_state == POWER_TO_SuperPower)
-        {
-            infantry->set_power = test_power + 60.0f;
-        }
-        else
-        {
-            infantry->set_power = test_power;
-        }
-    }
+    infantry->set_power = GetChassisPowerLimit(super_cap_active);
 
     // 无超电时，小陀螺，平移，缓冲能量消耗速度=恢复速度
     //  节能模式35w时，速度也不会出现负数
     //  地胶地形
     if (infantry->chassis_type == MECANUM_WHEEL)
     {
-#if ROBOT == OLD
+#if ROBOT_VARIANT == ROBOT_VARIANT_OLD
         if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
         {
             // 这里的speed不要超过10
@@ -230,7 +247,7 @@ void set_robot_speed(Infantry *infantry)
             infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 1.0f;
             infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.007f + 5.0f;
         }
-#elif ROBOT == NEW
+#elif ROBOT_VARIANT == ROBOT_VARIANT_NEW
         if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
         {
             // 这里的speed不要超过10
@@ -248,13 +265,12 @@ void set_robot_speed(Infantry *infantry)
     }
 }
 
-// 加速策略	TD滤波，减缓变化
+// 速度百分比由云台侧处理，底盘侧只做比例换算
 void wheels_accel(Infantry *infantry)
 {
-    // 给遥控器信号加个滤波，缓启动	底盘移动目标值
-    infantry->target_x_v = TD_Calculate(&infantry->x_v_td, infantry->target_x_v_percent * infantry->speed_x_max);
-    infantry->target_y_v = TD_Calculate(&infantry->y_v_td, infantry->target_y_v_percent * infantry->speed_y_max);
-    infantry->target_yaw_v = TD_Calculate(&infantry->yaw_v_td, infantry->target_yaw_v_percent * infantry->speed_yaw_max);
+    infantry->target_x_v = infantry->target_x_v_percent * infantry->speed_x_max;
+    infantry->target_y_v = infantry->target_y_v_percent * infantry->speed_y_max;
+    infantry->target_yaw_v = infantry->target_yaw_v_percent * infantry->speed_yaw_max;
 }
 
 void chassis_powerdown_control(Infantry *infantry)
@@ -272,9 +288,7 @@ void chassis_powerdown_control(Infantry *infantry)
         infantry->excute_info.wheels_set_current[i] = 0;
     }
 
-    TD_Clear(&infantry->x_v_td, 0);
-    TD_Clear(&infantry->y_v_td, 0);
-    TD_Clear(&infantry->yaw_v_td, 0);
+    infantry->follow_yaw_v = 0.0f;
 }
 
 void chassis_follow_control(Infantry *infantry)

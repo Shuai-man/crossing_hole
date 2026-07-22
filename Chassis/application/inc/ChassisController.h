@@ -1,36 +1,14 @@
 #ifndef _CHASIS_CONTROLLER_H
 #define _CHASIS_CONTROLLER_H
 
-#include <string.h>
 #include <stdint.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "arm_math.h"
-#include "arm_atan2_f32.h"
 
-#include "tools.h"
-#include "user_lib.h"
 #include "pid.h"
-
-#include "can_config.h"
 #include "TD.h"
-
 #include "PowerLimit.h"
-
 #include "M3508.h"
 #include "GM6020.h"
-#include "bsp_can.h"
-
-#include "mecanum.h"
-#include "omni.h"
-#include "steer.h"
-
-#include "PowerControlTask.h"
-#include "NingCap.h"
-#include "RefereeTask.h"
-#include "Offline_Task.h"
-
+#include "robot_config.h"
 
 extern float UI_FRONT_ERR,UI_FRONT_SIN,UI_FRONT_COS;
 
@@ -82,17 +60,6 @@ typedef enum
   CHASSIS_RIGHT,
 } chassis_direction_e;
 
-typedef enum Energy_State{
-	ENERGY_125,
-	ENERGY_100,
-	ENERGY_50,
-	ENERGY_30,
-	ENERGY_15,
-	ENERGY_5,
-  ENERGY_1,
-	ENERGY_0,
-} Energy_State;
-
 typedef struct Infantry
 {
   /*  传感器信息 */
@@ -102,7 +69,7 @@ typedef struct Infantry
   ExcuteTorque excute_info;
 
   /* 移动控制  */
-  float target_yaw_v; // rad/s  仅底盘运动模式下才生效，其余模式均由底盘板自动决策
+  float target_yaw_v; // rad/s  小陀螺/主动旋转速度
   float target_x_v;   // target_x_v_percent * speed_x_max
   float target_y_v;
 
@@ -118,11 +85,6 @@ typedef struct Infantry
   float set_yaw_v; // rad/s
   float set_x_v;
   float set_y_v;
-
-  // 跟踪微分器
-  TD_t x_v_td;
-  TD_t y_v_td;
-  TD_t yaw_v_td;
 
   // 实际速度
   float x_v;
@@ -144,6 +106,7 @@ typedef struct Infantry
   float yaw_radian; //yaw电机角度，弧度制，0-2pi
   float yaw_angle; //yaw电机角度，角度制，0-360
   float error_angle;
+  float follow_yaw_v; // 云台下发的跟随yaw目标速度，rad/s
 
   // 异常检测
   int16_t abnormal_count; // 异常次数计数
@@ -151,12 +114,7 @@ typedef struct Infantry
 
   // 转向PID
   PID_t turn_pos_pid;
-	PID_t turn_speed_pid;
   float target_pid_yaw_v;
-
-  // 麦轮底盘跟随前馈
-  Feedforward_t Mecanum_Follow_FF;
-  float Mecanum_Follow_FF_Coefficient[3];
 
   // 轮控PID
   PID_t wheels_pid[4];
@@ -183,7 +141,6 @@ typedef struct Infantry
   PowerLimiter power_limiter;
   float set_power; // 机器人功率设置
   PowerLimitMethod power_limit_method;
-  Energy_State energy_state;
 
   // 测试数据
   float wheels_send_current[4];

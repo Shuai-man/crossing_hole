@@ -1,13 +1,7 @@
 #ifndef _WIRELESS_H_
 #define _WIRELESS_H_
 
-#include <string.h>
 #include <stdint.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "tools.h"
 
 typedef enum WIRELESS_STATE{
 	WIRELESS_UP,
@@ -24,7 +18,7 @@ typedef struct WirelessSendData
 
 typedef struct WirelessRecvData
 {
-    uint16_t power_buckin; // ³äµç¹¦ÂÊ
+    uint16_t power_buckin; // å……ç”µåŠŸçŽ‡
     uint16_t _;
     uint16_t __;
     uint16_t ___;

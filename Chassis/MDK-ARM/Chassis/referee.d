@@ -46,5 +46,3 @@ chassis\referee.o: ../Judge/Inc/crcs.h
 chassis\referee.o: ../application/inc/HeatControl.h
 chassis\referee.o: ../boards/inc/bsp_dwt.h
 chassis\referee.o: ../Components/tools/inc/debug.h
-chassis\referee.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
-chassis\referee.o: ../Components/tools/inc/tools.h

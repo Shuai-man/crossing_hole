@@ -1487,11 +1487,6 @@
               <FilePath>..\Algorithm\src\TD.c</FilePath>
             </File>
             <File>
-              <FileName>RLS_Identification.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Algorithm\src\RLS_Identification.c</FilePath>
-            </File>
-            <File>
               <FileName>crc32.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Algorithm\src\crc32.c</FilePath>
