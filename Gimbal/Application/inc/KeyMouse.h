@@ -3,20 +3,7 @@
 
 #include "main.h"
 #include <stdlib.h>
-#include "remote_control.h"
-#include "DT7_Controller.h"
-#include "VTM_Controller.h"
-
-#include "debug.h"
 #include "TD.h"
-//#include "Offline_Task.h"
-
-#include "bsp_dwt.h"
-#include "Gimbal.h"
-#include "pc_serial.h"
-#include "ToggleBullet.h"
-
-#include "FrictionWheel.h"
 
 //参考遥控器，假设鼠标速度峰值为300，delta_t为0.01s
 #define MOUSE_YAW_SENSITIVITY   0.01f*180.0f/400.0f //t*角度/速度峰值

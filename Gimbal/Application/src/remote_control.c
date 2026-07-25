@@ -1,8 +1,13 @@
 #include "remote_control.h"
 
+#include "bsp_VTM.h"
+#include "bsp_DT7.h"
+#include "Offline_Task.h"
+#include "lifting_control.h"
+#include "Gimbal.h"
+
 RemoteController remote_controller;
 
-// int size_test = 0;
 void setChassisModeAction(enum CHASSIS_MODE_ACTION action)
 {
     // size_test = sizeof(remote_controller.control_mode_action); //1 字节

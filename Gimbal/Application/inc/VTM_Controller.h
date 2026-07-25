@@ -1,11 +1,8 @@
 #ifndef __VTM_CONTROLLER_H__
 #define __VTM_CONTROLLER_H__
 
-#include "main.h"
-#include "bsp_VTM.h"
-#include "Offline_Task.h"
-#include "remote_control.h"
-#include "KeyMouse.h"
+#include "stdint.h"
+#include "stdbool.h"
 
 typedef struct
 {
@@ -15,6 +12,9 @@ typedef struct
 	bool last_right_up;
 
 }VTM_Controller_t;
+
+#define MAX_SW_YAW_SPEED 180  // 云台yaw轴灵敏度(拨杆) 度/s
+#define MAX_SW_PITCH_SPEED 80 // 云台pitch轴灵敏度(拨杆) 度/s
 
 void VTM_Update(float delta_t);
 void VTM_Init(void);

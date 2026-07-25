@@ -1,5 +1,7 @@
 #include "FrictionWheel.h"
 
+#include "ChassisGet.h" 
+
 FrictionWheel_t friction_wheels; // 两个摩擦轮
 
 void FrictionWheel_Init()
@@ -9,10 +11,6 @@ void FrictionWheel_Init()
 					 C620_MAX_SEND_CURRENT, 7000.0f, 0.0, 2.5, 0.0, 0.00, 1000, 1000, 0, 0, 1, ChangingIntegrationRate);
 	PID_Init(&friction_wheels.PidFrictionSpeed[RIGHT_FRICTION_WHEEL],
 					 C620_MAX_SEND_CURRENT, 7000.0f, 0.0, 2.5, 0.0, 0.00, 1000, 1000, 0, 0, 1, ChangingIntegrationRate);
-	float ff_c_l[3] = {0.003f,0,0};
-	float ff_c_r[3] = {0.001f,0,0};
-	Feedforward_Init(&friction_wheels.feedforward[LEFT_FRICTION_WHEEL], 16384,ff_c_l,0.05,1,1);
-	Feedforward_Init(&friction_wheels.feedforward[RIGHT_FRICTION_WHEEL], 16384,ff_c_r,0.05,1,1);
 					 // 实测弹速会超0.5左右，但是基本不低于设定弹速
 	friction_wheels.friction_speed = 22.5f; // 初始弹速设置
 }
@@ -31,7 +29,7 @@ void setFrictionSpeed(void)
 	friction_wheels.shoot_speed = chassis_pack_get_1.shoot_speed;
 
 	if (friction_wheels.shoot_speed != 0 && friction_wheels.last_shoot_Speed == 0) // 上升沿检测弹速更新
-	{
+	{//弹速不稳定，控不了
 //		if (friction_wheels.shoot_speed > 25.0f)
 //		{
 //			friction_wheels.over_times += 1;
@@ -70,11 +68,9 @@ void FrictionWheel_Set(float speed) // 度/s
 {
 	friction_wheels.send_to_motor_current[LEFT_FRICTION_WHEEL] =
 			PID_Calculate(&friction_wheels.PidFrictionSpeed[LEFT_FRICTION_WHEEL],
-										friction_wheels.friction_motor_msgs[LEFT_FRICTION_WHEEL].speed, speed) +
-			Feedforward_Calculate(&friction_wheels.feedforward[LEFT_FRICTION_WHEEL], speed);
+										friction_wheels.friction_motor_msgs[LEFT_FRICTION_WHEEL].speed, speed);
 
 	friction_wheels.send_to_motor_current[RIGHT_FRICTION_WHEEL] =
 			PID_Calculate(&friction_wheels.PidFrictionSpeed[RIGHT_FRICTION_WHEEL],
-										friction_wheels.friction_motor_msgs[RIGHT_FRICTION_WHEEL].speed, -speed) +
-			Feedforward_Calculate(&friction_wheels.feedforward[RIGHT_FRICTION_WHEEL], -speed);
+										friction_wheels.friction_motor_msgs[RIGHT_FRICTION_WHEEL].speed, -speed);
 }

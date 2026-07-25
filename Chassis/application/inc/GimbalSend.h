@@ -5,9 +5,6 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "Referee.h"
-#include "HeatControl.h"
-
 #pragma pack(push, 1)
 
 typedef struct GimbalSendPack_1

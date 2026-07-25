@@ -1,5 +1,13 @@
 #include "ChassisSend.h"
 
+#include "remote_control.h"
+#include "ins.h"
+#include "Gimbal.h"
+#include "KeyMouse.h"
+#include "pc_serial.h"
+#include "FrictionWheel.h"
+#include "debug.h"
+
 ChassisSendPack1 chassis_send_pack1;
 ChassisSendPack2 chassis_send_pack2;
 

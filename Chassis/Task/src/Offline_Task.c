@@ -1,5 +1,7 @@
 #include "Offline_Task.h"
 
+#include "debug.h"
+
 OfflineDetector offline_detector;
 
 void Offline_task(void const *argument)
@@ -27,9 +29,9 @@ void Offline_task(void const *argument)
         }
         // 超电板
         LossDetect(&global_debugger.super_power_debugger);
-				
-				//裁判系统
-				LossDetect(&global_debugger.referee_debugger);
+
+        // 裁判系统
+        LossDetect(&global_debugger.referee_debugger);
 
         vTaskDelay(pdMS_TO_TICKS(200)); // delay时间必须大于losstime，否则会误判为loss
     }

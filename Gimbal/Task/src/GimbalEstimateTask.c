@@ -9,6 +9,8 @@
 
 #include "GimbalEstimateTask.h"
 
+#include "ins.h"
+
 /**
  * @brief 云台位姿估计任务
  * @param[in] void

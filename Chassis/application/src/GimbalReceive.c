@@ -8,6 +8,8 @@
  */
 
 #include "GimbalReceive.h"
+#include "debug.h"
+#include "remote_control.h"
 #include "ChassisController.h"
 
 GimbalReceivePack1 gimbal_receiver_pack1;

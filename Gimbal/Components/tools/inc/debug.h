@@ -8,9 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "tools.h"
-#include "bsp_dwt.h"
-
 enum State
 {
 	OFF,

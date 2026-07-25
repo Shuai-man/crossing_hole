@@ -1,11 +1,7 @@
 #ifndef _PC_SERIAL_H
 #define _PC_SERIAL_H
 
-#include "algorithmOfCRC.h"
-#include "ins.h"
-
-#include "ChassisGet.h"
-// #include "robot_config.h"
+#include "stdint.h"
 
 typedef enum AUTOAIM_MODE
 {

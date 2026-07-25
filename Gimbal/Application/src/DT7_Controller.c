@@ -1,5 +1,13 @@
 #include "DT7_Controller.h"
 
+#include "stdbool.h"
+#include "bsp_DT7.h"
+#include "KeyMouse.h"
+#include "remote_control.h"
+#include "Gimbal.h"
+#include "ToggleBullet.h"
+#include "pc_serial.h"
+
 void DT7_GimbalControl(float delta_t)
 {
     // 根据遥控器输入控制云台
@@ -39,18 +47,18 @@ void DT7_ChassisControl(void)
         chassis_solver.chassis_speed_y = 0;
     }
     // 旋转w
-    if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，直接发yaw速度
-    {                                              // 键鼠模式也需要这个
-        if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50)
-        {
-            chassis_solver.chassis_speed_w = -(float)(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) / CH_RANGE;
-        }
-        else
-        {
-            chassis_solver.chassis_speed_w = 0.0f;
-        }
-    }
-    else if (remote_controller.chassis_mode_action == CV_ROTATE) // 必须与过洞模式并列，否则硬件干涉
+    // if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，直接发yaw速度
+    // {                                              // 键鼠模式也需要这个
+    //     if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50)
+    //     {
+    //         chassis_solver.chassis_speed_w = -(float)(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) / CH_RANGE;
+    //     }
+    //     else
+    //     {
+    //         chassis_solver.chassis_speed_w = 0.0f;
+    //     }
+    // }
+    if (remote_controller.chassis_mode_action == CV_ROTATE) // 必须与过洞模式并列，否则硬件干涉
     {
         chassis_solver.chassis_speed_w = 0.5f;
     }
@@ -99,16 +107,14 @@ void DT7_Update(float delta_t)
             {
                 DT7_GimbalControl(delta_t);
             }
-            if (abs(dt7_remote.ch[RIGHT_LR] - CH_MIDDLE) > 150)
+            if (abs(dt7_remote.ch[RIGHT_CH_LR] - CH_MIDDLE) > 150)
             {
                 toggle_controller.is_shoot = 1;
-                remote_controller.auto_arm = 1;
                 pc_send_data.mode_want = STD_AUTO_AIM;
             }
             else
             {
                 toggle_controller.is_shoot = 0;
-                remote_controller.auto_arm = 0;
                 pc_send_data.mode_want = NOT_USE_AIM;
             }
             break;
@@ -201,7 +207,7 @@ void DT7_Update(float delta_t)
             }
             setChassisModeAction(NOT_CONTROL_MODE);
             DT7_GimbalControl(delta_t);
-            if (abs(dt7_remote.ch[RIGHT_LR] - CH_MIDDLE) > 150)
+            if (abs(dt7_remote.ch[RIGHT_CH_LR] - CH_MIDDLE) > 150)
             {
                 toggle_controller.is_shoot = 1;
             }
@@ -224,4 +230,12 @@ void DT7_Update(float delta_t)
 
     dt7_remote.Previous_rc_Left_SW = dt7_remote.s[LEFT_SW];
     dt7_remote.Previous_rc_Right_SW = dt7_remote.s[RIGHT_SW];
+    if (remote_controller.gimbal_action == GIMBAL_AUTO_ATM_TEST_MODE)
+    {
+        remote_controller.auto_arm = 1;
+    }
+    else
+    {
+        remote_controller.auto_arm = 0;
+    }
 }

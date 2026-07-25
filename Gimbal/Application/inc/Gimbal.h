@@ -5,16 +5,9 @@
 
 #include "Robot_config.h"
 #include "GimbalSystemIDConfig.h"
-
-#include "GM6020.h"
 #include "DM_Motor.h"
 
-#include "ins.h"
-#include "remote_control.h"
-#include "pc_serial.h"
-
 #include "pid.h"
-#include "my_filter.h"
 #include "TD.h"
 
 // pitch
@@ -145,8 +138,6 @@ typedef struct GimbalController
   // 底盘姿态估计
   float chassis_err_angle;   // 底盘pitch误差角度
   float chassis_pitch_angle; // 底盘pitch估计角度
-
-  Feedforward_t follow_gimbal_forward; // 底盘转向前馈
 
   /*----------反拨检测-----------------*/
   float if_spin_reverse;   // 是否反拨拨盘

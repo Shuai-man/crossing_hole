@@ -1,5 +1,10 @@
 #include "Offline_Task.h"
 
+#include "debug.h"
+#include "ChassisGet.h"
+#include "remote_control.h"
+#include "bsp_buzzer.h"
+
 uint8_t pc_on_flag = 0;
 uint8_t friction_off = 0;
 

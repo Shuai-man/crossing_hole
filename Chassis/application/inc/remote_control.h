@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "bsp_dwt.h"
-#include "debug.h"
 
 enum CONTROL_TYPE
 {
@@ -59,88 +57,6 @@ enum GIMBAL_POSITION
     UP,         // 抬头
 };
 
-#pragma pack(1)
-/*遥控器结构体*/
-typedef struct
-{
-    unsigned short ch[4]; // 摇杆
-    unsigned short s[2];  // 拨杆
-    unsigned short poke;  // 拨轮（左上角）
-} Remote;
-
-#define CH_MIDDLE 1024
-#define CH_RANGE 660 // 范围为CH_MIDDLE - CH_RANGE ~ CH_MIDDLE + CH_RANGE
-
-// 拨杆位置
-enum SWPos
-{
-    Lost = 0,
-    Up = 1,
-    Mid = 3,
-    Down = 2
-};
-enum WhichSW
-{
-    LEFT_SW = 1,
-    RIGHT_SW = 0
-};
-enum WhichCH
-{
-    RIGHT_CH_LR = 0, // 右杆左右方向
-    RIGHT_CH_UD = 1, // 右杆上下方向
-    LEFT_CH_LR = 2,  // 左杆左右方向
-    LEFT_CH_UD = 3,  // 左杆上下方向
-};
-/*鼠标结构体*/
-typedef struct
-{
-    short x;
-    short y;
-    short z;
-    unsigned char press_l;
-    unsigned char press_r;
-
-    // 按键检测
-    unsigned char last_press_l;
-    unsigned char last_press_r;
-    unsigned char mouseChangeOn_l;  // 检测按键值从0转1改变
-    unsigned char mouseChangeOff_l; // 检测按键值从1转0转变
-    unsigned char mouseChangeOn_r;  // 检测按键值从0转1改变
-    unsigned char mouseChangeOff_r; // 检测按键值从1转0转变
-} Mouse;
-
-#define KEY_B 0x8000
-#define KEY_V 0x4000
-#define KEY_C 0x2000
-#define KEY_X 0x1000
-#define KEY_Z 0x0800
-#define KEY_G 0x0400
-#define KEY_F 0x0200
-#define KEY_R 0x0100
-#define KEY_E 0x0080
-#define KEY_Q 0x0040
-#define KEY_CTRL 0x0020
-#define KEY_SHIFT 0x0010
-#define KEY_D 0x0008
-#define KEY_A 0x0004
-#define KEY_S 0x0002
-#define KEY_W 0x0001
-
-/*遥键鼠结构体综合*/
-typedef struct
-{
-    Remote rc;
-    Mouse mouse;
-    uint16_t keyValue;
-
-    // 以下是检测按键触发状态变量
-    uint16_t last_keyValue;
-    uint16_t keyChangeOn;  // 检测按键值从0转1改变
-    uint16_t keyChangeOff; // 检测按键值从1转0转变
-} RC_Ctl_t;
-
-#pragma pack()
-
 typedef struct RemoteController
 {
     enum ROBOT_STATE robot_state;   // 机器人状态(掉线模式，控制模式)
@@ -151,12 +67,6 @@ typedef struct RemoteController
     enum CHASSIS_MODE_ACTION last_control_mode_action; // 底盘模式
     enum PowerControlState super_power_state;          // 主动电容标志位
     enum GIMBAL_POSITION gimbal_position;              // 设置头部模式
-
-    RC_Ctl_t dji_remote;
-
-    /* 标志位 */
-    int8_t reverse_flag;      // 拨盘反拨标志位
-    int8_t single_shoot_flag; // 仅单发时有效，打击标志位
 
 } RemoteController;
 

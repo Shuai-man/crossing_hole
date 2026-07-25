@@ -43,5 +43,3 @@ gimbal\bsp_dt7.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
 gimbal\bsp_dt7.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 gimbal\bsp_dt7.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\bsp_dt7.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-gimbal\bsp_dt7.o: ../Components/tools/inc/tools.h
-gimbal\bsp_dt7.o: ../Components/boards/inc/bsp_dwt.h

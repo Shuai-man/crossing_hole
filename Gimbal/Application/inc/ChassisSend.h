@@ -7,13 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "remote_control.h"
-#include "ins.h"
-#include "Gimbal.h"
-#include "KeyMouse.h"
-#include "pc_serial.h"
-#include "FrictionWheel.h"
-
 #define CHASSIS_FOLLOW_YAW_SPEED_FF_COEF 0.35f
 #define CHASSIS_THROUGH_HOLE_YAW_SPEED_FF_COEF 1.0f
 

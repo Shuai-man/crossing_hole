@@ -36,7 +36,7 @@
 #include "bsp_led.h"
 #include "BMI088driver.h"
 #include "tof.h"
-
+#include "remote_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

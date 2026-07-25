@@ -44,5 +44,3 @@ chassis\referee.o: ../Core/Inc/usart.h
 chassis\referee.o: ../Core/Inc/main.h
 chassis\referee.o: ../Judge/Inc/crcs.h
 chassis\referee.o: ../application/inc/HeatControl.h
-chassis\referee.o: ../boards/inc/bsp_dwt.h
-chassis\referee.o: ../Components/tools/inc/debug.h

@@ -5,7 +5,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "debug.h"
 
 enum ROBOT_SENSORS_DETECT
 {

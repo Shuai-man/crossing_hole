@@ -1,7 +1,12 @@
 chassis\heatcontrol.o: ..\application\src\HeatControl.c
 chassis\heatcontrol.o: ../application/inc/HeatControl.h
-chassis\heatcontrol.o: ../boards/inc/bsp_dwt.h
 chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+chassis\heatcontrol.o: ../Judge/Inc/Referee.h
+chassis\heatcontrol.o: ../Judge/Inc/protocol.h
+chassis\heatcontrol.o: ../Judge/Inc/fifo.h
+chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
+chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
+chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 chassis\heatcontrol.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 chassis\heatcontrol.o: ../Core/Inc/stm32f4xx_hal_conf.h
 chassis\heatcontrol.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
@@ -36,10 +41,4 @@ chassis\heatcontrol.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.
 chassis\heatcontrol.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 chassis\heatcontrol.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 chassis\heatcontrol.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-chassis\heatcontrol.o: ../Judge/Inc/Referee.h
-chassis\heatcontrol.o: ../Judge/Inc/protocol.h
-chassis\heatcontrol.o: ../Judge/Inc/fifo.h
-chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
-chassis\heatcontrol.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
 chassis\heatcontrol.o: ../Components/tools/inc/debug.h

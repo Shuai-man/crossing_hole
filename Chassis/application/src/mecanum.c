@@ -1,5 +1,5 @@
 #include "mecanum.h"
-#include "mecanum.h"
+
 #include "ChassisController.h"
 
 #include <math.h>

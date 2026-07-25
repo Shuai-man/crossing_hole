@@ -1,5 +1,9 @@
 #include "ChassisTask.h"
 
+#include "bsp_can.h"
+#include "can_config.h"
+#include "ChassisSend.h"
+
 int8_t send_to_chassis_data_1[8]; // 模式
 int8_t send_to_chassis_data_2[8]; // pitch,yaw
 

@@ -1,6 +1,5 @@
 chassis\mecanum.o: ..\application\src\mecanum.c
 chassis\mecanum.o: ../application/inc/mecanum.h
-chassis\mecanum.o: ../Components/tools/inc/tools.h
 chassis\mecanum.o: ../application/inc/ChassisController.h
 chassis\mecanum.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
 chassis\mecanum.o: ../Algorithm/inc/pid.h
@@ -13,6 +12,7 @@ chassis\mecanum.o: ../Drivers/CMSIS/Include/cmsis_version.h
 chassis\mecanum.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 chassis\mecanum.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 chassis\mecanum.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+chassis\mecanum.o: ../Components/tools/inc/tools.h
 chassis\mecanum.o: ../boards/inc/bsp_dwt.h
 chassis\mecanum.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 chassis\mecanum.o: ../Core/Inc/stm32f4xx_hal_conf.h

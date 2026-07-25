@@ -1,11 +1,26 @@
 #include "GimbalTask.h"
+
+#include "Gimbal.h"
 #include "GimbalSystemID.h"
+#include "remote_control.h"
+#include "FrictionWheel.h"
+#include "pc_serial.h"
+#include "lifting_control.h"
+#include "KeyMouse.h"
+
+#include "debug.h"
+#include "Offline_Task.h"
+#include "usb_device.h"
+
+#include "can_config.h"
+#include "bsp_can.h"
+#include "Motor_Typdef.h"
+
+#define RAD_TO_ANGLE_COEF 57.295779513f
+#define ANGLE_TO_RAD_COEF 0.0174532925f
 
 int8_t dji_motors_send_data_can1[8];
 int8_t dji_motors_send_data_can2[8];
-
-SI_t SI_object;
-SawToothWave saw_tooth_wave;
 
 /**
  * @brief 拨盘转速检测&自动反转

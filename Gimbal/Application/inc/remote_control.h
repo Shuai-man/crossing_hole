@@ -8,11 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "bsp_VTM.h"
-#include "bsp_DT7.h"
-#include "Offline_Task.h"
-#include "lifting_control.h"
-#include "Gimbal.h"
 
 enum REMOTE_TYPE // 遥控器选择
 {

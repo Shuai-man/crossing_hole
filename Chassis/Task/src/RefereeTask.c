@@ -1,6 +1,12 @@
 #include "RefereeTask.h"
+
+#include "ChassisController.h"
 #include "GimbalReceive.h"
 #include "NingCap.h"
+#include "remote_control.h"
+#include "debug.h"
+#include "Referee.h"
+#include "bsp_referee.h"
 #include <stdio.h>
 
 int Rest_UI_Flag;
@@ -13,7 +19,7 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100);
 static bool Ref_UI_StatusInitialAddPending(void);
 static bool Ref_UI_GetPriorityStatusItem(uint8_t *item_index);
 
-#define UI_STATUS_ITEM_COUNT       8U
+#define UI_STATUS_ITEM_COUNT       9U
 #define UI_STATUS_ALL_ADDED_MASK   ((1U << UI_STATUS_ITEM_COUNT) - 1U)
 
 static uint8_t ui_status_item_index = 0;
@@ -26,6 +32,7 @@ static uint8_t ui_last_aim_mode = 0;
 static uint8_t ui_last_friction_speed = 0;
 static uint16_t ui_last_cap_voltage_x10 = 0;
 static uint8_t ui_last_ammo_alert = 0;
+static chassis_direction_e ui_last_chassis_direction = CHASSIS_FRONT;
 
 #define CAP_BAR_UI_START_X 750
 #define CAP_BAR_UI_START_Y 35
@@ -360,6 +367,13 @@ static bool Ref_UI_GetPriorityStatusItem(uint8_t *item_index)
 		return true;
 	}
 
+	if (((ui_priority_status_valid_mask & (1U << 8)) == 0U) ||
+		(ui_last_chassis_direction != infantry.chassis_direction))
+	{
+		*item_index = 8U;
+		return true;
+	}
+
 	if (((ui_priority_status_valid_mask & (1U << 3)) == 0U) ||
 		(ui_last_aim_mode != gimbal_receiver_pack1.aim_mode))
 	{
@@ -498,6 +512,19 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100)
 									: "          ");
 		ui_last_ammo_alert = (global_debugger.referee_debugger.state == ON && ammo_remaining <= 10U) ? 1U : 0U;
 		ui_priority_status_valid_mask |= (1U << 7);
+		break;
+
+	case 8:
+		Ref_UI_SendStatusString("DIR", operate,
+								(infantry.chassis_direction == CHASSIS_FRONT)
+									? UI_Color_Green
+									: UI_Color_Orange,
+								15, 10, 3, 1460, 550,
+								(infantry.chassis_direction == CHASSIS_FRONT)
+									? "HEAD:FRONT"
+									: "HEAD:BACK ");
+		ui_last_chassis_direction = infantry.chassis_direction;
+		ui_priority_status_valid_mask |= (1U << 8);
 		break;
 
 	default:

@@ -43,5 +43,3 @@ gimbal\tof.o: ../Components/tools/inc/debug.h
 gimbal\tof.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 gimbal\tof.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\tof.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-gimbal\tof.o: ../Components/tools/inc/tools.h
-gimbal\tof.o: ../Components/boards/inc/bsp_dwt.h

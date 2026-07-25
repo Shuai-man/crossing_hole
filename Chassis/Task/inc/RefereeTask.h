@@ -6,11 +6,8 @@
 #include "usart.h"
 #include "string.h"
 #include "stdbool.h"
-#include "Referee.h"
 #include "cmsis_os.h"
 #include "protocol.h"
-#include "bsp_referee.h"
-
 
 #define Max(a,b) ((a) > (b) ? (a) : (b))
 #define Robot_ID_Current Robot_Status.robot_id

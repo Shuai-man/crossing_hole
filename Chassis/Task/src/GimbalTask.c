@@ -5,6 +5,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "HeatControl.h"
 #include "Gimbalreceive.h"
 #include "GimbalSend.h"
 #include "bsp_can.h"

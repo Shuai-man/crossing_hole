@@ -11,7 +11,9 @@ gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable
 gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
 gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
-gimbal\gimbalestimatetask.o: ../Components/boards/inc/bsp_dwt.h
+gimbal\gimbalestimatetask.o: ../Application/inc/ins.h
+gimbal\gimbalestimatetask.o: ../Application/inc/BMI088driver.h
+gimbal\gimbalestimatetask.o: ../Core/Inc/main.h
 gimbal\gimbalestimatetask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 gimbal\gimbalestimatetask.o: ../Core/Inc/stm32f4xx_hal_conf.h
 gimbal\gimbalestimatetask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
@@ -46,9 +48,6 @@ gimbal\gimbalestimatetask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_u
 gimbal\gimbalestimatetask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 gimbal\gimbalestimatetask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 gimbal\gimbalestimatetask.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
-gimbal\gimbalestimatetask.o: ../Application/inc/ins.h
-gimbal\gimbalestimatetask.o: ../Application/inc/BMI088driver.h
-gimbal\gimbalestimatetask.o: ../Core/Inc/main.h
 gimbal\gimbalestimatetask.o: ../Config/robot_config.h
 gimbal\gimbalestimatetask.o: ../Algorithm/inc/QuaternionEKF.h
 gimbal\gimbalestimatetask.o: ../Algorithm/inc/kalman_filter.h
@@ -65,8 +64,3 @@ gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/
 gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 gimbal\gimbalestimatetask.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-gimbal\gimbalestimatetask.o: ../Components/boards/inc/bsp_PWM.h
-gimbal\gimbalestimatetask.o: ../Core/Inc/tim.h
-gimbal\gimbalestimatetask.o: ../Algorithm/inc/pid.h
-gimbal\gimbalestimatetask.o: ../Components/tools/inc/tools.h
-gimbal\gimbalestimatetask.o: ../Components/tools/inc/debug.h

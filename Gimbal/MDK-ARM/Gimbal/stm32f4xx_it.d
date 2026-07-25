@@ -44,8 +44,6 @@ gimbal\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
 gimbal\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 gimbal\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-gimbal\stm32f4xx_it.o: ../Components/tools/inc/tools.h
-gimbal\stm32f4xx_it.o: ../Components/boards/inc/bsp_dwt.h
 gimbal\stm32f4xx_it.o: ../Components/boards/inc/bsp_VTM.h
 gimbal\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h
 gimbal\stm32f4xx_it.o: ../Lift/Inc/tof.h

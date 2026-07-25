@@ -1,13 +1,7 @@
 #ifndef __DT7_CONTROLLER_H__
 #define __DT7_CONTROLLER_H__
 
-
-#include "main.h"
-#include "bsp_DT7.h"
-#include "KeyMouse.h"
-#include "remote_control.h"
 #include <stdlib.h>
-
 
 #define MAX_SW_YAW_SPEED 180  // 云台yaw轴灵敏度(拨杆) 度/s
 #define MAX_SW_PITCH_SPEED 80 // 云台yaw轴灵敏度(拨杆) 度/s

@@ -1,9 +1,7 @@
 #ifndef _HEAT_CONTROL_H
 #define _HEAT_CONTROL_H
 
-#include "bsp_dwt.h"
-#include "Referee.h"
-#include "debug.h"
+#include "stdint.h"
 
 #define ONE_BULLET_HEAT 10
 

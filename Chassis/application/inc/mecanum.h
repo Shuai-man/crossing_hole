@@ -1,8 +1,6 @@
 #ifndef _MECANUM_H
 #define _MECANUM_H
 
-#include "tools.h"
-
 // 麦克纳姆轮组件
 
 /*  设置CAN ID时 请严格按照如图来设置 ，否则的话，需要更改以下序号 (按下图配置则LEFT_UP_OMNI_WHEEL等分别为0，1，2，3)*/

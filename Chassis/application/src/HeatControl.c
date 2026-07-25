@@ -1,5 +1,8 @@
 #include "HeatControl.h"
 
+#include "Referee.h"
+#include "debug.h"
+
 HeatController heat_controller;
 // 计算剩余发弹量，判断是否打弹
 void HeatUpdate(void)

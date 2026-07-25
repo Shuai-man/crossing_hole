@@ -12,7 +12,9 @@
  */
 #include "ins.h"
 
-
+#include "bsp_PWM.h"
+#include "pid.h"
+#include "debug.h"
 
 INS_t INS;
 IMU_Param_t IMU_Param;

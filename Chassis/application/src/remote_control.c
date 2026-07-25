@@ -2,7 +2,6 @@
 
 RemoteController remote_controller;
 
-// int size_test = 0;
 void setChassisAction(enum CHASSIS_MODE_ACTION action)
 {
     // size_test = sizeof(remote_controller.control_mode_action); //1 字节

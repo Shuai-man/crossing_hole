@@ -1,6 +1,11 @@
 #include "Gimbal.h"
+
 #include "bsp_dwt.h"
 #include "GimbalSystemID.h"
+#include "ins.h"
+#include "remote_control.h"
+#include "pc_serial.h"
+#include "my_filter.h"
 
 GimbalController gimbal_controller;
 
@@ -35,9 +40,6 @@ void GimbalPidInit(void)
     // r增大，可以增加加速度项，从而加大前馈的输出值
     TD_Init(&gimbal_controller.pos_yaw_td, 2000, 0.005);
 
-    // 底盘转向前馈
-    float ff_c_follow[3] = {0, 0.01, 0};
-    Feedforward_Init(&gimbal_controller.follow_gimbal_forward, 1.0f, ff_c_follow, 0.05, 1, 1);
 }
 
 /**
@@ -202,7 +204,7 @@ void Gimbal_ErrorAngle(void)
  * @brief 更新pitch角速度，以及角度(注意需要标定零点)
  */
 
-void updateGyro()
+void updateGyro(void)
 {
     float speed = 0;
     // 对Pitch和roll进行交换（由于IMU安装问题）

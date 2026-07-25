@@ -7,15 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "robot_config.h"
 #include "usart.h"
 #include "fifo.h"
 #include "protocol.h"
 
 #define REFEREE_FIFO_BUF_LENGTH     1024
 #define REFEREE_USART_RX_BUF_LENGHT 512
-
-//#endif
 
 /*  数据定义  */
 extern fifo_s_t Referee_FIFO;

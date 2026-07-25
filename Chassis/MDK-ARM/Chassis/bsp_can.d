@@ -57,7 +57,6 @@ chassis\bsp_can.o: ../Algorithm/inc/my_filter.h
 chassis\bsp_can.o: ../Components/motor/inc/GM6020.h
 chassis\bsp_can.o: ../config/robot_config.h
 chassis\bsp_can.o: ../application/inc/Gimbalreceive.h
-chassis\bsp_can.o: ../Components/tools/inc/debug.h
-chassis\bsp_can.o: ../application/inc/remote_control.h
 chassis\bsp_can.o: ../application/inc/NingCap.h
 chassis\bsp_can.o: ../config/can_config.h
+chassis\bsp_can.o: ../Components/tools/inc/debug.h

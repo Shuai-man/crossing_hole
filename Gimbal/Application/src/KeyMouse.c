@@ -12,6 +12,19 @@
 
 #include "KeyMouse.h"
 
+#include "remote_control.h"
+#include "bsp_DT7.h"
+#include "DT7_Controller.h"
+#include "bsp_VTM.h"
+#include "VTM_Controller.h"
+
+#include "debug.h"
+#include "bsp_dwt.h"
+#include "Gimbal.h"
+#include "pc_serial.h"
+#include "ToggleBullet.h"
+#include "FrictionWheel.h"
+
 ChassisSolver chassis_solver;
 
 void State_Clear(void)
@@ -173,12 +186,12 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         switch (key_and) // 按键上升沿
         {
         case KEY_B:
-
+            gimbal_controller.return_flag =1;
             break;
         case KEY_V:
             break;
         case KEY_SHIFT:
-					  setSuperPower(POWER_TO_SuperPower);
+            setSuperPower(POWER_TO_SuperPower);
             break;
         case KEY_CTRL:
 
@@ -281,7 +294,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
     gimbal_controller.target_pitch_angle += chassis_solver.mouse_y_td.x * MOUSE_PITCH_SENSITIVITY;
     gimbal_controller.target_pitch_angle += remote_controller.dji_remote.mouse.z * MOUSE_SCROLL_SENSITIVITY;
 
-    chassis_solver.chassis_speed_w = speed_smoother_update(&chassis_solver.speed_w_smoother, speed_w, chassis_solver.delta_t); 
+    chassis_solver.chassis_speed_w = speed_smoother_update(&chassis_solver.speed_w_smoother, speed_w, chassis_solver.delta_t);
     chassis_solver.chassis_speed_x = speed_smoother_update(&chassis_solver.speed_x_smoother, speed_x, chassis_solver.delta_t);
     chassis_solver.chassis_speed_y = speed_smoother_update(&chassis_solver.speed_y_smoother, speed_y, chassis_solver.delta_t);
 

@@ -2,8 +2,6 @@
 #define _GIMBAL_RECEIVE_H
 
 #include "stdint.h"
-#include "debug.h"
-#include "remote_control.h"
 
 #pragma pack(push, 1)
 

@@ -43,6 +43,4 @@ gimbal\bsp_vtm.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
 gimbal\bsp_vtm.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 gimbal\bsp_vtm.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 gimbal\bsp_vtm.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-gimbal\bsp_vtm.o: ../Components/tools/inc/tools.h
-gimbal\bsp_vtm.o: ../Components/boards/inc/bsp_dwt.h
 gimbal\bsp_vtm.o: D:\keil\ARM\ARMCC\Bin\..\include\stdbool.h

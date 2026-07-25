@@ -41,7 +41,6 @@ chassis\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
 chassis\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
 chassis\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
 chassis\stm32f4xx_it.o: D:\keil\ARM\ARMCC\Bin\..\include\stdlib.h
-chassis\stm32f4xx_it.o: ../config/robot_config.h
 chassis\stm32f4xx_it.o: ../Core/Inc/usart.h
 chassis\stm32f4xx_it.o: ../Judge/Inc/fifo.h
 chassis\stm32f4xx_it.o: ../Judge/Inc/protocol.h

@@ -4,7 +4,6 @@
 #include "pid.h"
 #include "M2006.h"
 #include "M3508.h"
-#include "ChassisGet.h" 
 
 #define LEFT_FRICTION_WHEEL 0
 #define RIGHT_FRICTION_WHEEL 1
@@ -37,7 +36,6 @@ typedef struct Calculate_Acc
 typedef struct FrictionWheel_t
 {
     PID_t PidFrictionSpeed[2];
-		Feedforward_t feedforward[2];
     M3508_Recv friction_motor_recv[2];
     M3508_Info friction_motor_msgs[2];
     float send_to_motor_current[2];

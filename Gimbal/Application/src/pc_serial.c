@@ -8,12 +8,15 @@
  */
 
 #include "pc_serial.h"
-#include "Gimbal.h"
-#include "arm_atan2_f32.h"
-#include "debug.h"
 #include "usbd_cdc_if.h"
-#include "SignalGenerator.h"
+#include "arm_atan2_f32.h"
+#include "algorithmOfCRC.h"
+
+#include "debug.h"
+#include "Gimbal.h"
 #include "remote_control.h"
+#include "ChassisGet.h"
+
 
 unsigned char PCbuffer[PC_RECVBUF_SIZE];
 unsigned char SendToPC_Buff[PC_SENDBUF_SIZE];

@@ -55,6 +55,9 @@ enum Virtual_SW{
 };
 #pragma pack()
 
+#define CH_MIDDLE 1024
+#define CH_RANGE 660 // 通道范围，CH_MIDDLE - CH_RANGE ~ CH_MIDDLE + CH_RANGE
+
 extern VTM_Remote vtm_remote;
 
 void remote_VTM_init(void);  

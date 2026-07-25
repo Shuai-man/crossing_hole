@@ -57,10 +57,10 @@ chassis\chassiscontroller.o: D:\keil\ARM\ARMCC\Bin\..\include\float.h
 chassis\chassiscontroller.o: ../application/inc/NingCap.h
 chassis\chassiscontroller.o: ../Task/inc/PowerControlTask.h
 chassis\chassiscontroller.o: ../application/inc/Gimbalreceive.h
-chassis\chassiscontroller.o: ../Components/tools/inc/debug.h
-chassis\chassiscontroller.o: ../application/inc/remote_control.h
 chassis\chassiscontroller.o: ../boards/inc/bsp_can.h
 chassis\chassiscontroller.o: ../Core/Inc/can.h
 chassis\chassiscontroller.o: ../Core/Inc/main.h
 chassis\chassiscontroller.o: ../config/can_config.h
+chassis\chassiscontroller.o: ../Components/tools/inc/debug.h
 chassis\chassiscontroller.o: ../application/inc/mecanum.h
+chassis\chassiscontroller.o: ../application/inc/remote_control.h
