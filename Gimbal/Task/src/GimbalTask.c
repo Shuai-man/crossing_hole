@@ -19,38 +19,13 @@
 #define RAD_TO_ANGLE_COEF 57.295779513f
 #define ANGLE_TO_RAD_COEF 0.0174532925f
 
-int8_t dji_motors_send_data_can1[8];
-int8_t dji_motors_send_data_can2[8];
+/**------------云台运动控制--------------*/
 
 /**
- * @brief 拨盘转速检测&自动反转
- * @param[in] void
+ * @brief 云台YAW回正
+ * @param[in] gimbal 云台控制器指针
+ * @param[in] remote 远程控制器指针
  */
-void autoReverse(GimbalController *gimbal, ToggleController *toggle)
-{
-    // 暂时只有位置控
-    if (fabsf(toggle->toggle_pos_pid.Err) > ONE_GRID_ANGLE)
-    {
-        if (gimbal->if_spin_reverse >= 0.99f) // 正转时候检测卡弹
-        {
-            // 当拨盘速度小于参考参考值
-            if (fabsf(toggle->toggle_info.speed) < 0.3f * fabsf(toggle->toggle_speed_pid.Ref))
-            {
-                gimbal->if_spin_reverse = -1.3f; // 开启反拨
-            }
-        }
-    }
-    else if (gimbal->if_spin_reverse <= -1) // 进入这说明误差到了一格内
-    {
-        if (fabsf(toggle->toggle_pos_pid.Err) < 0.3f * ONE_GRID_ANGLE) // 进一步收敛
-        {
-            // 结束反拨
-            gimbal->if_spin_reverse = 1.0f;
-        }
-    }
-}
-
-// 云台YAW回正
 void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
 {
     if (gimbal->return_flag)
@@ -72,6 +47,10 @@ void Gimbal_Return(GimbalController *gimbal, RemoteController *remote)
     }
 }
 
+/**
+ * @brief 云台PC控制
+ * @param[in] void
+ */
 void Gimbal_PC_Cal(void)
 {
     float yaw_friction_ratio;
@@ -106,6 +85,10 @@ void Gimbal_PC_Cal(void)
     TD_Clear(&gimbal_controller.pos_pitch_td, gimbal_controller.target_pitch_angle);
 }
 
+/**
+ * @brief 云台手动控制
+ * @param[in] void
+ */
 void Gimbal_Act_Cal(void)
 {
     // pitch限制幅值
@@ -115,7 +98,10 @@ void Gimbal_Act_Cal(void)
     Gimbal_Pitch_Calculate(gimbal_controller.target_pitch_angle);
 }
 
-// 自瞄模式的云台控制
+/**
+ * @brief 自瞄模式的云台控制，处理不同情况下的云台控制方式
+ * @param[in] void
+ */
 void Gimbal_Auto_aim_Cal(void)
 {
     gimbal_controller.pc_dt_yaw = find_min_angle(pc_recv_data.yaw_setpoint, gimbal_controller.gyro_yaw_angle);
@@ -146,6 +132,12 @@ void Gimbal_Auto_aim_Cal(void)
     }
 }
 
+/**------------发射机构控制--------------*/
+
+/**
+ * @brief 发射机构清空下电
+ * @param[in] void
+ */
 void Shoot_Power_down_Cal(void)
 {
     if (fabs(friction_wheels.friction_motor_msgs[LEFT_FRICTION_WHEEL].speed) > 6000 || fabs(friction_wheels.friction_motor_msgs[RIGHT_FRICTION_WHEEL].speed) > 6000)
@@ -164,7 +156,11 @@ void Shoot_Power_down_Cal(void)
     Toggle_Calculate(TOGGLE_STOP, 0.0f);
 }
 
-// 比赛打弹
+/**
+ * @brief 开火控制函数
+ * @param[in] void
+ * @return void
+ */
 void Shoot_Fire_Cal(void)
 {
     // 摩擦轮转速
@@ -201,6 +197,41 @@ void Shoot_Fire_Cal(void)
     }
 }
 
+/**
+ * @brief 拨盘转速检测&自动反转
+ * @param[in] void
+ */
+void autoReverse(GimbalController *gimbal, ToggleController *toggle)
+{
+    // 暂时只有位置控
+    if (fabsf(toggle->toggle_pos_pid.Err) > ONE_GRID_ANGLE)
+    {
+        if (gimbal->if_spin_reverse >= 0.99f) // 正转时候检测卡弹
+        {
+            // 当拨盘速度小于参考参考值
+            if (fabsf(toggle->toggle_info.speed) < 0.3f * fabsf(toggle->toggle_speed_pid.Ref))
+            {
+                gimbal->if_spin_reverse = -1.3f; // 开启反拨
+            }
+        }
+    }
+    else if (gimbal->if_spin_reverse <= -1) // 进入这说明误差到了一格内
+    {
+        if (fabsf(toggle->toggle_pos_pid.Err) < 0.3f * ONE_GRID_ANGLE) // 进一步收敛
+        {
+            // 结束反拨
+            gimbal->if_spin_reverse = 1.0f;
+        }
+    }
+}
+
+/**------------云台数据更新--------------*/
+
+/**
+ * @brief 更新云台数据
+ * @param[in] void
+ * @return void
+ */
 void Gimbal_Msg_Update(void)
 {
     // 更新传感器信息
@@ -215,9 +246,18 @@ void Gimbal_Msg_Update(void)
     }
 }
 
+/**------------电机执行控制--------------*/
+
+/**
+ * @brief 电机控制函数，执行发送最后计算的力矩
+ * @param[in] void
+ * @return void
+ */
 void execute_func(void)
 {
     int8_t send_data[2][8] = {0};
+    int8_t dji_motors_send_data_can1[8] = {0};
+    int8_t dji_motors_send_data_can2[8] = {0};
 
     // 单独接电机进行测试时，会进行保护，tff不会赋值
     if (global_debugger.pitch_debugger.state == ON && global_debugger.yaw_debugger.state == ON)
@@ -276,8 +316,6 @@ void Gimbal_Task(void *pvParameters)
     const portTickType xFrequency = 1; // 1000HZ
 
     gimbal_controller.if_spin_reverse = 1;
-    memset(dji_motors_send_data_can2, 0, 8);
-    memset(dji_motors_send_data_can1, 0, 8);
 
     // 摩擦轮PID初始化
     FrictionWheel_Init();
@@ -290,6 +328,7 @@ void Gimbal_Task(void *pvParameters)
     Toggle_Init();
     // 丝杆电机初始化
     LiftPidInit();
+
     // USB初始化会默认放到freertos的第一个task里面,一定要确保调用了,否则无法成功初始化
     MX_USB_DEVICE_Init();
     vTaskDelay(1000);
@@ -350,14 +389,12 @@ void Gimbal_Task(void *pvParameters)
             break;
         }
 
-        // 控制丝杆升降
-        Lifting_Control();
+        Lifting_Control(); // 控制丝杆升降
 
         if (index % 2 == 0) // 500hz
         {
-            SendtoPC(); // 将信息发送给上位机
-                        // 执行函数
-            execute_func();
+            SendtoPC();     // 将信息发送给上位机
+            execute_func(); // 执行函数
         }
         index++;
 

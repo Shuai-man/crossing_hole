@@ -69,7 +69,7 @@ void VTM_Chassis_Ctrl(void)
 	// 底盘控制
 	if ((vtm_remote.ch[RIGHT_UD] - CH_MIDDLE) > 50 || (vtm_remote.ch[RIGHT_UD] - CH_MIDDLE) < -50)
 	{
-		chassis_solver.chassis_speed_x = 1.0f * (vtm_remote.ch[RIGHT_UD] - CH_MIDDLE) / CH_RANGE;
+		chassis_solver.chassis_speed_x = (float)(vtm_remote.ch[RIGHT_UD] - CH_MIDDLE) / CH_RANGE;
 	}
 	else
 	{
@@ -82,19 +82,19 @@ void VTM_Chassis_Ctrl(void)
 	}
 	else if ((vtm_remote.ch[RIGHT_LR] - CH_MIDDLE) > 50 || (vtm_remote.ch[RIGHT_LR] - CH_MIDDLE) < -50)
 	{
-		chassis_solver.chassis_speed_y = 1.0f * (vtm_remote.ch[RIGHT_LR] - CH_MIDDLE) / CH_RANGE;
+		chassis_solver.chassis_speed_y = (float)(vtm_remote.ch[RIGHT_LR] - CH_MIDDLE) / CH_RANGE;
 	}
 	else
 	{
 		chassis_solver.chassis_speed_y = 0;
 	}
 	// 旋转
-	// if (remote_controller.gimbal_position == DOWN)
-	// {
-	// 	setChassisModeAction(FOLLOW_GIMBAL);
-	// 	chassis_solver.chassis_speed_w = -(float)(vtm_remote.ch[LEFT_LR] - CH_MIDDLE) / CH_RANGE;
-	// }
-	if ((vtm_remote.wheel < (CH_MIDDLE - 50)) || (vtm_remote.wheel > (CH_MIDDLE + 50))) // 阈值
+	if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，不允许小陀螺
+	{
+		setChassisModeAction(FOLLOW_GIMBAL);
+		chassis_solver.chassis_speed_w = 0.0f;
+	}
+	else if ((vtm_remote.wheel < (CH_MIDDLE - 50)) || (vtm_remote.wheel > (CH_MIDDLE + 50))) // 阈值
 	{
 		setChassisModeAction(CV_ROTATE);
 		if (vtm_remote.wheel > CH_MIDDLE)

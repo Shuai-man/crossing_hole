@@ -26,7 +26,6 @@ void DT7_GimbalControl(float delta_t)
 
 void DT7_ChassisControl(void)
 {
-
     // 根据遥控器输入控制底盘
     // 前后x
     if (abs(dt7_remote.ch[RIGHT_CH_UD] - CH_MIDDLE) > 50) // 过零检测
@@ -47,18 +46,11 @@ void DT7_ChassisControl(void)
         chassis_solver.chassis_speed_y = 0;
     }
     // 旋转w
-    // if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，直接发yaw速度
-    // {                                              // 键鼠模式也需要这个
-    //     if (abs(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) > 50)
-    //     {
-    //         chassis_solver.chassis_speed_w = -(float)(dt7_remote.ch[LEFT_CH_LR] - CH_MIDDLE) / CH_RANGE;
-    //     }
-    //     else
-    //     {
-    //         chassis_solver.chassis_speed_w = 0.0f;
-    //     }
-    // }
-    if (remote_controller.chassis_mode_action == CV_ROTATE) // 必须与过洞模式并列，否则硬件干涉
+    if (remote_controller.gimbal_position == DOWN) // 过洞姿态下，不允许小陀螺
+    {
+        chassis_solver.chassis_speed_w = 0.0f;
+    }
+    else if (remote_controller.chassis_mode_action == CV_ROTATE) // 必须与过洞模式并列，否则硬件干涉
     {
         chassis_solver.chassis_speed_w = 0.5f;
     }
@@ -138,7 +130,6 @@ void DT7_Update(float delta_t)
             break;
         }
         break;
-
     case Mid:
         // 切换键鼠控制
         initRemoteControl(KEY_MOUSE);
@@ -162,8 +153,6 @@ void DT7_Update(float delta_t)
             DT7_ChassisControl();
             break;
         case Mid:
-// 分模式进行测试
-#if TEST_MODE_SELECT1 == SELF_ROTATE_MODE
             // 左右小陀螺模式
             if (sw_changed)
             {
@@ -193,9 +182,7 @@ void DT7_Update(float delta_t)
                 chassis_solver.chassis_speed_w = 0.0f;
             }
             break;
-#endif
         case Up:
-#if TEST_MODE_SELECT2 == SHOOT_MODE
             // 检录打弹模式
             if (sw_changed)
             {
@@ -217,7 +204,6 @@ void DT7_Update(float delta_t)
             }
 
             break;
-#endif
         default:
             setAllModeOff();
             break;

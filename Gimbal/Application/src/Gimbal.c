@@ -11,9 +11,8 @@ GimbalController gimbal_controller;
 
 void GimbalMotorInit(void)
 {
-    DM_Motor_Init(&gimbal_controller.DM_Pitch_Motor, P_MAX, 10, V_MAX);
-    //	DM_Motor_Init(&gimbal_controller.DM_Yaw_Motor,P_MAX,T_MAX,V_MAX);
-    DM_Motor_Init(&gimbal_controller.DM_Yaw_Motor, P_MAX, 10, V_MAX); // 为了方便调参，放大最大值;pid输出限幅要对应修改
+    DM_Motor_Init(&gimbal_controller.DM_Pitch_Motor, P_MAX, T_MAX, V_MAX);
+    DM_Motor_Init(&gimbal_controller.DM_Yaw_Motor, P_MAX, T_MAX, V_MAX); 
 }
 
 /**

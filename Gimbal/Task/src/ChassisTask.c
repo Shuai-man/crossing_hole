@@ -18,7 +18,7 @@ void Chassis_Task(void const *argument)
 
     uint16_t i = 0;
 
-    vTaskDelay(1500);
+    vTaskDelay(500);
 
     while (1)
     {
@@ -34,8 +34,6 @@ void Chassis_Task(void const *argument)
             memcpy(send_to_chassis_data_2, &chassis_send_pack2, 8);
             CanSend(CHASSIS_CAN_COMM_CANx, send_to_chassis_data_2, SEND_TO_CHASSIS_CAN_ID_2);
         }
-
-        //        // 1 kHZ
 
         i++;
 

@@ -16,8 +16,8 @@
 #define GIMBAL_PITCH_BIAS 0.0f      // pitch最低角度(imu测得) - 实际最低角度(机械处测得)
 
 // 作为云台控制的yaw角度需要以逆时针为正(角度增加)
-#define GIMBAL_YAW_MOTOR_SIGN -1.0f // 用来标记电机的方向，逆时针为正
 #define GIMBAL_YAW_GYRO_SIGN 1.0f   // 用来标记gyro的方向，逆时针为正
+#define GIMBAL_YAW_MOTOR_SIGN -1.0f // 用来标记电机的方向，逆时针为正
 
 // 云台角度限位
 #if ROBOT_SELECT == OLD

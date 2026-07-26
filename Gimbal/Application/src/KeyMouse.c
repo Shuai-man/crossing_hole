@@ -7,9 +7,6 @@
  ******************************************************************************
  */
 
-// 移动超功率；缓启动平移没效果
-// 小陀螺后跟随零点发送变化
-
 #include "KeyMouse.h"
 
 #include "remote_control.h"
@@ -91,11 +88,9 @@ void KeyMouseUpdate(ChassisSolver *infantry)
     // VTM
     else if (global_debugger.VTM_debugger.state == ON)
     {
-
-        // 记得设置好接口可以跳转回遥控器模式
         if (vtm_remote.gear != gear_N)
         {
-            initRemoteControl(REMOTE_CONTROL); // 切换遥控模式
+            initRemoteControl(REMOTE_CONTROL); // 切换回遥控模式
             VTM_Init();
             State_Clear();
         }

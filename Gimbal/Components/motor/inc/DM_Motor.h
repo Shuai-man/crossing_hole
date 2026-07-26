@@ -5,9 +5,12 @@
 #include "tools.h"
 #include <string.h>
 
-#define DM_T_Data_MAX 4096   //非电机最大力矩，驱动内部参数,不修改
-#define DM_P_Data_MAX 65536
-#define DM_V_Data_MAX 4096
+//2的12次方，发送的扭矩会映射到这个范围内：-T_MAX~T_MAX
+//发送值为0的时候对应-T_MAX，请注意清空扭矩不要发0，而是2048
+#define DM_T_Data_MAX 4096  //12位  
+#define DM_V_Data_MAX 4096  //12位
+#define DM_P_Data_MAX 65536 //16位
+//速度、扭矩用12位数据，位置用16位数据，可见电机手册
 
 #define P_MIN -3.141593f
 #define P_MAX 3.141593f
@@ -17,9 +20,8 @@
 #define KP_MAX 500.0f
 #define KD_MIN 0.0f
 #define KD_MAX 5.0f
-#define T_MIN -3.0f
-#define T_MAX 3.0f
-// TODO: 缩进&编码
+#define T_MIN -10.0f
+#define T_MAX 10.0f
 
 typedef enum DM_MODE
 {
@@ -27,6 +29,7 @@ typedef enum DM_MODE
 	DM_DISABLE,
 	DM_MIT_CONTROL
 } DM_MODE;
+
 #pragma pack(push, 1)
 typedef struct DM_MIT
 {

@@ -8,55 +8,31 @@
 
 RemoteController remote_controller;
 
-void setChassisModeAction(enum CHASSIS_MODE_ACTION action)
+/**----------键鼠共用遥控器数据结构体--------------*/
+
+/**
+ * @brief 重置遥控器结构体数据
+ * @param[in] void
+ */
+void RC_Rst(void)
 {
-    // size_test = sizeof(remote_controller.control_mode_action); //1 字节
-    if (remote_controller.robot_state == CONTROL_MODE)
+    for (int i = 0; i < 4; i++)
     {
-        remote_controller.chassis_mode_action = action;
-        if (action != NOT_CONTROL_MODE)
-        {
-            remote_controller.last_chassis_mode_action = action;
-        }
+        remote_controller.dji_remote.rc.ch[i] = CH_MIDDLE;
     }
+    remote_controller.dji_remote.mouse.x = 0;
+    remote_controller.dji_remote.mouse.y = 0;
+    remote_controller.dji_remote.mouse.z = 0;
+    remote_controller.dji_remote.mouse.press_l = 0;
+    remote_controller.dji_remote.mouse.press_r = 0;
+
+    remote_controller.dji_remote.keyValue = 0;
 }
 
-void setGameModeAction(enum GAME_MODE action)
-{
-    remote_controller.last_game_mode = remote_controller.game_mode;
-    remote_controller.game_mode = action;
-    // 检测游戏模式是否改变
-    if (remote_controller.game_mode != remote_controller.last_game_mode)
-    {
-        // 初始化游戏模式
-        switch (remote_controller.game_mode)
-        {
-        case POWER_DOWN_MODE:
-            Change_Init();
-            break;
-        case TEST_MODE:
-            Test_Init();
-            break;
-        case GAME_MODE:
-            Game_Init();
-            break;
-        default:
-            setAllModeOff();
-            break;
-        }
-    }
-}
-
-void setGimbalAction(enum GIMBAL_ACTION action)
-{
-    remote_controller.gimbal_action = action;
-}
-
-void setShootAction(enum SHOOT_ACTION action)
-{
-    remote_controller.shoot_action = action;
-}
-
+/**
+ * @brief 获取遥控器数据
+ * @param[in] void
+ */
 void RemoteGet(void)
 {
     // 获取遥控器数据
@@ -96,19 +72,28 @@ void RemoteGet(void)
     }
 }
 
-void RC_Rst(void)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        remote_controller.dji_remote.rc.ch[i] = CH_MIDDLE;
-    }
-    remote_controller.dji_remote.mouse.x = 0;
-    remote_controller.dji_remote.mouse.y = 0;
-    remote_controller.dji_remote.mouse.z = 0;
-    remote_controller.dji_remote.mouse.press_l = 0;
-    remote_controller.dji_remote.mouse.press_r = 0;
+/**----------------模式设置-----------------*/
 
-    remote_controller.dji_remote.keyValue = 0;
+void setChassisModeAction(enum CHASSIS_MODE_ACTION action)
+{
+    if (remote_controller.robot_state == CONTROL_MODE)
+    {
+        remote_controller.chassis_mode_action = action;
+        if (action != NOT_CONTROL_MODE)
+        {
+            remote_controller.last_chassis_mode_action = action;
+        }
+    }
+}
+
+void setGimbalAction(enum GIMBAL_ACTION action)
+{
+    remote_controller.gimbal_action = action;
+}
+
+void setShootAction(enum SHOOT_ACTION action)
+{
+    remote_controller.shoot_action = action;
 }
 
 void setControlMode(enum CONTROL_TYPE type)
@@ -145,6 +130,32 @@ void setGimbalPosition(enum GIMBAL_POSITION position)
     remote_controller.gimbal_position = position;
 }
 
+void setGameModeAction(enum GAME_MODE action)
+{
+    remote_controller.last_game_mode = remote_controller.game_mode;
+    remote_controller.game_mode = action;
+    // 检测游戏模式是否改变
+    if (remote_controller.game_mode != remote_controller.last_game_mode)
+    {
+        // 初始化游戏模式
+        switch (remote_controller.game_mode)
+        {
+        case POWER_DOWN_MODE:
+            Change_Init();
+            break;
+        case TEST_MODE:
+            Test_Init();
+            break;
+        case GAME_MODE:
+            Game_Init();
+            break;
+        default:
+            setAllModeOff();
+            break;
+        }
+    }
+}
+
 void setAllModeOff(void)
 {
     setRobotState(OFFLINE_MODE);
@@ -154,9 +165,7 @@ void setAllModeOff(void)
     setGimbalPosition(POWER_DOWN);
 }
 
-/*
- *模式初始化
- */
+/**----------------模式初始化---------------*/
 void Test_Init(void)
 {
     // 自瞄测试 底盘趴下
@@ -175,7 +184,7 @@ void Game_Init(void)
     setSuperPower(POWER_TO_BATTERY);
 }
 
-void Change_Init(void)//切换遥控模式
+void Change_Init(void) // 切换遥控模式
 {
     setChassisModeAction(NOT_CONTROL_MODE);
     setShootAction(SHOOT_POWER_DOWN_MODE);

@@ -8,6 +8,7 @@
  */
 
 #include "pc_serial.h"
+
 #include "usbd_cdc_if.h"
 #include "arm_atan2_f32.h"
 #include "algorithmOfCRC.h"
@@ -24,12 +25,6 @@ unsigned char SendToPC_Buff[PC_SENDBUF_SIZE];
 PCRecvData pc_recv_data;
 PCSendData pc_send_data;
 
-void PCSolve(void)
-{
-    LossUpdate(&global_debugger.pc_receive_debugger, 0.02);
-    global_debugger.pc_receive_debugger.loss_time = 0;
-}
-
 void PCReceive(unsigned char *PCbuffer)
 {
     if (PCbuffer[0] == 0xAA && PCbuffer[1] == 0x55 &&
@@ -37,7 +32,7 @@ void PCReceive(unsigned char *PCbuffer)
         PCbuffer[PC_RECVBUF_SIZE - 1] == 0x0D)
     {
         memcpy(&pc_recv_data, PCbuffer, PC_RECVBUF_SIZE);
-        PCSolve();
+        LossUpdate(&global_debugger.pc_receive_debugger, 0.02);
     }
 }
 
