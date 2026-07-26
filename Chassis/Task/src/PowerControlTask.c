@@ -140,10 +140,11 @@ void PowerControlTask(void const *argument)
     (void)argument;
     CapControllerInit();
     ChassisPowerControllerInit();
-
+    
+    last_wake_time = xTaskGetTickCount();
     while (1)
     {
-        last_wake_time = xTaskGetTickCount();
+
 
         referee_online =
             (uint8_t)(global_debugger.referee_debugger.state == ON);

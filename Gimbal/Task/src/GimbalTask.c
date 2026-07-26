@@ -311,9 +311,7 @@ void execute_func(void)
  */
 void Gimbal_Task(void *pvParameters)
 {
-
     portTickType xLastWakeTime;
-    const portTickType xFrequency = 1; // 1000HZ
 
     gimbal_controller.if_spin_reverse = 1;
 
@@ -331,15 +329,13 @@ void Gimbal_Task(void *pvParameters)
 
     // USB初始化会默认放到freertos的第一个task里面,一定要确保调用了,否则无法成功初始化
     MX_USB_DEVICE_Init();
-    vTaskDelay(1000);
 
+    vTaskDelay(pdMS_TO_TICKS(1000));
     int index = 0;
-
+    xLastWakeTime = xTaskGetTickCount();
+    
     while (1)
     {
-
-        xLastWakeTime = xTaskGetTickCount();
-
         Gimbal_Msg_Update();
         gimbal_controller.delta_t = DWT_GetDeltaT(&gimbal_controller.last_cnt);
         Gimbal_ErrorAngle();
@@ -399,6 +395,6 @@ void Gimbal_Task(void *pvParameters)
         index++;
 
         /*  延时  */
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
     }
 }

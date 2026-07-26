@@ -71,8 +71,10 @@ void Refereetask(void const *argument)
 	static int16_t pitch_snapshot_x100 = 0;
 	uint8_t ui_tx_slot;
 	uint8_t priority_status_item;
+	portTickType last_wake_time;
 
 	Ref_Init();
+	last_wake_time = xTaskGetTickCount();
 	while (1)
 	{
 		Referee_UnpackFifoData(&Referee_Unpack_OBJ, &Referee_FIFO);
@@ -171,7 +173,7 @@ void Refereetask(void const *argument)
 		}
 
 		ui_update_counter++;
-		osDelay(10);
+		vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(10));
 	}
 }
 

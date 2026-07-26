@@ -10,7 +10,7 @@ uint8_t friction_off = 0;
 
 void Offline_task(void const *argument)
 {
-	vTaskDelay(3000);						// 待机器人初始化后开始检测
+	vTaskDelay(pdMS_TO_TICKS(3000));// 待机器人初始化后开始检测
 	Initialization_Completed(); // initialization finished buzzing
 	// 判断逻辑：没有新数据更新，判断为掉线
 
@@ -76,6 +76,6 @@ void Offline_task(void const *argument)
 			}
 		}
 
-		vTaskDelay(1000); // 所有数据都应该超过5HZ
+		vTaskDelay(pdMS_TO_TICKS(200)); //确保每个数据更新间隔为200ms以内，否则之间判断为off
 	}
 }

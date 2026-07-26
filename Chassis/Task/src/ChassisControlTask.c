@@ -23,10 +23,9 @@ void ChassisControl_task(void const * argument)
     InfantryInit(&infantry);
     vTaskDelay(500);
 
+    xLastWakeTime = xTaskGetTickCount();
     while (1)
     {
-        xLastWakeTime = xTaskGetTickCount();
-
         // 获取两帧之间时间差
         infantry.delta_t = DWT_GetDeltaT(&infantry.last_cnt);
 

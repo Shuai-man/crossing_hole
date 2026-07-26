@@ -31,10 +31,9 @@ void GimbalTask(void const *argument)
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
+    xLastWakeTime = xTaskGetTickCount();
     while (1)
     {
-        xLastWakeTime = xTaskGetTickCount();
-
         HeatUpdate();
 
         SendToGimbalPack();
@@ -45,6 +44,6 @@ void GimbalTask(void const *argument)
         Gimbal_msgs_Update2();
 
         /*  延时  */
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(4));
     }
 }

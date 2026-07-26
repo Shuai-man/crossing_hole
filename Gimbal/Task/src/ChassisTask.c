@@ -14,30 +14,19 @@ int8_t send_to_chassis_data_2[8]; // pitch,yaw
 void Chassis_Task(void const *argument)
 {
     portTickType xLastWakeTime;
-    const portTickType xFrequency = 1; // 1000HZ
-
-    uint16_t i = 0;
-
-    vTaskDelay(500);
-
+    vTaskDelay(pdMS_TO_TICKS(1000)); // 等待can外设初始化
+    xLastWakeTime = xTaskGetTickCount();
     while (1)
     {
-        xLastWakeTime = xTaskGetTickCount();
+        Pack_InfantryMode();
+        memcpy(send_to_chassis_data_1, &chassis_send_pack1, 8);
+        CanSend(CHASSIS_CAN_COMM_CANx, send_to_chassis_data_1, SEND_TO_CHASSIS_CAN_ID_1);
 
-        if (i % 4 == 1) // 250HZ
-        {
-            Pack_InfantryMode();
-            memcpy(send_to_chassis_data_1, &chassis_send_pack1, 8);
-            CanSend(CHASSIS_CAN_COMM_CANx, send_to_chassis_data_1, SEND_TO_CHASSIS_CAN_ID_1);
-
-            Pack_Chassis2();
-            memcpy(send_to_chassis_data_2, &chassis_send_pack2, 8);
-            CanSend(CHASSIS_CAN_COMM_CANx, send_to_chassis_data_2, SEND_TO_CHASSIS_CAN_ID_2);
-        }
-
-        i++;
+        Pack_Chassis2();
+        memcpy(send_to_chassis_data_2, &chassis_send_pack2, 8);
+        CanSend(CHASSIS_CAN_COMM_CANx, send_to_chassis_data_2, SEND_TO_CHASSIS_CAN_ID_2);
 
         /*  延时  */
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(4)); // 4ms发一次，既250hz
     }
 }

@@ -11,9 +11,7 @@
 ChassisSendPack1 chassis_send_pack1;
 ChassisSendPack2 chassis_send_pack2;
 
-
-
-void Pack_InfantryMode()
+void Pack_InfantryMode(void)
 {
   chassis_send_pack1.robot_state = remote_controller.robot_state;
   chassis_send_pack1.control_type = remote_controller.control_type;

@@ -54,7 +54,7 @@
 #define SEND_TO_CHASSIS_CAN_ID_2 0x151
 #define GET_FROM_CHASSIS_CAN_ID_1 0x160
 #define GET_FROM_CHASSIS_CAN_ID_2 0x161
-#define CHASSIS_LOSS_TIME	0.0055f //s
+#define CHASSIS_LOSS_TIME	0.01f //s
 #define CHASSIS_CAN_COMM_CANx &hcan1
 
 /*---------CAN1------------*/

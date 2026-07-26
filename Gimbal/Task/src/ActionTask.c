@@ -9,16 +9,13 @@
 void Action_Task(void const *argument)
 {
     portTickType xLastWakeTime;
-    const portTickType xFrequency = 4; // 250HZ
-
-    vTaskDelay(100);
     KeyMouse_Init();
-
-    DWT_GetDeltaT(&chassis_solver.last_cnt); // 时间初始化
+    
+    vTaskDelay(pdMS_TO_TICKS(100));
+    xLastWakeTime = xTaskGetTickCount(); // 延时后再开启计数
 
     while (1)
     {
-        xLastWakeTime = xTaskGetTickCount();
 
         chassis_solver.delta_t = DWT_GetDeltaT(&chassis_solver.last_cnt);
 
@@ -28,6 +25,6 @@ void Action_Task(void const *argument)
         get_control_info(&chassis_solver);
 
         /*  延时  */
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(4));
     }
 }

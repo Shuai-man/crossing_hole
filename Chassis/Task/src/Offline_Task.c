@@ -6,8 +6,10 @@ OfflineDetector offline_detector;
 
 void Offline_task(void const *argument)
 {
+    portTickType last_wake_time;
     vTaskDelay(pdMS_TO_TICKS(1000)); // 待机器人初始化后开始检测
 
+    last_wake_time = xTaskGetTickCount();
     while (1)
     {
         // 6020舵电机
@@ -33,6 +35,6 @@ void Offline_task(void const *argument)
         // 裁判系统
         LossDetect(&global_debugger.referee_debugger);
 
-        vTaskDelay(pdMS_TO_TICKS(200)); // delay时间必须大于losstime，否则会误判为loss
+        vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(200)); // delay时间必须大于losstime，否则会误判为loss
     }
 }

@@ -17,8 +17,6 @@
 
 Infantry infantry;
 
-float UI_FRONT_ERR, UI_FRONT_SIN, UI_FRONT_COS;
-
 static uint8_t float_is_finite(float value)
 {
     return (uint8_t)((value == value) && (value <= FLT_MAX) && (value >= -FLT_MAX));
@@ -37,23 +35,12 @@ void InfantryInit(Infantry *infantry)
  */
 float limit_angle(float in)
 {
-    while (in < -180.0f || in > 180.0f)
-    {
-        if (fabs(in - 0) < 1e-4)
-        {
-            in = 0.0f;
-            break;
-        }
-        else if (in < -0.0f)
-        {
-            in = in + 360.0f;
-        }
-        else if (in > 0.0f)
-        {
-            in = in - 360.0f;
-        }
-    }
-    return in;
+    float angle = fmodf(in, 360.0f);
+    if (angle < -180.0f)
+        angle = angle + 2 * 180.0f;
+    if (angle > 180.0f)
+        angle = angle - 2 * 180.0f;
+    return angle;
 }
 
 /**
@@ -62,7 +49,6 @@ float limit_angle(float in)
  * @retval 方向偏差
  */
 uint8_t dir = 0;
-float err = 0;
 float angle_z_err_get(float target_ang, float zeros_angle)
 {
     // 输入为电机机械角度

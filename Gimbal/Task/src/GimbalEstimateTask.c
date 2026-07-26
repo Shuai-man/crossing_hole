@@ -18,7 +18,6 @@
 void GimbalEstimate_task(void const *argument)
 {
     portTickType xLastWakeTime;
-    const portTickType xFrequency = 1; // 1kHZ
 
     BMI088_Read(&BMI088);
     float ax = BMI088.Accel[X];
@@ -28,16 +27,13 @@ void GimbalEstimate_task(void const *argument)
     float roll = atan(ay / az);
     INS_Init(pitch, roll);
 
-    // 适当延时
-    vTaskDelay(100);
+    vTaskDelay(pdMS_TO_TICKS(100));
+    xLastWakeTime = xTaskGetTickCount();
 
     while (1)
     {
-        xLastWakeTime = xTaskGetTickCount();
-
         INS_Task();
 
-        /*  延时  */
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
     }
 }
