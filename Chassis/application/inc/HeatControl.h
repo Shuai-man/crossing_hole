@@ -15,7 +15,7 @@ typedef struct HeatController
     int last_shoot_count; // 上一次更新热量时的发射子弹数
 
     int16_t HeatMax;  // 热量上限
-    int16_t HeatCool; // 枪口冷却
+    uint16_t HeatCool; // 枪口冷却恢复速度
     int16_t CurHeat;  // 当前热量
     int16_t LastHeat; // 上一次更新时的热量
 

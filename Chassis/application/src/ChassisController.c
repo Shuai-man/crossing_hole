@@ -26,6 +26,16 @@ void InfantryInit(Infantry *infantry)
 {
     // 功率控制初始化
     PowerLimitInit(&infantry->power_limiter, 4, M3508, infantry->power_limit_method);
+// 最大速度初始化
+#if ROBOT_CONFIG == OLD
+    MaxSpeed_Init(&infantry->speed_x_fit, 45.0f, 1.0f, 120.0f, 1.5f);
+    MaxSpeed_Init(&infantry->speed_y_fit, 45.0f, 1.0f, 120.0f, 1.5f);
+    MaxSpeed_Init(&infantry->speed_yaw_fit, 45.0f, 3.7f, 120.0f, 8.0f);
+#elif ROBOT_CONFIG == NEW
+    MaxSpeed_Init(&infantry->speed_x_fit, 45.0f, 1.1f, 120.0f, 1.5f);
+    MaxSpeed_Init(&infantry->speed_y_fit, 45.0f, 1.1f, 120.0f, 1.5f);
+    MaxSpeed_Init(&infantry->speed_yaw_fit, 45.0f, 5.0f, 120.0f, 5.5f);
+#endif
 }
 
 /**
@@ -147,6 +157,73 @@ void get_sensors_info(Sensors *sensors_info)
     getDir();
 }
 
+void MaxSpeed_Init(ChassisMaxSpeedFit *max_speed_fit, float power_low, float speed_low, float power_high, float speed_high)
+{
+    max_speed_fit->power_low = power_low;
+    max_speed_fit->speed_low = speed_low;
+    max_speed_fit->power_high = power_high;
+    max_speed_fit->speed_high = speed_high;
+    max_speed_fit->k = (speed_high - speed_low) / (power_high - power_low);
+    max_speed_fit->b = speed_low - max_speed_fit->k * power_low;
+}
+
+float ChassisMaxSpeed(ChassisMaxSpeedFit *max_speed_fit, float set_power)
+{
+    max_speed_fit->speed_max = max_speed_fit->k * set_power + max_speed_fit->b;
+    return max_speed_fit->speed_max;
+}
+
+// 设置机器人功率以及控制其速度
+void set_robot_speed(Infantry *infantry)
+{
+    const uint8_t super_cap_available =
+        (uint8_t)(global_debugger.super_power_debugger.state == ON &&
+                  NingCapHasEnergy() != 0U);
+    const uint8_t super_cap_active =
+        (uint8_t)(super_cap_available != 0U &&
+                  remote_controller.super_power_state ==
+                      POWER_TO_SuperPower);
+
+    infantry->set_power = GetChassisPowerLimit(super_cap_active);
+
+    // 无超电时，小陀螺，平移，缓冲能量消耗速度=恢复速度
+    //  节能模式35w时，速度也不会出现负数
+    //  地胶地形
+    if (infantry->chassis_type == MECANUM_WHEEL)
+    {
+        infantry->speed_x_max = ChassisMaxSpeed(&infantry->speed_x_fit, infantry->set_power);
+        infantry->speed_y_max = ChassisMaxSpeed(&infantry->speed_y_fit, infantry->set_power);
+        infantry->speed_yaw_max = ChassisMaxSpeed(&infantry->speed_yaw_fit, infantry->set_power);
+
+        if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
+        {
+            {
+                float yaw_ratio;
+                float translate_scale;
+
+                yaw_ratio = fabsf(infantry->target_yaw_v_percent);
+                yaw_ratio = LIMIT_MAX_MIN(yaw_ratio, 1.0f, 0.0f);
+
+                translate_scale = 1.0f - CHASSIS_ROTATE_YAW_WEIGHT * yaw_ratio;
+                translate_scale = LIMIT_MAX_MIN(translate_scale,
+                                                1.0f,
+                                                CHASSIS_ROTATE_TRANSLATE_MIN_SCALE);
+
+                infantry->speed_x_max *= translate_scale;
+                infantry->speed_y_max *= translate_scale;
+            }
+        }
+    }
+}
+
+// 速度百分比由云台侧处理，底盘侧只做比例换算
+void wheels_accel(Infantry *infantry)
+{
+    infantry->target_x_v = infantry->target_x_v_percent * infantry->speed_x_max;
+    infantry->target_y_v = infantry->target_y_v_percent * infantry->speed_y_max;
+    infantry->target_yaw_v = infantry->target_yaw_v_percent * infantry->speed_yaw_max;
+}
+
 void wheels_power_limit(Infantry *infantry)
 {
     // 功率控制
@@ -201,64 +278,6 @@ void wheels_power_limit(Infantry *infantry)
     }
 }
 
-// 设置机器人功率以及控制其速度
-void set_robot_speed(Infantry *infantry)
-{
-    const uint8_t super_cap_available =
-        (uint8_t)(global_debugger.super_power_debugger.state == ON &&
-                  NingCapHasEnergy() != 0U);
-    const uint8_t super_cap_active =
-        (uint8_t)(super_cap_available != 0U &&
-                  remote_controller.super_power_state ==
-                      POWER_TO_SuperPower);
-
-    infantry->set_power = GetChassisPowerLimit(super_cap_active);
-
-    // 无超电时，小陀螺，平移，缓冲能量消耗速度=恢复速度
-    //  节能模式35w时，速度也不会出现负数
-    //  地胶地形
-    if (infantry->chassis_type == MECANUM_WHEEL)
-    {
-#if ROBOT_VARIANT == ROBOT_VARIANT_OLD
-        if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
-        {
-            // 这里的speed不要超过10
-            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 0.5f;
-            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 0.5f;
-            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.06f + 3.7f;
-        }
-        else
-        {
-            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 1.0f;
-            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 1.0f;
-            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.007f + 5.0f;
-        }
-#elif ROBOT_VARIANT == ROBOT_VARIANT_NEW
-        if (gimbal_receiver_pack1.chassis_mode_action == CV_ROTATE)
-        {
-            // 这里的speed不要超过10
-            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 0.3f;
-            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 0.3f;
-            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.06f + 3.9f;
-        }
-        else
-        {
-            infantry->speed_x_max = (infantry->set_power - 45.0f) * 0.007f + 1.1f;
-            infantry->speed_y_max = (infantry->set_power - 45.0f) * 0.007f + 1.1f;
-            infantry->speed_yaw_max = (infantry->set_power - 45.0f) * 0.007f + 5.0f;
-        }
-#endif
-    }
-}
-
-// 速度百分比由云台侧处理，底盘侧只做比例换算
-void wheels_accel(Infantry *infantry)
-{
-    infantry->target_x_v = infantry->target_x_v_percent * infantry->speed_x_max;
-    infantry->target_y_v = infantry->target_y_v_percent * infantry->speed_y_max;
-    infantry->target_yaw_v = infantry->target_yaw_v_percent * infantry->speed_yaw_max;
-}
-
 void chassis_powerdown_control(Infantry *infantry)
 {
     infantry->set_x_v = 0;
@@ -267,14 +286,12 @@ void chassis_powerdown_control(Infantry *infantry)
     infantry->target_x_v = 0;
     infantry->target_y_v = 0;
     infantry->target_yaw_v = 0;
-
+    infantry->follow_yaw_v = 0.0f;
     for (int i = 0; i < 4; i++)
     {
         infantry->excute_info.steers_set_current[i] = 0;
         infantry->excute_info.wheels_set_current[i] = 0;
     }
-
-    infantry->follow_yaw_v = 0.0f;
 }
 
 void chassis_follow_control(Infantry *infantry)

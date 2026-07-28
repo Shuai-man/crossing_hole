@@ -121,6 +121,17 @@ void DataReceive(CAN_HandleTypeDef *hcan, CAN_RxHeaderTypeDef *rx_header, uint8_
 
 		LossUpdate(&global_debugger.lift_debugger, LIFT_LOSS_TIME);
 	}
+	else if (hcan == CHASSIS_CAN_COMM_CANx && rx_header->StdId == GET_FROM_CHASSIS_CAN_ID_1)
+	{
+		memcpy(&chassis_pack_get_1, data, 8);
+
+		LossUpdate(&global_debugger.chassis_debugger[0], CHASSIS_LOSS_TIME);
+	}
+	else if (hcan == CHASSIS_CAN_COMM_CANx && rx_header->StdId == GET_FROM_CHASSIS_CAN_ID_2)
+	{
+		memcpy(&chassis_pack_get_2, data, 8);
+		LossUpdate(&global_debugger.chassis_debugger[1], CHASSIS_LOSS_TIME);
+	}	
 	else if (hcan == ENCODER_CAN && rx_header->StdId == ENCODER_ID)
 	{
 		/* 只接受协议头完整的自动回传帧，异常CAN帧不能刷新在线状态或进入位置闭环。 */
@@ -134,17 +145,6 @@ void DataReceive(CAN_HandleTypeDef *hcan, CAN_RxHeaderTypeDef *rx_header, uint8_
 			Encoder_UpdateCounter++;
 			LossUpdate(&global_debugger.encoder_debugger, ENCODER_LOSS_TIME);
 		}
-	}
-	else if (hcan == CHASSIS_CAN_COMM_CANx && rx_header->StdId == GET_FROM_CHASSIS_CAN_ID_1)
-	{
-		memcpy(&chassis_pack_get_1, data, 8);
-
-		LossUpdate(&global_debugger.receive_chassis_debugger[0], CHASSIS_LOSS_TIME);
-	}
-	else if (hcan == CHASSIS_CAN_COMM_CANx && rx_header->StdId == GET_FROM_CHASSIS_CAN_ID_2)
-	{
-		memcpy(&chassis_pack_get_2, data, 8);
-		LossUpdate(&global_debugger.receive_chassis_debugger[1], CHASSIS_LOSS_TIME);
 	}
 }
 

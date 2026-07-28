@@ -41,7 +41,7 @@ void SendCapPack(SuperCapSendData *send_data, float referee_power_limit)
 
     if (send_data == 0)
     {
-        return;
+        return;//无效地址
     }
 
     encoded_power = clamp_float(referee_power_limit * 100.0f, 0.0f, 125.0f * 100.0f);
@@ -55,10 +55,34 @@ void ReceiveCapDecode(const uint8_t *recv_data, SuperCapRecvData *decoded_data)
 {
     if (recv_data == 0 || decoded_data == 0)
     {
-        return;
+        return;//无效地址
     }
     memcpy(decoded_data, recv_data, sizeof(*decoded_data));
     cap_recv_sequence++;
+}
+
+void CapVoltageUpdate(void)
+{
+    if(cap_controller.cap_vol < CAP_VOL_LOW)
+    {
+        cap_controller.cap_vol_state = CapVol_Low;
+    }
+    else if(cap_controller.cap_vol > CAP_VOL_HIGH)
+    {
+        cap_controller.cap_vol_state = CapVol_High;
+    }
+    else
+    {
+        // 中间状态切换，防止状态频繁跳变
+        if(cap_controller.cap_vol_state == CapVol_Low && cap_controller.cap_vol > CAP_VOL_MID)
+        {
+            cap_controller.cap_vol_state = CapVol_Middle;
+        }
+        else if(cap_controller.cap_vol_state == CapVol_High && cap_controller.cap_vol < CAP_VOL_MID)
+        {
+            cap_controller.cap_vol_state = CapVol_Middle;
+        }
+    }
 }
 
 void NingCapUpdateState(uint8_t online)
@@ -124,45 +148,8 @@ void NingCapUpdateState(uint8_t online)
         cap_controller.energy_available = 1U;
     }
 
-    switch (cap_controller.cap_vol_state)
-    {
-    case CapVol_Low:
-        if (cap_controller.cap_vol > CAP_VOL_HIGH)
-        {
-            cap_controller.cap_vol_state = CapVol_High;
-        }
-        else if (cap_controller.cap_vol > CAP_VOL_MID)
-        {
-            cap_controller.cap_vol_state = CapVol_Middle;
-        }
-        break;
+    CapVoltageUpdate();
 
-    case CapVol_Middle:
-        if (cap_controller.cap_vol > CAP_VOL_HIGH)
-        {
-            cap_controller.cap_vol_state = CapVol_High;
-        }
-        else if (cap_controller.cap_vol < CAP_VOL_LOW)
-        {
-            cap_controller.cap_vol_state = CapVol_Low;
-        }
-        break;
-
-    case CapVol_High:
-        if (cap_controller.cap_vol < CAP_VOL_LOW)
-        {
-            cap_controller.cap_vol_state = CapVol_Low;
-        }
-        else if (cap_controller.cap_vol < CAP_VOL_MID)
-        {
-            cap_controller.cap_vol_state = CapVol_Middle;
-        }
-        break;
-
-    default:
-        cap_controller.cap_vol_state = CapVol_Low;
-        break;
-    }
 }
 
 uint8_t NingCapHasEnergy(void)

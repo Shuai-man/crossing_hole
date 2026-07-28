@@ -47,7 +47,7 @@ void Offline_task(void const *argument)
 		// 板间通信
 		for (int i = 0; i < 2; i++)
 		{
-			LossDetect(&global_debugger.receive_chassis_debugger[i]);
+			LossDetect(&global_debugger.chassis_debugger[i]);
 		}
 
 		// 检查裁判系统是否连接

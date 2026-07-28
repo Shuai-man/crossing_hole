@@ -156,7 +156,6 @@ typedef struct RemoteController
     RC_Ctl_t dji_remote;
 
     /* 标志位 */
-    int8_t fire_flag;
     int8_t reverse_flag;      // 拨盘反拨标志位
     int8_t single_shoot_flag; // 仅单发时有效，打击标志位
     int8_t auto_arm;          // 使用辅瞄

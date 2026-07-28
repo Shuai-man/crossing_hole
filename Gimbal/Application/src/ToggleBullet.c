@@ -9,12 +9,12 @@ ToggleController toggle_controller;
 
 /**
  * @brief 过滤裁判系统数据
- * @param[in] raw 原始数据
+ * @param[in] bullets 原始数据
  */
-void Toggle_FilterBulletData(uint8_t raw)
+void Toggle_FilterBulletData(uint8_t bullets , uint8_t heat_cooling)
 {
     // 裁判系统超热量会回传255，需要过滤
-    if (raw > BULLET_MAX_VALID)
+    if (bullets > BULLET_MAX_VALID)
     {
         toggle_controller.receive_bullets = 0;
     }
@@ -24,7 +24,15 @@ void Toggle_FilterBulletData(uint8_t raw)
     }
     else // 裁判系统在线
     {
-        toggle_controller.receive_bullets = raw;
+        toggle_controller.receive_bullets = bullets;
+    }
+    if(heat_cooling!=0)
+    {
+        toggle_controller.heat_cooling = heat_cooling;
+    }
+    else
+    {
+        toggle_controller.heat_cooling = 2.0f;//最慢2s恢复1发
     }
 }
 
@@ -45,7 +53,7 @@ void Toggle_UpdatePendingTimeout(float dt)
     }
 
     while (timeout_bullets < toggle_controller.pending_bullets &&
-           toggle_controller.pending_bullet_time[timeout_bullets] >= FIRE_TIME_DIFF)
+           toggle_controller.pending_bullet_time[timeout_bullets] >= toggle_controller.heat_cooling)
     {
         timeout_bullets++;
     }
@@ -166,7 +174,7 @@ void Toggle_Calculate(enum TOGGLE_CONTROL_MODE control_mode, float set_point)
  */
 void Toggle_AddGrid(ToggleController *controller, uint8_t num)
 {
-    if (controller->remaining_bullets > num)
+    if (controller->remaining_bullets >= num)
     {
         controller->set_pos = controller->set_pos + ONE_GRID_ANGLE * num * SIGN_ROTATE;
         for (uint8_t i = 0; i < num; i++)
@@ -208,8 +216,8 @@ void Toggle_SelectShootFreq(void)
  */
 bool Toggle_Scheduler(void)
 {
-    // 输出拨盘目标
-    if (toggle_controller.is_shoot == 0)
+    //松手和剩余弹量不够时停止控制，防止抖动
+    if (toggle_controller.is_shoot == 0 || toggle_controller.remaining_bullets<1.0f)
     {
         // 清空时间累计
         toggle_controller.dt_accumulated = 0;
@@ -249,9 +257,9 @@ void Toggle_Control(uint8_t is_run)
  * @brief 拨弹主函数
  * @param[in] receive_bullets 接收发弹量
  */
-void Toggle_Fire(uint8_t receive_bullets)
+void Toggle_Fire(uint8_t receive_bullets, uint8_t heat_cooling)
 {
-    Toggle_FilterBulletData(receive_bullets); // 过滤数据
+    Toggle_FilterBulletData(receive_bullets, heat_cooling); // 过滤数据
     Toggle_BulletPrediction();                // 计算剩余弹量
     bool is_run = Toggle_Scheduler();         // 拨弹间隔计算
     Toggle_Control(is_run);                   // 控制拨弹电机

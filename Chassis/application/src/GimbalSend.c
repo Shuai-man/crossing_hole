@@ -30,4 +30,5 @@ void GimbalSendPack()
   {
     gimbal_pack_send_1.shoot_speed = 0;
   }
+  gimbal_pack_send_1.heat_cooling = heat_controller.HeatCool;
 }

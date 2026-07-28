@@ -12,6 +12,7 @@ void HeatUpdate(void)
         heat_controller.HeatMax = Robot_Status.shooter_barrel_heat_limit;
         heat_controller.CurHeat = Power_Heat_Data.shooter_17mm_barrel_heat;
         heat_controller.available_shoot = (heat_controller.HeatMax - heat_controller.CurHeat) / ONE_BULLET_HEAT;
+        heat_controller.HeatCool = ONE_BULLET_HEAT/Robot_Status.shooter_barrel_cooling_value;
     }
     if (heat_controller.shoot_count > heat_controller.last_shoot_count) // 弹丸发射
     {

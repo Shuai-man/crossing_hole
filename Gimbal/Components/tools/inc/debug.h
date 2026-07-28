@@ -52,7 +52,7 @@ typedef struct GlobalDebugger
 		Loss_Debugger lift_debugger;//抬升电机
 		Loss_Debugger tof_debugger;//tof测距模块
 		Loss_Debugger encoder_debugger;//编码器
-    Loss_Debugger receive_chassis_debugger[2];//板间通信
+    Loss_Debugger chassis_debugger[2];//板间通信
     Loss_Debugger pc_receive_debugger;//PC通信
 } GlobalDebugger;
 

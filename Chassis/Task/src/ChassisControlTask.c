@@ -16,13 +16,12 @@
  * @brief 底盘控制任务
  * @param[in] void
  */
-void ChassisControl_task(void const * argument)
+void ChassisControl_task(void const *argument)
 {
     portTickType xLastWakeTime;
-
-    InfantryInit(&infantry);
     vTaskDelay(500);
 
+    InfantryInit(&infantry);
     xLastWakeTime = xTaskGetTickCount();
     while (1)
     {
@@ -31,16 +30,16 @@ void ChassisControl_task(void const * argument)
 
         get_sensors_info(&infantry.sensors_info);
 
-        set_robot_speed(&infantry);	//设置功率和最大速度
+        set_robot_speed(&infantry); // 设置功率和最大速度
 
-        wheels_accel(&infantry);	//处理遥控器信号
+        wheels_accel(&infantry); // 处理遥控器信号
 
-        main_control(&infantry);	//解算出电机电流值
+        main_control(&infantry); // 解算出电机电流值
 
-        wheels_power_limit(&infantry);	//限制输出功率
+        wheels_power_limit(&infantry); // 限制输出功率
 
         /* 执行控制 */
-        execute_control(&infantry.excute_info);	//把电流值发送给电机
+        execute_control(&infantry.excute_info); // 把电流值发送给电机
 
         /*  延时  */
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));

@@ -11,28 +11,68 @@
 
 int Rest_UI_Flag;
 bool ref_ready_flag; // 当前线程初始化完成标志
-/* 每次重新发送静态 UI 时递增，通知动态 UI 重新使用 Add。 */
-static uint8_t ui_readd_generation = 0;
-static void Show_NIKO(uint8_t operate);
 static void Ref_UI_LaneFlashShow(int16_t pitch_x100);
 static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100);
 static bool Ref_UI_StatusInitialAddPending(void);
 static bool Ref_UI_GetPriorityStatusItem(uint8_t *item_index);
+static bool Ref_UI_DirectionArcUpdatePending(void);
+static uint16_t Ref_UI_GetDirectionArcCenterAngle(float yaw_angle);
+static uint8_t Ref_UI_IsAmmoAlert(void);
 
 #define UI_STATUS_ITEM_COUNT       9U
 #define UI_STATUS_ALL_ADDED_MASK   ((1U << UI_STATUS_ITEM_COUNT) - 1U)
 
-static uint8_t ui_status_item_index = 0;
-static uint16_t ui_status_added_mask = 0;
-static uint8_t ui_status_observed_generation = 0;
-static uint16_t ui_priority_status_valid_mask = 0;
-static enum CHASSIS_MODE_ACTION ui_last_chassis_mode;
-static uint8_t ui_last_pc_on = 0;
-static uint8_t ui_last_aim_mode = 0;
-static uint8_t ui_last_friction_speed = 0;
-static uint16_t ui_last_cap_voltage_x10 = 0;
-static uint8_t ui_last_ammo_alert = 0;
-static chassis_direction_e ui_last_chassis_direction = CHASSIS_FRONT;
+typedef struct
+{
+	uint16_t added_mask;
+	uint16_t valid_mask;
+	uint16_t cap_voltage_x10;
+	uint16_t direction_angle;
+	portTickType ammo_tick;
+	portTickType direction_tick;
+	enum CHASSIS_MODE_ACTION chassis_mode;
+	chassis_direction_e chassis_direction;
+	uint8_t item_index;
+	uint8_t generation;
+	uint8_t readd_generation;
+	uint8_t pc_on;
+	uint8_t aim_mode;
+	uint8_t friction_speed;
+	uint8_t ammo_alert;
+	uint8_t ammo_color;
+} RefUiState;
+
+typedef struct
+{
+	char name[4];
+	uint16_t char_size;
+	uint16_t length;
+	uint16_t width;
+	uint16_t x;
+	uint16_t y;
+} RefUiTextConfig;
+
+static RefUiState ui_state = {0};
+
+static const RefUiTextConfig UI_TEXT_GIM   = {"gim", 17, 24, 3,   60, 750};
+static const RefUiTextConfig UI_TEXT_CHA   = {"cha", 17, 12, 3,   60, 700};
+static const RefUiTextConfig UI_TEXT_PC    = {"pc ", 17,  7, 3,   60, 650};
+static const RefUiTextConfig UI_TEXT_AIM   = {"aim", 20, 12, 3, 1280, 700};
+static const RefUiTextConfig UI_TEXT_SPEED = {"SPD", 15, 15, 3, 1460, 590};
+static const RefUiTextConfig UI_TEXT_CAP   = {"CAP", 25, 12, 3,  860, 110};
+static const RefUiTextConfig UI_TEXT_FLAG  = {"fal", 30,  4, 3,  910, 880};
+static const RefUiTextConfig UI_TEXT_AMMO  = {"amm", 60, 10, 3,  720, 800};
+
+#define AMMO_ALERT_COLOR_INTERVAL_MS 400U
+static const uint8_t ui_ammo_alert_colors[] = {
+	UI_Color_Yellow,
+	UI_Color_Green,
+	UI_Color_Orange,
+	UI_Color_Purple,
+	UI_Color_Pink,
+	UI_Color_Cyan,
+	UI_Color_White
+};
 
 #define CAP_BAR_UI_START_X 750
 #define CAP_BAR_UI_START_Y 35
@@ -45,6 +85,15 @@ static chassis_direction_e ui_last_chassis_direction = CHASSIS_FRONT;
 #define LANE_VANISHING_Y_PER_DEGREE 10
 #define LANE_VANISHING_Y_MIN         200
 #define LANE_VANISHING_Y_MAX         900
+
+/* 环绕原生中央准心圆环的底盘方向指示器。 */
+#define DIRECTION_ARC_CENTER_X        960U
+#define DIRECTION_ARC_CENTER_Y        540U
+#define DIRECTION_ARC_RADIUS          82U
+#define DIRECTION_ARC_WIDTH           10U
+#define DIRECTION_ARC_HALF_ANGLE       30U
+#define DIRECTION_ARC_YAW_INTERVAL_MS  50U
+#define DIRECTION_ARC_KEEPALIVE_MS     200U
 
 /*******************************************************************************************************
 Ref任务初始化
@@ -99,7 +148,7 @@ void Refereetask(void const *argument)
 				{
 					Sightglass_static_show();
 					static_ui_added = true;
-					ui_readd_generation++;
+					ui_state.readd_generation++;
 					steady_ui_phase = 0;
 					fri_refresh_slot = 0;
 					ui_update_counter = 0;
@@ -109,7 +158,7 @@ void Refereetask(void const *argument)
 			else if (ui_update_counter >= 500)
 			{
 				Sightglass_static_show();
-				ui_readd_generation++;
+				ui_state.readd_generation++;
 				steady_ui_phase = 0;
 				fri_refresh_slot = 0;
 				ui_update_counter = 0;
@@ -128,6 +177,15 @@ void Refereetask(void const *argument)
 					{
 						/* GIM、CHA、PC 排在前三项，约 100 ms 完成主状态区加载。 */
 						Sightglass1_flash_show();
+					}
+					else if (Ref_UI_DirectionArcUpdatePending())
+					{
+						/*
+						 * 底盘方向变化时绕过普通状态队列。
+						 * 通过重复发送和 5 Hz 保活刷新，避免单帧丢失后
+						 * 准心圆弧长期停留在错误位置。
+						 */
+						Ref_UI_SendStatusItem(8U, gimbal_receiver_pack2.gimbal_pitch);
 					}
 					else if (steady_ui_phase == 0U)
 					{
@@ -182,11 +240,11 @@ void Sightglass_static_show(void)
 	//两条车道线和五条准心左车道线：LLL（Left Lane Line）右车道线：RLL（Right Lane Line） 准心 crosshair ch
 	UI_Draw_Line(&UI_Graph7.Graphic[0], "LLL", UI_Graph_Add, 1, UI_Color_Green, 3, 460, 100, 930, 600);
 	UI_Draw_Line(&UI_Graph7.Graphic[1], "RLL", UI_Graph_Add, 1, UI_Color_Green, 3, 1460, 100, 990, 600);
-	UI_Draw_Line(&UI_Graph7.Graphic[2], "ch1", UI_Graph_Add, 1, UI_Color_Orange, 2, 915, 470, 1005, 470);
-	UI_Draw_Line(&UI_Graph7.Graphic[3], "ch2", UI_Graph_Add, 1, UI_Color_Orange, 2, 915, 440, 1005, 440);
-	UI_Draw_Line(&UI_Graph7.Graphic[4], "ch3", UI_Graph_Add, 1, UI_Color_Orange, 2, 915, 410, 1005, 410);
-	UI_Draw_Line(&UI_Graph7.Graphic[5], "ch4", UI_Graph_Add, 1, UI_Color_Orange, 2, 915, 380, 1005, 380);
-	UI_Draw_Line(&UI_Graph7.Graphic[6], "ch5", UI_Graph_Add, 1, UI_Color_Orange, 2, 915, 350, 1005, 350);
+	UI_Draw_Line(&UI_Graph7.Graphic[2], "ch1", UI_Graph_Add, 1, UI_Color_Orange, 2, 930, 470, 990, 470);
+	UI_Draw_Line(&UI_Graph7.Graphic[3], "ch2", UI_Graph_Add, 1, UI_Color_Orange, 2, 930, 440, 990, 440);
+	UI_Draw_Line(&UI_Graph7.Graphic[4], "ch3", UI_Graph_Add, 1, UI_Color_Orange, 2, 930, 410, 990, 410);
+	UI_Draw_Line(&UI_Graph7.Graphic[5], "ch4", UI_Graph_Add, 1, UI_Color_Orange, 2, 930, 380, 990, 380);
+	UI_Draw_Line(&UI_Graph7.Graphic[6], "ch5", UI_Graph_Add, 1, UI_Color_Orange, 2, 930, 350, 990, 350);
 
 
 	UI_PushUp_Graphs(7, &UI_Graph7, Robot_ID_Current);
@@ -260,86 +318,84 @@ static const char *Ref_UI_GetAimModeText(uint8_t aim_mode)
 	}
 }
 
-/**
- * @brief 组装并发送一条状态字符串 UI。
- *
- * UI 字符串需要使用固定长度。如果用短文字刷新长文字，旧文字超出
- * 新文字长度的部分不会自动被覆盖，可能残留在屏幕上。因此函数会
- * 先用空格填充字符串缓冲区，再复制实际文字，清除旧文字残留。
- * 当实际文字过长时，只保留 string_length 个字符。
- * @param name UI 字符串的名称。
- * @param operate UI 操作类型，例如 Add 或 Change。
- * @param color 字符串颜色。
- * @param char_size 字符大小。
- * @param string_length UI 字符串长度。
- * @param width 字符宽度。
- * @param start_x 字符串起始 X 坐标。
- * @param start_y 字符串起始 Y 坐标。
- * @param text 要显示的文字。
- */
-static void Ref_UI_SendStatusString(char *name,
-										 uint8_t operate,
-										 uint8_t color,
-										 uint16_t char_size,
-										 uint16_t string_length,
-										 uint16_t width,
-										 uint16_t start_x,
-										 uint16_t start_y,
-										 const char *text)
+/* 补齐固定长度文字并完成组包、发送，避免短文字覆盖后残留。 */
+static void Ref_UI_SendText(const RefUiTextConfig *config,
+							uint8_t operate,
+							uint8_t color,
+							const char *text)
 {
-	char text_buffer[30];
 	size_t copy_length;
+	uint16_t length = config->length;
 
-	if (string_length > sizeof(text_buffer))
-		string_length = sizeof(text_buffer);
+	if (length > sizeof(UI_String.String.stringdata))
+		length = sizeof(UI_String.String.stringdata);
 
-	memset(text_buffer, ' ', sizeof(text_buffer));
 	memset(UI_String.String.stringdata, ' ', sizeof(UI_String.String.stringdata));
-
 	copy_length = strlen(text);
-	if (copy_length > string_length)
-		copy_length = string_length;
-	memcpy(text_buffer, text, copy_length);
+	if (copy_length > length)
+		copy_length = length;
+	memcpy(UI_String.String.stringdata, text, copy_length);
 
 	UI_Draw_String(&UI_String.String,
-					 name,
-					 operate,
-					 2,
-					 color,
-					 char_size,
-					 string_length,
-					 width,
-					 start_x,
-					 start_y,
-					 text_buffer);
+				   (char *)config->name,
+				   operate,
+				   2,
+				   color,
+				   config->char_size,
+				   length,
+				   config->width,
+				   config->x,
+				   config->y,
+				   (char *)UI_String.String.stringdata);
 	UI_PushUp_String(&UI_String, Robot_ID_Current);
-}
-
-/**
- * @brief 显示队伍标识 NIKO。
- * @param operate UI 操作类型，例如 Add 或 Change。
- */
-static void Show_NIKO(uint8_t operate)
-{
-	Ref_UI_SendStatusString("fal", operate, UI_Color_Green,
-							30, 4, 3, 910, 880, "NIKO");
 }
 
 static void Ref_UI_StatusSyncGeneration(void)
 {
-	if (ui_status_observed_generation != ui_readd_generation)
+	if (ui_state.generation != ui_state.readd_generation)
 	{
-		ui_status_observed_generation = ui_readd_generation;
-		ui_status_item_index = 0;
-		ui_status_added_mask = 0;
-		ui_priority_status_valid_mask = 0;
+		ui_state.generation = ui_state.readd_generation;
+		ui_state.item_index = 0;
+		ui_state.added_mask = 0;
+		ui_state.valid_mask = 0;
 	}
 }
 
 static bool Ref_UI_StatusInitialAddPending(void)
 {
 	Ref_UI_StatusSyncGeneration();
-	return ui_status_added_mask != UI_STATUS_ALL_ADDED_MASK;
+	return ui_state.added_mask != UI_STATUS_ALL_ADDED_MASK;
+}
+
+/* 将云台 Yaw 转换为圆环角度：正上方为 0 度，顺时针递增。 */
+static uint16_t Ref_UI_GetDirectionArcCenterAngle(float yaw_angle)
+{
+	return (uint16_t)((int32_t)(GIMBAL_MOTOR_SIGN *
+							   (yaw_angle - GIMBAL_FOLLOW_ZERO) +
+							   720.5f) % 360);
+}
+
+/* Yaw 变化最高约 15 Hz 刷新，静止时保持 5 Hz 重发。 */
+static bool Ref_UI_DirectionArcUpdatePending(void)
+{
+	portTickType elapsed;
+	uint16_t angle;
+
+	if ((ui_state.added_mask & (1U << 8)) == 0U)
+		return false;
+
+	elapsed = (portTickType)(xTaskGetTickCount() - ui_state.direction_tick);
+	angle = Ref_UI_GetDirectionArcCenterAngle(infantry.yaw_angle);
+	return (ui_state.chassis_direction != infantry.chassis_direction) ||
+		   (elapsed >= pdMS_TO_TICKS(DIRECTION_ARC_KEEPALIVE_MS)) ||
+		   ((angle != ui_state.direction_angle) &&
+			(elapsed >= pdMS_TO_TICKS(DIRECTION_ARC_YAW_INTERVAL_MS)));
+}
+
+static uint8_t Ref_UI_IsAmmoAlert(void)
+{
+	return (global_debugger.referee_debugger.state == ON) &&
+		   (Projectile_Allowance.projectile_allowance_17mm <= 10U);
 }
 
 /**
@@ -355,45 +411,40 @@ static bool Ref_UI_GetPriorityStatusItem(uint8_t *item_index)
 		return false;
 
 	*item_index = 0U;
-	if (((ui_priority_status_valid_mask & (1U << 1)) == 0U) ||
-		(ui_last_chassis_mode != remote_controller.control_mode_action))
+	if (((ui_state.valid_mask & (1U << 1)) == 0U) ||
+		(ui_state.chassis_mode != remote_controller.control_mode_action))
 	{
 		*item_index = 1U;
 		return true;
 	}
 
-	if (((ui_priority_status_valid_mask & (1U << 2)) == 0U) ||
-		(ui_last_pc_on != (uint8_t)gimbal_receiver_pack1.is_pc_on))
+	if (((ui_state.valid_mask & (1U << 2)) == 0U) ||
+		(ui_state.pc_on != (uint8_t)gimbal_receiver_pack1.is_pc_on))
 	{
 		*item_index = 2U;
 		return true;
 	}
 
-	if (((ui_priority_status_valid_mask & (1U << 8)) == 0U) ||
-		(ui_last_chassis_direction != infantry.chassis_direction))
-	{
-		*item_index = 8U;
-		return true;
-	}
-
-	if (((ui_priority_status_valid_mask & (1U << 3)) == 0U) ||
-		(ui_last_aim_mode != gimbal_receiver_pack1.aim_mode))
+	if (((ui_state.valid_mask & (1U << 3)) == 0U) ||
+		(ui_state.aim_mode != gimbal_receiver_pack1.aim_mode))
 	{
 		*item_index = 3U;
 		return true;
 	}
 
-	if (((ui_priority_status_valid_mask & (1U << 4)) == 0U) ||
-		(ui_last_friction_speed != gimbal_receiver_pack1.set_friction_speed))
+	if (((ui_state.valid_mask & (1U << 4)) == 0U) ||
+		(ui_state.friction_speed != gimbal_receiver_pack1.set_friction_speed))
 	{
 		*item_index = 4U;
 		return true;
 	}
 
-	ammo_alert = (global_debugger.referee_debugger.state == ON &&
-				  Projectile_Allowance.projectile_allowance_17mm <= 10U) ? 1U : 0U;
-	if (((ui_priority_status_valid_mask & (1U << 7)) == 0U) ||
-		(ui_last_ammo_alert != ammo_alert))
+	ammo_alert = Ref_UI_IsAmmoAlert();
+	if (((ui_state.valid_mask & (1U << 7)) == 0U) ||
+		(ui_state.ammo_alert != ammo_alert) ||
+		(ammo_alert &&
+		 ((portTickType)(xTaskGetTickCount() - ui_state.ammo_tick) >=
+		  pdMS_TO_TICKS(AMMO_ALERT_COLOR_INTERVAL_MS))))
 	{
 		*item_index = 7U;
 		return true;
@@ -401,10 +452,10 @@ static bool Ref_UI_GetPriorityStatusItem(uint8_t *item_index)
 
 	/* 电压文字每变化 0.5 V 才更新，避免抢占超电进度条带宽。 */
 	cap_voltage_x10 = (uint16_t)(cap_controller.cap_vol * 10.0f + 0.5f);
-	cap_voltage_delta = (int32_t)cap_voltage_x10 - (int32_t)ui_last_cap_voltage_x10;
+	cap_voltage_delta = (int32_t)cap_voltage_x10 - (int32_t)ui_state.cap_voltage_x10;
 	if (cap_voltage_delta < 0)
 		cap_voltage_delta = -cap_voltage_delta;
-	if (((ui_priority_status_valid_mask & (1U << 5)) == 0U) ||
+	if (((ui_state.valid_mask & (1U << 5)) == 0U) ||
 		(cap_voltage_delta >= 5))
 	{
 		*item_index = 5U;
@@ -425,15 +476,17 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100)
 	uint8_t operate;
 	char text[30];
 	uint16_t cap_voltage_x10;
-	uint16_t ammo_remaining;
+	uint8_t ammo_alert;
 	int pitch_value;
 	int pitch_abs;
+	chassis_direction_e chassis_direction_snapshot;
+	uint16_t direction_arc_center_angle;
 
 	if ((Robot_ID_Current == 0) || (item_index >= UI_STATUS_ITEM_COUNT))
 		return;
 
 	Ref_UI_StatusSyncGeneration();
-	operate = (ui_status_added_mask & (1U << item_index)) ? UI_Graph_Change : UI_Graph_Add;
+	operate = (ui_state.added_mask & (1U << item_index)) ? UI_Graph_Change : UI_Graph_Add;
 	memset(text, 0, sizeof(text));
 
 	switch (item_index)
@@ -447,36 +500,32 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100)
 				 pitch_value < 0 ? "-" : "",
 				 pitch_abs / 100,
 				 pitch_abs % 100);
-		Ref_UI_SendStatusString("gim", operate, UI_Color_Green,
-								17, 24, 3, 60, 750, text);
+		Ref_UI_SendText(&UI_TEXT_GIM, operate, UI_Color_Green, text);
 		break;
 
 	case 1:
 		/* 底盘模式和 CHA: 标签合并为一行。 */
 		snprintf(text, sizeof(text), "CHA:%s",
 				 Ref_UI_GetChassisModeText(remote_controller.control_mode_action));
-		Ref_UI_SendStatusString("cha", operate, UI_Color_Green,
-								17, 12, 3, 60, 700, text);
-		ui_last_chassis_mode = remote_controller.control_mode_action;
-		ui_priority_status_valid_mask |= (1U << 1);
+		Ref_UI_SendText(&UI_TEXT_CHA, operate, UI_Color_Green, text);
+		ui_state.chassis_mode = remote_controller.control_mode_action;
+		ui_state.valid_mask |= (1U << 1);
 		break;
 
 	case 2:
 		/* PC 状态原本就是单包动态更新。 */
-		Ref_UI_SendStatusString("pc ", operate,
-								gimbal_receiver_pack1.is_pc_on ? UI_Color_Green : UI_Color_Orange,
-								17, 7, 3, 60, 650,
-								gimbal_receiver_pack1.is_pc_on ? "PC :ON " : "PC :OFF");
-		ui_last_pc_on = (uint8_t)gimbal_receiver_pack1.is_pc_on;
-		ui_priority_status_valid_mask |= (1U << 2);
+		Ref_UI_SendText(&UI_TEXT_PC, operate,
+						gimbal_receiver_pack1.is_pc_on ? UI_Color_Green : UI_Color_Orange,
+						gimbal_receiver_pack1.is_pc_on ? "PC :ON " : "PC :OFF");
+		ui_state.pc_on = (uint8_t)gimbal_receiver_pack1.is_pc_on;
+		ui_state.valid_mask |= (1U << 2);
 		break;
 
 	case 3:
-		Ref_UI_SendStatusString("aim", operate, UI_Color_Orange,
-								20, 12, 3, 1280, 700,
-								Ref_UI_GetAimModeText(gimbal_receiver_pack1.aim_mode));
-		ui_last_aim_mode = gimbal_receiver_pack1.aim_mode;
-		ui_priority_status_valid_mask |= (1U << 3);
+		Ref_UI_SendText(&UI_TEXT_AIM, operate, UI_Color_Orange,
+						Ref_UI_GetAimModeText(gimbal_receiver_pack1.aim_mode));
+		ui_state.aim_mode = gimbal_receiver_pack1.aim_mode;
+		ui_state.valid_mask |= (1U << 3);
 		break;
 
 	case 4:
@@ -484,10 +533,9 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100)
 		snprintf(text, sizeof(text), "FRI_SPEED:%u.%u",
 				 (unsigned int)(gimbal_receiver_pack1.set_friction_speed / 10U),
 				 (unsigned int)(gimbal_receiver_pack1.set_friction_speed % 10U));
-		Ref_UI_SendStatusString("SPD", operate, UI_Color_Green,
-								15, 15, 3, 1460, 590, text);
-		ui_last_friction_speed = gimbal_receiver_pack1.set_friction_speed;
-		ui_priority_status_valid_mask |= (1U << 4);
+		Ref_UI_SendText(&UI_TEXT_SPEED, operate, UI_Color_Green, text);
+		ui_state.friction_speed = gimbal_receiver_pack1.set_friction_speed;
+		ui_state.valid_mask |= (1U << 4);
 		break;
 
 	case 5:
@@ -495,45 +543,59 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100)
 		snprintf(text, sizeof(text), "CAP:%u.%uV",
 				 (unsigned int)(cap_voltage_x10 / 10U),
 				 (unsigned int)(cap_voltage_x10 % 10U));
-		Ref_UI_SendStatusString("CAP", operate, UI_Color_Green,
-								25, 12, 3, 860, 110, text);
-		ui_last_cap_voltage_x10 = cap_voltage_x10;
-		ui_priority_status_valid_mask |= (1U << 5);
+		Ref_UI_SendText(&UI_TEXT_CAP, operate, UI_Color_Green, text);
+		ui_state.cap_voltage_x10 = cap_voltage_x10;
+		ui_state.valid_mask |= (1U << 5);
 		break;
 
 	case 6:
-		Show_NIKO(operate);
+		Ref_UI_SendText(&UI_TEXT_FLAG, operate, UI_Color_Green, "NIKO");
 		break;
 
 	case 7:
-		ammo_remaining = Projectile_Allowance.projectile_allowance_17mm;
-		Ref_UI_SendStatusString("amm", operate, UI_Color_Orange,
-								60, 10, 3, 720, 800,
-								(global_debugger.referee_debugger.state == ON && ammo_remaining <= 10U)
-									? "BUY AMMO!"
-									: "          ");
-		ui_last_ammo_alert = (global_debugger.referee_debugger.state == ON && ammo_remaining <= 10U) ? 1U : 0U;
-		ui_priority_status_valid_mask |= (1U << 7);
+		ammo_alert = Ref_UI_IsAmmoAlert();
+		Ref_UI_SendText(&UI_TEXT_AMMO, operate,
+						ammo_alert
+							? ui_ammo_alert_colors[ui_state.ammo_color]
+							: UI_Color_Orange,
+						ammo_alert ? "BUY AMMO!" : "          ");
+		ui_state.ammo_alert = ammo_alert;
+		if (ammo_alert)
+		{
+			ui_state.ammo_color = (uint8_t)((ui_state.ammo_color + 1U) %
+				(sizeof(ui_ammo_alert_colors) / sizeof(ui_ammo_alert_colors[0])));
+			ui_state.ammo_tick = xTaskGetTickCount();
+		}
+		else
+			ui_state.ammo_color = 0U;
+		ui_state.valid_mask |= (1U << 7);
 		break;
 
 	case 8:
-		Ref_UI_SendStatusString("DIR", operate,
-								(infantry.chassis_direction == CHASSIS_FRONT)
-									? UI_Color_Green
-									: UI_Color_Orange,
-								15, 10, 3, 1460, 550,
-								(infantry.chassis_direction == CHASSIS_FRONT)
-									? "HEAD:FRONT"
-									: "HEAD:BACK ");
-		ui_last_chassis_direction = infantry.chassis_direction;
-		ui_priority_status_valid_mask |= (1U << 8);
+		chassis_direction_snapshot = infantry.chassis_direction;
+		direction_arc_center_angle =
+			Ref_UI_GetDirectionArcCenterAngle(infantry.yaw_angle);
+		UI_Draw_Arc(&UI_Graph1.Graphic[0], "DIR", operate, 2,
+					(chassis_direction_snapshot == CHASSIS_FRONT)
+						? UI_Color_Green
+						: UI_Color_Orange,
+					(direction_arc_center_angle + 360U - DIRECTION_ARC_HALF_ANGLE) % 360U,
+					(direction_arc_center_angle + DIRECTION_ARC_HALF_ANGLE) % 360U,
+					DIRECTION_ARC_WIDTH,
+					DIRECTION_ARC_CENTER_X, DIRECTION_ARC_CENTER_Y,
+					DIRECTION_ARC_RADIUS, DIRECTION_ARC_RADIUS);
+		UI_PushUp_Graphs(1, &UI_Graph1, Robot_ID_Current);
+		ui_state.chassis_direction = chassis_direction_snapshot;
+		ui_state.direction_angle = direction_arc_center_angle;
+		ui_state.direction_tick = xTaskGetTickCount();
+		ui_state.valid_mask |= (1U << 8);
 		break;
 
 	default:
 		return;
 	}
 
-	ui_status_added_mask |= (uint16_t)(1U << item_index);
+	ui_state.added_mask |= (uint16_t)(1U << item_index);
 }
 
 /**
@@ -545,14 +607,13 @@ void Sightglass1_flash_show(void)
 		return;
 
 	Ref_UI_StatusSyncGeneration();
-	if (ui_status_item_index >= UI_STATUS_ITEM_COUNT)
-		ui_status_item_index = 0;
+	if (ui_state.item_index >= UI_STATUS_ITEM_COUNT)
+		ui_state.item_index = 0;
 
-	Ref_UI_SendStatusItem(ui_status_item_index,
+	Ref_UI_SendStatusItem(ui_state.item_index,
 						  gimbal_receiver_pack2.gimbal_pitch);
-	ui_status_item_index++;
-	if (ui_status_item_index >= UI_STATUS_ITEM_COUNT)
-		ui_status_item_index = 0;
+	ui_state.item_index = (uint8_t)((ui_state.item_index + 1U) %
+									UI_STATUS_ITEM_COUNT);
 }
 
 /**
@@ -628,14 +689,14 @@ static void Ref_UI_LaneFlashShow(int16_t pitch_x100)
 		return;
 
 	/* 静态 UI 重建后强制更新；Pitch 未变化时不重复占用带宽。 */
-	if ((observed_generation == ui_readd_generation) &&
+	if ((observed_generation == ui_state.readd_generation) &&
 		lane_initialized &&
 		(pitch_x100 == last_pitch_x100))
 	{
 		return;
 	}
 
-	observed_generation = ui_readd_generation;
+	observed_generation = ui_state.readd_generation;
 	Ref_UI_DrawLaneLines(&UI_Graph2.Graphic[0],
 						&UI_Graph2.Graphic[1],
 						UI_Graph_Change,
@@ -686,32 +747,26 @@ void Sightglass2_flash_show(void)
 {
 	static bool cap_bar_added = false;
 	static uint8_t observed_generation = 0;
+	uint8_t operate;
 
 	if (Robot_ID_Current == 0)
 		return;
 
 	/* 静态 UI 重建后，电容条也重新 Add。 */
-	if (observed_generation != ui_readd_generation)
+	if (observed_generation != ui_state.readd_generation)
 	{
-		observed_generation = ui_readd_generation;
+		observed_generation = ui_state.readd_generation;
 		cap_bar_added = false;
 	}
 
-	if (!cap_bar_added)
-	{
-		/* 超电进度条：首次创建。 */
-		UI_Draw_Rectangle(&UI_Graph2.Graphic[0], "cap", UI_Graph_Add, 1, UI_Color_White, 5, CAP_BAR_UI_START_X, CAP_BAR_UI_START_Y + CAP_BAR_WIDTH / 2, CAP_BAR_UI_START_X + CAP_BAR_LENGTH, CAP_BAR_UI_START_Y - CAP_BAR_WIDTH / 2);
-		drawCapBar(&UI_Graph2.Graphic[1], UI_Graph_Add);
-
-		UI_PushUp_Graphs(2, &UI_Graph2, Robot_ID_Current);
-		cap_bar_added = true;
-	}
-	else
-	{
-		/* 超电进度条：后续刷新。 */
-		UI_Draw_Rectangle(&UI_Graph2.Graphic[0], "cap", UI_Graph_Change, 1, UI_Color_White, 5, CAP_BAR_UI_START_X, CAP_BAR_UI_START_Y + CAP_BAR_WIDTH / 2, CAP_BAR_UI_START_X + CAP_BAR_LENGTH, CAP_BAR_UI_START_Y - CAP_BAR_WIDTH / 2);
-		drawCapBar(&UI_Graph2.Graphic[1], UI_Graph_Change);
-
-		UI_PushUp_Graphs(2, &UI_Graph2, Robot_ID_Current);
-	}
+	operate = cap_bar_added ? UI_Graph_Change : UI_Graph_Add;
+	UI_Draw_Rectangle(&UI_Graph2.Graphic[0], "cap", operate, 1,
+					  UI_Color_White, 5,
+					  CAP_BAR_UI_START_X,
+					  CAP_BAR_UI_START_Y + CAP_BAR_WIDTH / 2,
+					  CAP_BAR_UI_START_X + CAP_BAR_LENGTH,
+					  CAP_BAR_UI_START_Y - CAP_BAR_WIDTH / 2);
+	drawCapBar(&UI_Graph2.Graphic[1], operate);
+	UI_PushUp_Graphs(2, &UI_Graph2, Robot_ID_Current);
+	cap_bar_added = true;
 }

@@ -183,7 +183,7 @@ void Shoot_Fire_Cal(void)
         remote_controller.single_shoot_flag = FALSE; // 自瞄连发
         if (pc_recv_data.shoot_flag == 1)
         {
-            Toggle_Fire(chassis_pack_get_1.shoot_avaiable);
+            Toggle_Fire(chassis_pack_get_1.shoot_avaiable , chassis_pack_get_1.heat_cooling);
         }
         else
         {
@@ -193,7 +193,7 @@ void Shoot_Fire_Cal(void)
     else // 手动开火
     {
         remote_controller.single_shoot_flag = FALSE;
-        Toggle_Fire(chassis_pack_get_1.shoot_avaiable);
+        Toggle_Fire(chassis_pack_get_1.shoot_avaiable , chassis_pack_get_1.heat_cooling);
     }
 }
 

@@ -58,7 +58,6 @@ osThreadId gimbalTaskHandle;
 osThreadId powerControlTasHandle;
 osThreadId refereetaskHandle;
 osThreadId _ChassisCtrlHandle;
-osThreadId BlueToothHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -71,7 +70,6 @@ void GimbalTask(void const * argument);
 void PowerControlTask(void const * argument);
 void Refereetask(void const * argument);
 void ChassisControl_task(void const * argument);
-void BlueToothTask(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -135,11 +133,11 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityLow, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of offline_task */
-  osThreadDef(offline_task, Offline_task, osPriorityRealtime, 0, 1024);
+  osThreadDef(offline_task, Offline_task, osPriorityNormal, 0, 1024);
   offline_taskHandle = osThreadCreate(osThread(offline_task), NULL);
 
   /* definition and creation of gimbalTask */
@@ -157,10 +155,6 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of _ChassisCtrl */
   osThreadDef(_ChassisCtrl, ChassisControl_task, osPriorityRealtime, 0, 1024);
   _ChassisCtrlHandle = osThreadCreate(osThread(_ChassisCtrl), NULL);
-
-  /* definition and creation of BlueTooth */
-  osThreadDef(BlueTooth, BlueToothTask, osPriorityRealtime, 0, 1024);
-  BlueToothHandle = osThreadCreate(osThread(BlueTooth), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -274,24 +268,6 @@ __weak void ChassisControl_task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END ChassisControl_task */
-}
-
-/* USER CODE BEGIN Header_BlueToothTask */
-/**
-* @brief Function implementing the _BlueToothTask thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_BlueToothTask */
-__weak void BlueToothTask(void const * argument)
-{
-  /* USER CODE BEGIN BlueToothTask */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END BlueToothTask */
 }
 
 /* Private application code --------------------------------------------------*/

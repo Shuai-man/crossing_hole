@@ -181,25 +181,6 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-void Is_Motor_On_Check(void)
-{
-		while(infantry.Motor_Init_Time < 1.0f && infantry.All_Motor_On == FALSE)
-	{
-			if(
-					global_debugger.wheels_comm_debugger[0].recv_msgs_num > 5		&&
-					global_debugger.wheels_comm_debugger[1].recv_msgs_num > 5		&&
-					global_debugger.wheels_comm_debugger[2].recv_msgs_num > 5		&&
-					global_debugger.wheels_comm_debugger[3].recv_msgs_num > 5
-			)
-				{
-					infantry.All_Motor_On = TRUE;
-				}
-				
-			infantry.Motor_Init_Time += DWT_GetDeltaT(&infantry.Timer);
-			HAL_Delay(1);
-	}
-}
-
 /* USER CODE END 4 */
 
 /**

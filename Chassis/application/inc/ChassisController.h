@@ -17,6 +17,9 @@ extern float UI_FRONT_ERR,UI_FRONT_SIN,UI_FRONT_COS;
 
 #define UI_FRONT_BIAS 0
 
+#define CHASSIS_ROTATE_YAW_WEIGHT              0.55f
+#define CHASSIS_ROTATE_TRANSLATE_MIN_SCALE     0.35f
+
 typedef struct Vector // 向量
 {
   float module; // 模值
@@ -60,6 +63,22 @@ typedef enum
   CHASSIS_RIGHT,
 } chassis_direction_e;
 
+/* 底盘最大速度拟合  */
+//speed = k * power + b
+typedef struct ChassisMaxSpeedFit
+{
+  float power_low;
+  float speed_low;
+  float power_high;
+  float speed_high;
+
+  float k;
+  float b;
+  
+  float speed_max;
+} ChassisMaxSpeedFit;
+
+/*  底盘控制器 */
 typedef struct Infantry
 {
   /*  传感器信息 */
@@ -76,6 +95,10 @@ typedef struct Infantry
   float target_x_v_percent; // 0.0 -1.0f
   float target_y_v_percent;
   float target_yaw_v_percent;
+
+  ChassisMaxSpeedFit speed_x_fit;
+  ChassisMaxSpeedFit speed_y_fit; 
+  ChassisMaxSpeedFit speed_yaw_fit;
 
   float speed_x_max;
   float speed_y_max;
@@ -144,20 +167,13 @@ typedef struct Infantry
 
   // 测试数据
   float wheels_send_current[4];
-	
-	// 复活后电机重新上电等待时间
-	uint32_t Timer;
-	float Motor_Init_Time;
-	int All_Motor_On;
-	
-	uint16_t friction_speed;
-	uint8_t aim_id;
 
 } Infantry;
 
 extern Infantry infantry;
 
 void InfantryInit(Infantry *infantry);
+void MaxSpeed_Init(ChassisMaxSpeedFit *max_speed_fit,float power_low,float speed_low,float power_high,float speed_high);
 void main_control(Infantry *infantry);
 void wheels_power_limit(Infantry *infantry);
 void execute_control(ExcuteTorque *torque);

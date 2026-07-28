@@ -75,3 +75,7 @@ gimbal\vtm_controller.o: ../Application/inc/GimbalSystemIDConfig.h
 gimbal\vtm_controller.o: ../Components/motor/inc/DM_Motor.h
 gimbal\vtm_controller.o: ../Core/Inc/can.h
 gimbal\vtm_controller.o: ../Algorithm/inc/pid.h
+gimbal\vtm_controller.o: ../Application/inc/ToggleBullet.h
+gimbal\vtm_controller.o: ../Components/motor/inc/M2006.h
+gimbal\vtm_controller.o: ../Components/tools/inc/ZeroCheck.h
+gimbal\vtm_controller.o: ../Algorithm/inc/my_filter.h

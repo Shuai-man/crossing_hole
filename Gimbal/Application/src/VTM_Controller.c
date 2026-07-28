@@ -5,6 +5,7 @@
 #include "remote_control.h"
 #include "KeyMouse.h"
 #include "Gimbal.h"
+#include "ToggleBullet.h"
 
 VTM_Controller_t vtm_controller;
 
@@ -31,17 +32,17 @@ void VTM_Fire(void)
 			setShootAction(SHOOT_FIRE_MODE);
 			if ((vtm_remote.ch[RIGHT_LR] < (CH_MIDDLE - 150)) || (vtm_remote.ch[RIGHT_LR] > (CH_MIDDLE + 150)))
 			{
-				remote_controller.fire_flag = 1;
+				toggle_controller.is_shoot = 1;
 			}
 			else
 			{
-				remote_controller.fire_flag = 0;
+				toggle_controller.is_shoot = 0;
 			}
 		}
 		else
 		{
 			setShootAction(SHOOT_POWER_DOWN_MODE);
-			remote_controller.fire_flag = 0;
+			toggle_controller.is_shoot = 0;
 		}
 	}
 	else if (remote_controller.control_type == KEY_MOUSE)
