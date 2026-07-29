@@ -5,6 +5,7 @@
 #include "NingCap.h"
 #include "remote_control.h"
 #include "debug.h"
+#include "HeatControl.h"
 #include "Referee.h"
 #include "bsp_referee.h"
 #include <stdio.h>
@@ -61,7 +62,7 @@ static const RefUiTextConfig UI_TEXT_AIM   = {"aim", 20, 12, 3, 1280, 700};
 static const RefUiTextConfig UI_TEXT_SPEED = {"SPD", 15, 15, 3, 1460, 590};
 static const RefUiTextConfig UI_TEXT_CAP   = {"CAP", 25, 12, 3,  860, 110};
 static const RefUiTextConfig UI_TEXT_FLAG  = {"fal", 30,  4, 3,  910, 880};
-static const RefUiTextConfig UI_TEXT_AMMO  = {"amm", 60, 10, 3,  720, 800};
+static const RefUiTextConfig UI_TEXT_AMMO  = {"amm", 100, 10, 6,  600, 750};
 
 #define AMMO_ALERT_COLOR_INTERVAL_MS 400U
 static const uint8_t ui_ammo_alert_colors[] = {
@@ -395,7 +396,7 @@ static bool Ref_UI_DirectionArcUpdatePending(void)
 static uint8_t Ref_UI_IsAmmoAlert(void)
 {
 	return (global_debugger.referee_debugger.state == ON) &&
-		   (Projectile_Allowance.projectile_allowance_17mm <= 10U);
+		   (Projectile_Allowance.projectile_allowance_17mm < 30);
 }
 
 /**
@@ -442,9 +443,8 @@ static bool Ref_UI_GetPriorityStatusItem(uint8_t *item_index)
 	ammo_alert = Ref_UI_IsAmmoAlert();
 	if (((ui_state.valid_mask & (1U << 7)) == 0U) ||
 		(ui_state.ammo_alert != ammo_alert) ||
-		(ammo_alert &&
-		 ((portTickType)(xTaskGetTickCount() - ui_state.ammo_tick) >=
-		  pdMS_TO_TICKS(AMMO_ALERT_COLOR_INTERVAL_MS))))
+		((portTickType)(xTaskGetTickCount() - ui_state.ammo_tick) >=
+		 pdMS_TO_TICKS(AMMO_ALERT_COLOR_INTERVAL_MS)))
 	{
 		*item_index = 7U;
 		return true;
@@ -554,11 +554,26 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100)
 
 	case 7:
 		ammo_alert = Ref_UI_IsAmmoAlert();
-		Ref_UI_SendText(&UI_TEXT_AMMO, operate,
-						ammo_alert
-							? ui_ammo_alert_colors[ui_state.ammo_color]
-							: UI_Color_Orange,
-						ammo_alert ? "BUY AMMO!" : "          ");
+		if (ammo_alert)
+		{
+			/*
+			 * A deleted string must be added again; Change cannot recreate it.
+			 * While the alert remains active, use Change for color animation.
+			 */
+			operate = ((ui_state.added_mask & (1U << 7)) != 0U) &&
+					  (ui_state.ammo_alert != 0U)
+						  ? UI_Graph_Change
+						  : UI_Graph_Add;
+			Ref_UI_SendText(&UI_TEXT_AMMO, operate,
+							ui_ammo_alert_colors[ui_state.ammo_color],
+							"BUY AMMO!");
+		}
+		else
+		{
+			/* Spaces do not erase an existing client string reliably. */
+			Ref_UI_SendText(&UI_TEXT_AMMO, UI_Graph_Delete,
+							UI_Color_Orange, "");
+		}
 		ui_state.ammo_alert = ammo_alert;
 		if (ammo_alert)
 		{
@@ -567,7 +582,14 @@ static void Ref_UI_SendStatusItem(uint8_t item_index, int16_t pitch_x100)
 			ui_state.ammo_tick = xTaskGetTickCount();
 		}
 		else
+		{
 			ui_state.ammo_color = 0U;
+			/*
+			 * Keep retrying Delete while the alert is hidden.  A single lost
+			 * UI packet must not leave stale "BUY AMMO!" text on the client.
+			 */
+			ui_state.ammo_tick = xTaskGetTickCount();
+		}
 		ui_state.valid_mask |= (1U << 7);
 		break;
 

@@ -15,14 +15,14 @@
 #define REFEREE_POWER_LIMIT_MIN 35.0f       /* 接受的裁判底盘功率上限最小值，单位 W */
 #define REFEREE_POWER_LIMIT_DEFAULT 60.0f   /* 尚未收到裁判数据时的默认功率，单位 W */
 #define REFEREE_BUFFER_ENERGY_MAX 60.0f     /* 裁判底盘缓冲能量最大有效值，单位 J */
-#define REFEREE_BUFFER_ENERGY_TARGET 40.0f  /* 缓冲能量闭环的目标值，单位 J */
+#define REFEREE_BUFFER_ENERGY_TARGET 30.0f  /* 缓冲能量闭环的目标值，单位 J */
 #define REFEREE_BUFFER_POWER_KP 12.0f       /* 缓冲能量偏差转换成功率修正的比例系数 */
 #define REFEREE_BUFFER_MAX_BONUS 20.0f      /* 无超电时缓冲能量最多额外提供的功率，单位 W */
 #define REFEREE_BUFFER_MIN_POWER_COEF 0.75f /* 缓冲不足时最低功率占裁判上限的比例 */
 #define REFEREE_OFFLINE_POWER_COEF 0.85f    /* 裁判掉线后使用最近有效上限的保守比例 */
 #define BUFFER_ADJUST_RISE_ALPHA 0.01f      /* 功率上调滤波系数：小值使功率缓慢恢复 */
 #define BUFFER_ADJUST_FALL_ALPHA 0.20f      /* 功率下调滤波系数：大值使功率快速收紧 */
-#define SUPER_CAP_POWER_BONUS 60.0f         /* 超电正常且启用时允许增加的功率，单位 W */
+#define SUPER_CAP_POWER_BONUS 100.0f         /* 超电正常且启用时允许增加的功率，单位 W */
 
 ChassisPowerStatus chassis_power_status;
 

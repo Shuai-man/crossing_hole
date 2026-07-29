@@ -10,10 +10,10 @@ void mecanum_pid_init()
     PID_Init(&infantry.turn_pos_pid, 20, 0, 0.0, 0.3, 0, 0.0, 0, 0, 0.000, 0.000, 1, NONE);
 
     // 轮子控制PID
-    PID_Init(&infantry.wheels_pid[LEFT_UP_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 10.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
-    PID_Init(&infantry.wheels_pid[RIGHT_UP_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 10.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
-    PID_Init(&infantry.wheels_pid[LEFT_DOWN_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 10.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
-    PID_Init(&infantry.wheels_pid[RIGHT_DOWN_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 10.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
+    PID_Init(&infantry.wheels_pid[LEFT_UP_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 20.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
+    PID_Init(&infantry.wheels_pid[RIGHT_UP_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 20.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
+    PID_Init(&infantry.wheels_pid[LEFT_DOWN_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 20.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
+    PID_Init(&infantry.wheels_pid[RIGHT_DOWN_MECANUM_WHEEL], C620_MAX_SEND_CURRENT, 0, 0, 20.0f, 0, 0, 0, 0, 0, 0, 1, NONE);
 }
 
 // 正运动学
@@ -73,7 +73,6 @@ void mecanum_follow_control()
     infantry.set_yaw_v = LIMIT_MAX_MIN(infantry.target_pid_yaw_v + infantry.follow_yaw_v,
                                        infantry.speed_yaw_max,
                                        -infantry.speed_yaw_max);
-    
 
     // 逆运动学解算
     mecanum_inv_kinematics();

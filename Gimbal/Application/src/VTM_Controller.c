@@ -98,18 +98,13 @@ void VTM_Chassis_Ctrl(void)
 	else if ((vtm_remote.wheel < (CH_MIDDLE - 50)) || (vtm_remote.wheel > (CH_MIDDLE + 50))) // 阈值
 	{
 		setChassisModeAction(CV_ROTATE);
-		if (vtm_remote.wheel > CH_MIDDLE)
-		{
-			chassis_solver.chassis_speed_w = -0.5f;
-		}
-		else
-		{
-			chassis_solver.chassis_speed_w = 0.5f;
-		}
+		setSuperPower(POWER_TO_SuperPower);
+		chassis_solver.chassis_speed_w = (float)(vtm_remote.wheel - CH_MIDDLE) / CH_RANGE;
 	}
 	else
 	{
 		setChassisModeAction(FOLLOW_GIMBAL);
+		setSuperPower(POWER_TO_BATTERY);
 		chassis_solver.chassis_speed_w = 0.0f;
 	}
 }

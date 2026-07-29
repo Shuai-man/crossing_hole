@@ -181,7 +181,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         switch (key_and) // 按键上升沿
         {
         case KEY_B:
-            gimbal_controller.return_flag =1;
+            gimbal_controller.return_flag = 1;
             break;
         case KEY_V:
             break;
@@ -222,6 +222,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             pc_send_data.mode_want = SMALL_BUFF;
             break;
         case KEY_C:
+            setSuperPower(POWER_TO_SuperPower);
             break;
         case KEY_D:
             break;
@@ -266,6 +267,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             if (remote_controller.game_mode == GAME_MODE)
             {
                 setChassisModeAction(FOLLOW_GIMBAL);
+                setSuperPower(POWER_TO_BATTERY);
                 speed_w = 0.0f;
             }
             break;

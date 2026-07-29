@@ -22,20 +22,16 @@ static uint8_t float_is_finite(float value)
     return (uint8_t)((value == value) && (value <= FLT_MAX) && (value >= -FLT_MAX));
 }
 
+// todo 有了功控其实很难超功率，所以应该把speedmax改成设定目标速度，通过调度超电，尽可能达到设定速度
+// 根据目标速度，更改设定功率
 void InfantryInit(Infantry *infantry)
 {
     // 功率控制初始化
     PowerLimitInit(&infantry->power_limiter, 4, M3508, infantry->power_limit_method);
 // 最大速度初始化
-#if ROBOT_CONFIG == OLD
-    MaxSpeed_Init(&infantry->speed_x_fit, 45.0f, 1.0f, 120.0f, 1.5f);
-    MaxSpeed_Init(&infantry->speed_y_fit, 45.0f, 1.0f, 120.0f, 1.5f);
-    MaxSpeed_Init(&infantry->speed_yaw_fit, 45.0f, 3.7f, 120.0f, 8.0f);
-#elif ROBOT_CONFIG == NEW
-    MaxSpeed_Init(&infantry->speed_x_fit, 45.0f, 1.1f, 120.0f, 1.5f);
-    MaxSpeed_Init(&infantry->speed_y_fit, 45.0f, 1.1f, 120.0f, 1.5f);
-    MaxSpeed_Init(&infantry->speed_yaw_fit, 45.0f, 5.0f, 120.0f, 5.5f);
-#endif
+    MaxSpeed_Init(&infantry->speed_x_fit, 45.0f, 0.7f, 120.0f, 2.0f);
+    MaxSpeed_Init(&infantry->speed_y_fit, 45.0f, 0.7f, 120.0f, 2.0f);
+    MaxSpeed_Init(&infantry->speed_yaw_fit, 45.0f, 5.0f, 120.0f, 8.0f);
 }
 
 /**
