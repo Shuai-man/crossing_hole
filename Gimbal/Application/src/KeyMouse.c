@@ -184,6 +184,7 @@ void KeyMouseUpdate(ChassisSolver *infantry)
             gimbal_controller.return_flag = 1;
             break;
         case KEY_V:
+            setSuperPower(POWER_TO_WIRELESS);
             break;
         case KEY_SHIFT:
             setSuperPower(POWER_TO_SuperPower);

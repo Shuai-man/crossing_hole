@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 
-#define ONE_BULLET_HEAT 10
+#define ONE_BULLET_HEAT 10.0f
 
 typedef struct HeatController
 {

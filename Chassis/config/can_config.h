@@ -40,9 +40,9 @@
 #define SUPER_POWER_CAN &hcan1
 
 /*-----------无线充电-------------*/
-#define WIRELESS_CAN_ID 0x061
-#define SEND_TO_WIRELESS_CAN_ID 0x060
-#define WIRELESS_LOSS_TIME 0.0055f // 无线充电丢帧时间阈值
+#define WIRELESS_CAN_ID 0x052
+//#define SEND_TO_WIRELESS_CAN_ID 0x060
+#define WIRELESS_LOSS_TIME 0.02f // 无线充电丢帧时间阈值
 #define WIRELESS_CAN &hcan1
 
 // FIFO 0 接收ID

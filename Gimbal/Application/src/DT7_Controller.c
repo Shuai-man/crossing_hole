@@ -102,7 +102,7 @@ void DT7_Update(float delta_t)
             if (abs(dt7_remote.ch[RIGHT_CH_LR] - CH_MIDDLE) > 150)
             {
                 toggle_controller.is_shoot = 1;
-                pc_send_data.mode_want = STD_AUTO_AIM;
+								pc_send_data.mode_want = STD_AUTO_AIM;//打车测试
             }
             else
             {
@@ -145,7 +145,7 @@ void DT7_Update(float delta_t)
                 setChassisModeAction(FOLLOW_GIMBAL);
                 setShootAction(SHOOT_POWER_DOWN_MODE);
                 setGimbalAction(GIMBAL_ACT_MODE);
-                setSuperPower(POWER_TO_BATTERY);
+                setSuperPower(POWER_TO_BATTERY);//小陀螺启用超电
                 setGimbalPosition(UP);
             }
 
@@ -160,7 +160,7 @@ void DT7_Update(float delta_t)
                 setChassisModeAction(CV_ROTATE);
                 setShootAction(SHOOT_POWER_DOWN_MODE);
                 setGimbalAction(GIMBAL_ACT_MODE);
-                setSuperPower(POWER_TO_BATTERY);
+                setSuperPower(POWER_TO_SuperPower);
                 setGimbalPosition(UP);
             }
 

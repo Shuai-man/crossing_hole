@@ -176,6 +176,10 @@ void Shoot_Fire_Cal(void)
             Toggle_AddGrid(&toggle_controller, 1);
             remote_controller.single_shoot_flag = FALSE;
         }
+				//更新预测弹量，防止剩余弹量不更新，打不了弹------
+				Toggle_FilterBulletData(chassis_pack_get_1.shoot_avaiable , chassis_pack_get_1.heat_cooling/100.0f);
+				Toggle_BulletPrediction();
+				//------------------------------------------------
         Toggle_Calculate(TOGGLE_POS, toggle_controller.set_pos);
     }
     else if (remote_controller.gimbal_action == GIMBAL_AUTO_AIM_MODE)
@@ -183,7 +187,7 @@ void Shoot_Fire_Cal(void)
         remote_controller.single_shoot_flag = FALSE; // 自瞄连发
         if (pc_recv_data.shoot_flag == 1)
         {
-            Toggle_Fire(chassis_pack_get_1.shoot_avaiable , chassis_pack_get_1.heat_cooling);
+            Toggle_Fire(chassis_pack_get_1.shoot_avaiable , chassis_pack_get_1.heat_cooling/100.0f);
         }
         else
         {
@@ -193,7 +197,7 @@ void Shoot_Fire_Cal(void)
     else // 手动开火
     {
         remote_controller.single_shoot_flag = FALSE;
-        Toggle_Fire(chassis_pack_get_1.shoot_avaiable , chassis_pack_get_1.heat_cooling);
+        Toggle_Fire(chassis_pack_get_1.shoot_avaiable , chassis_pack_get_1.heat_cooling/100.0f);
     }
 }
 

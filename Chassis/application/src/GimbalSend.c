@@ -3,8 +3,6 @@
 #include "Referee.h"
 #include "HeatControl.h"
 
-#define ONE_BULLET_HEAT 10
-
 GimbalSendPack_1 gimbal_pack_send_1;
 GimbalSendPack_2 gimbal_pack_send_2;
 

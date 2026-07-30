@@ -31,7 +31,7 @@ void InfantryInit(Infantry *infantry)
 // 最大速度初始化
     MaxSpeed_Init(&infantry->speed_x_fit, 45.0f, 0.7f, 120.0f, 2.0f);
     MaxSpeed_Init(&infantry->speed_y_fit, 45.0f, 0.7f, 120.0f, 2.0f);
-    MaxSpeed_Init(&infantry->speed_yaw_fit, 45.0f, 5.0f, 120.0f, 8.0f);
+    MaxSpeed_Init(&infantry->speed_yaw_fit, 45.0f, 5.0f, 120.0f, 12.0f);
 }
 
 /**

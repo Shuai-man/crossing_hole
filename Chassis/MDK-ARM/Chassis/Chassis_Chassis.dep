@@ -57,7 +57,7 @@ I (../Core/Inc/dma.h)(0x6A66E3F9)
 I (../Core/Inc/i2c.h)(0x6A66E3F9)
 I (../Core/Inc/usart.h)(0x6A66E3F9)
 I (../Core/Inc/gpio.h)(0x6A66E3F6)
-I (../config/robot_config.h)(0x6A699FDD)
+I (../config/robot_config.h)(0x6A6B64E1)
 I (../application/inc/ChassisController.h)(0x6A687408)
 I (../Algorithm/inc/pid.h)(0x6A60EEDE)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
@@ -77,7 +77,7 @@ I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
 I (../boards/inc/bsp_can.h)(0x6A60EEE8)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
-I (../application/inc/remote_control.h)(0x6A64E2E0)
+I (../application/inc/remote_control.h)(0x6A69ADF8)
 F (../Core/Src/gpio.c)(0x6A66E3F6)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\gpio.o --omf_browse chassis\gpio.crf --depend chassis\gpio.d)
 I (../Core/Inc/gpio.h)(0x6A66E3F6)
 I (../Core/Inc/main.h)(0x6A66E3FA)
@@ -1357,7 +1357,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/task.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/list.h)(0x68FA3A9A)
-F (..\boards\src\bsp_can.c)(0x6A60EEE8)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\bsp_can.o --omf_browse chassis\bsp_can.crf --depend chassis\bsp_can.d)
+F (..\boards\src\bsp_can.c)(0x6A69B5EE)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\bsp_can.o --omf_browse chassis\bsp_can.crf --depend chassis\bsp_can.d)
 I (../boards/inc/bsp_can.h)(0x6A60EEE8)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
 I (../Core/Inc/can.h)(0x6A66E3F8)
@@ -1412,10 +1412,10 @@ I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
 I (../Components/tools/inc/ZeroCheck.h)(0x6A60EEDE)
 I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
-I (../config/robot_config.h)(0x6A699FDD)
-I (../application/inc/Gimbalreceive.h)(0x6A64E216)
-I (../application/inc/NingCap.h)(0x6A60EEE7)
-I (../config/can_config.h)(0x6A64B236)
+I (../config/robot_config.h)(0x6A6B64E1)
+I (../application/inc/Gimbalreceive.h)(0x6A69ADC5)
+I (../application/inc/NingCap.h)(0x6A69C4B9)
+I (../config/can_config.h)(0x6A69B66B)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
 F (..\boards\src\bsp_dwt.c)(0x6A60EEE8)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\bsp_dwt.o --omf_browse chassis\bsp_dwt.crf --depend chassis\bsp_dwt.d)
 I (../boards/inc/bsp_dwt.h)(0x6A60EEE8)
@@ -1498,7 +1498,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68FA3AEB)
 I (../Judge/Inc/fifo.h)(0x6A60EEE2)
 I (../Judge/Inc/protocol.h)(0x6A60EEE2)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
-F (..\config\can_config.h)(0x6A64B236)()
+F (..\config\can_config.h)(0x6A69B66B)()
 F (..\config\robot_config.c)(0x6A60EEE8)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\robot_config.o --omf_browse chassis\robot_config.crf --depend chassis\robot_config.d)
 I (../application/inc/ChassisController.h)(0x6A687408)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -1551,9 +1551,9 @@ I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
 I (../Components/tools/inc/ZeroCheck.h)(0x6A60EEDE)
 I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
-I (../config/robot_config.h)(0x6A699FDD)
+I (../config/robot_config.h)(0x6A6B64E1)
 I (../application/inc/mecanum.h)(0x6A64E352)
-F (..\config\robot_config.h)(0x6A699FDD)()
+F (..\config\robot_config.h)(0x6A6B64E1)()
 F (..\application\src\ChassisController.c)(0x6A699FCF)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\chassiscontroller.o --omf_browse chassis\chassiscontroller.crf --depend chassis\chassiscontroller.d)
 I (../application/inc/ChassisController.h)(0x6A687408)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -1606,23 +1606,23 @@ I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
 I (../Components/tools/inc/ZeroCheck.h)(0x6A60EEDE)
 I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
-I (../config/robot_config.h)(0x6A699FDD)
+I (../config/robot_config.h)(0x6A6B64E1)
 I (D:\keil\ARM\ARMCC\include\float.h)(0x588B8344)
-I (../application/inc/NingCap.h)(0x6A60EEE7)
+I (../application/inc/NingCap.h)(0x6A69C4B9)
 I (../Task/inc/PowerControlTask.h)(0x6A60EEE7)
-I (../application/inc/Gimbalreceive.h)(0x6A64E216)
+I (../application/inc/Gimbalreceive.h)(0x6A69ADC5)
 I (../boards/inc/bsp_can.h)(0x6A60EEE8)
 I (../Core/Inc/can.h)(0x6A66E3F8)
 I (../Core/Inc/main.h)(0x6A66E3FA)
-I (../config/can_config.h)(0x6A64B236)
+I (../config/can_config.h)(0x6A69B66B)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
 I (../application/inc/mecanum.h)(0x6A64E352)
-I (../application/inc/remote_control.h)(0x6A64E2E0)
+I (../application/inc/remote_control.h)(0x6A69ADF8)
 F (..\application\src\GimbalReceive.c)(0x6A64E21A)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\gimbalreceive.o --omf_browse chassis\gimbalreceive.crf --depend chassis\gimbalreceive.d)
-I (../application/inc/GimbalReceive.h)(0x6A64E216)
+I (../application/inc/GimbalReceive.h)(0x6A69ADC5)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
-I (../application/inc/remote_control.h)(0x6A64E2E0)
+I (../application/inc/remote_control.h)(0x6A69ADF8)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\math.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
@@ -1673,15 +1673,15 @@ I (../Components/motor/inc/M3508.h)(0x6A60EEDE)
 I (../Components/tools/inc/ZeroCheck.h)(0x6A60EEDE)
 I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
-I (../config/robot_config.h)(0x6A699FDD)
+I (../config/robot_config.h)(0x6A6B64E1)
 F (..\application\src\remote_control.c)(0x6A64E2F1)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\remote_control.o --omf_browse chassis\remote_control.crf --depend chassis\remote_control.d)
-I (../application/inc/remote_control.h)(0x6A64E2E0)
+I (../application/inc/remote_control.h)(0x6A69ADF8)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\math.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\stdlib.h)(0x588B8344)
-F (..\application\src\GimbalSend.c)(0x6A68CBF8)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\gimbalsend.o --omf_browse chassis\gimbalsend.crf --depend chassis\gimbalsend.d)
+F (..\application\src\GimbalSend.c)(0x6A6A20CB)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\gimbalsend.o --omf_browse chassis\gimbalsend.crf --depend chassis\gimbalsend.d)
 I (../application/inc/GimbalSend.h)(0x6A68C9F3)
 I (D:\keil\ARM\ARMCC\include\stdlib.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
@@ -1723,7 +1723,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x68FA3AEB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x68FA3AEB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68FA3AEB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68FA3AEB)
-I (../application/inc/HeatControl.h)(0x6A68CBD5)
+I (../application/inc/HeatControl.h)(0x6A6A2096)
 F (..\application\src\PowerLimit.c)(0x6A60EEE7)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\powerlimit.o --omf_browse chassis\powerlimit.crf --depend chassis\powerlimit.d)
 I (../application/inc/PowerLimit.h)(0x6A60EEE7)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
@@ -1731,8 +1731,8 @@ I (../Components/motor/inc/Motor_Typdef.h)(0x6A60EEDE)
 I (D:\keil\ARM\ARMCC\include\float.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\math.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
-F (..\application\src\NingCap.c)(0x6A699A65)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\ningcap.o --omf_browse chassis\ningcap.crf --depend chassis\ningcap.d)
-I (../application/inc/NingCap.h)(0x6A60EEE7)
+F (..\application\src\NingCap.c)(0x6A69AEDA)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\ningcap.o --omf_browse chassis\ningcap.crf --depend chassis\ningcap.d)
+I (../application/inc/NingCap.h)(0x6A69C4B9)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
 F (..\application\src\mecanum.c)(0x6A68E7D2)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\mecanum.o --omf_browse chassis\mecanum.crf --depend chassis\mecanum.d)
@@ -1788,9 +1788,9 @@ I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
 I (../Components/tools/inc/ZeroCheck.h)(0x6A60EEDE)
 I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
-I (../config/robot_config.h)(0x6A699FDD)
-F (..\application\src\HeatControl.c)(0x6A68CBD7)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\heatcontrol.o --omf_browse chassis\heatcontrol.crf --depend chassis\heatcontrol.d)
-I (../application/inc/HeatControl.h)(0x6A68CBD5)
+I (../config/robot_config.h)(0x6A6B64E1)
+F (..\application\src\HeatControl.c)(0x6A6A2139)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\heatcontrol.o --omf_browse chassis\heatcontrol.crf --depend chassis\heatcontrol.d)
+I (../application/inc/HeatControl.h)(0x6A6A2096)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
 I (../Judge/Inc/Referee.h)(0x6A60EEE2)
 I (../Judge/Inc/protocol.h)(0x6A60EEE2)
@@ -1846,7 +1846,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h)(0x68FA3A9A
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/task.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/list.h)(0x68FA3A9A)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
-F (..\Task\src\PowerControlTask.c)(0x6A698E50)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\powercontroltask.o --omf_browse chassis\powercontroltask.crf --depend chassis\powercontroltask.d)
+F (..\Task\src\PowerControlTask.c)(0x6A69AFE8)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\powercontroltask.o --omf_browse chassis\powercontroltask.crf --depend chassis\powercontroltask.d)
 I (../Task/inc/PowerControlTask.h)(0x6A60EEE7)
 I (D:\keil\ARM\ARMCC\include\stdint.h)(0x588B8344)
 I (D:\keil\ARM\ARMCC\include\math.h)(0x588B8344)
@@ -1860,7 +1860,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/task.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/list.h)(0x68FA3A9A)
-I (../application/inc/NingCap.h)(0x6A60EEE7)
+I (../application/inc/NingCap.h)(0x6A69C4B9)
 I (../Judge/Inc/Referee.h)(0x6A60EEE2)
 I (../Judge/Inc/protocol.h)(0x6A60EEE2)
 I (../Judge/Inc/fifo.h)(0x6A60EEE2)
@@ -1902,9 +1902,10 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68FA3AEB)
 I (../boards/inc/bsp_can.h)(0x6A60EEE8)
 I (../Core/Inc/can.h)(0x6A66E3F8)
 I (../Core/Inc/main.h)(0x6A66E3FA)
-I (../config/can_config.h)(0x6A64B236)
-I (../config/robot_config.h)(0x6A699FDD)
+I (../config/can_config.h)(0x6A69B66B)
+I (../config/robot_config.h)(0x6A6B64E1)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
+I (../application/inc/remote_control.h)(0x6A69ADF8)
 F (..\Task\src\GimbalTask.c)(0x6A66EB79)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\gimbaltask.o --omf_browse chassis\gimbaltask.crf --depend chassis\gimbaltask.d)
 I (../Task/inc/GimbalTask.h)(0x6A60EEE7)
 I (D:\keil\ARM\ARMCC\include\string.h)(0x588B8344)
@@ -1919,8 +1920,8 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/task.h)(0x68FA3A9A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/list.h)(0x68FA3A9A)
-I (../application/inc/HeatControl.h)(0x6A68CBD5)
-I (../application/inc/Gimbalreceive.h)(0x6A64E216)
+I (../application/inc/HeatControl.h)(0x6A6A2096)
+I (../application/inc/Gimbalreceive.h)(0x6A69ADC5)
 I (../application/inc/GimbalSend.h)(0x6A68C9F3)
 I (D:\keil\ARM\ARMCC\include\stdlib.h)(0x588B8344)
 I (../boards/inc/bsp_can.h)(0x6A60EEE8)
@@ -1958,8 +1959,8 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x68FA3AEB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x68FA3AEB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68FA3AEB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68FA3AEB)
-I (../config/can_config.h)(0x6A64B236)
-I (../config/robot_config.h)(0x6A699FDD)
+I (../config/can_config.h)(0x6A69B66B)
+I (../config/robot_config.h)(0x6A6B64E1)
 F (..\Task\src\ChassisControlTask.c)(0x6A66CB19)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\chassiscontroltask.o --omf_browse chassis\chassiscontroltask.crf --depend chassis\chassiscontroltask.d)
 I (../Task/inc/ChassisControlTask.h)(0x6A64E418)
 I (../Core/Inc/FreeRTOSConfig.h)(0x6A66E3F8)
@@ -2022,8 +2023,8 @@ I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
 I (../Components/tools/inc/ZeroCheck.h)(0x6A60EEDE)
 I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
-I (../config/robot_config.h)(0x6A699FDD)
-F (..\Task\src\RefereeTask.c)(0x6A67513F)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\refereetask.o --omf_browse chassis\refereetask.crf --depend chassis\refereetask.d)
+I (../config/robot_config.h)(0x6A6B64E1)
+F (..\Task\src\RefereeTask.c)(0x6A69A657)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\refereetask.o --omf_browse chassis\refereetask.crf --depend chassis\refereetask.d)
 I (../Task/inc/RefereeTask.h)(0x6A67513F)
 I (../Judge/Inc/fifo.h)(0x6A60EEE2)
 I (D:\keil\ARM\ARMCC\include\stdio.h)(0x588B8344)
@@ -2095,11 +2096,12 @@ I (../Components/motor/inc/M3508.h)(0x6A60EEDE)
 I (../Components/tools/inc/ZeroCheck.h)(0x6A60EEDE)
 I (../Algorithm/inc/my_filter.h)(0x6A60EEDE)
 I (../Components/motor/inc/GM6020.h)(0x6A60EEDE)
-I (../config/robot_config.h)(0x6A699FDD)
-I (../application/inc/GimbalReceive.h)(0x6A64E216)
-I (../application/inc/NingCap.h)(0x6A60EEE7)
-I (../application/inc/remote_control.h)(0x6A64E2E0)
+I (../config/robot_config.h)(0x6A6B64E1)
+I (../application/inc/GimbalReceive.h)(0x6A69ADC5)
+I (../application/inc/NingCap.h)(0x6A69C4B9)
+I (../application/inc/remote_control.h)(0x6A69ADF8)
 I (../Components/tools/inc/debug.h)(0x6A60EEDE)
+I (../application/inc/HeatControl.h)(0x6A6A2096)
 I (../Judge/Inc/Referee.h)(0x6A60EEE2)
 I (../boards/inc/bsp_referee.h)(0x6A64E0F7)
 F (..\Algorithm\src\arm_atan2_f32.c)(0x6A60EEDE)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../config -I ../application/inc -I ../Algorithm/inc -I ../boards/inc -I ../Components/tools/inc -I ../Components/motor/inc -I ../Middlewares/ST/ARM/DSP/Inc -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Task/inc -I ../Judge/Inc-I.\RTE\_Chassis-ID:\keil\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="541" -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx -DARM_MATH_CM4 -D__CORTEX_M4="1" -D__FPU_USED="1U" -D__FPU_PRESENT="1U"-o chassis\arm_atan2_f32.o --omf_browse chassis\arm_atan2_f32.crf --depend chassis\arm_atan2_f32.d)
@@ -2456,5 +2458,5 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68FA3AEB)
 I (../Core/Inc/usart.h)(0x6A66E3F9)
 I (../Core/Inc/main.h)(0x6A66E3FA)
 I (../Judge/Inc/crcs.h)(0x6A60EEE2)
-I (../application/inc/HeatControl.h)(0x6A68CBD5)
+I (../application/inc/HeatControl.h)(0x6A6A2096)
 F (../Middlewares/ST/ARM/DSP/Lib/arm_cortexM4lf_math.lib)(0x6919AD81)()

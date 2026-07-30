@@ -1,4 +1,4 @@
-﻿#ifndef _TOGGLE_BULLET_H
+#ifndef _TOGGLE_BULLET_H
 #define _TOGGLE_BULLET_H
 
 #include "main.h"
@@ -49,7 +49,7 @@ typedef struct ToggleController
   float freq_time;    // 转换为s的弹频时间
   float send_current; // 发送电流值
 
-  uint8_t heat_cooling;                          // 热量恢复冷却
+  float heat_cooling;                          // 热量恢复冷却
   uint8_t remaining_bullets;                     // 剩余发弹量
   uint8_t receive_bullets;                       // 接收发弹量
   uint8_t last_receive_bullets;                  // 上一次接收发弹量
@@ -67,7 +67,9 @@ void Toggle_Init(void);
 void Toggle_Calculate(enum TOGGLE_CONTROL_MODE control_mode, float set_point);
 void Toggle_AddGrid(ToggleController *controller, uint8_t num);
 void Toggle_SelectShootFreq(void);
-void Toggle_Fire(uint8_t receive_bullets, uint8_t heat_cooling);
+void Toggle_FilterBulletData(uint8_t bullets , float heat_cooling);
+void Toggle_BulletPrediction(void);
+void Toggle_Fire(uint8_t receive_bullets, float heat_cooling);
 void Toggle_RemovePendingBullets(uint8_t num);
 void Toggle_UpdateRemainingByPending(void);
 #endif // !_TOGGLE_BULLET_H

@@ -8,10 +8,10 @@
 #define CAP_MAX_VOL 28.0f  /* 超电充满电压，也是可用能量计算上限 */
 
 #define CAP_VOL_HIGH 26.0f /* 电压高状态阈值，用于状态显示 */
-#define CAP_VOL_MID 23.0f  /* 电压中状态阈值，用于状态切换迟滞 */
-#define CAP_VOL_LOW 20.0f  /* 电压低状态阈值，低于此值不可使用 */
-#define CAP_USE_ENABLE_VOL 22.0f /* 电压恢复到此值以上才重新允许使用超电 */
-#define CAP_USE_DISABLE_VOL 20.0f /* 电压低于此值立即禁止使用超电 */
+#define CAP_VOL_MID 20.0f  /* 电压中状态阈值，用于状态切换迟滞 */
+#define CAP_VOL_LOW 10.0f  /* 电压低状态阈值，低于此值不可使用 */
+#define CAP_USE_ENABLE_VOL CAP_VOL_LOW+2.0f /* 电压恢复到此值以上才重新允许使用超电 */
+#define CAP_USE_DISABLE_VOL CAP_VOL_LOW /* 电压低于此值立即禁止使用超电 */
 
 #pragma pack(push, 1)
 typedef struct
@@ -61,7 +61,7 @@ void CapControllerInit(void);
 void ReceiveCapDecode(const uint8_t *recv_data, SuperCapRecvData *decoded_data);
 
 /* 仅把裁判系统当前功率上限发给超电，不发送本地扩展后的底盘上限。 */
-void SendCapPack(SuperCapSendData *send_data, float referee_power_limit);
+void SendCapPack(SuperCapSendData *send_data, float referee_power_limit,uint8_t not_use_cap);
 
 /* online 必须来自 debug.c 的超电掉线检测。掉线时立即判定为无可用能量。 */
 void NingCapUpdateState(uint8_t online);

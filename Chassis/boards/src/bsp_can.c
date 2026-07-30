@@ -182,6 +182,14 @@ void CanReceiveAll(CAN_HandleTypeDef *hcan, CAN_RxHeaderTypeDef *rx_header, uint
             LossUpdate(&global_debugger.super_power_debugger, SUPER_POWER_LOSS_TIME);
         }
     }
+
+    if (hcan == WIRELESS_CAN)
+    {
+        if (rx_header->StdId == WIRELESS_CAN_ID)
+        {
+            LossUpdate(&global_debugger.wireless_debugger, WIRELESS_LOSS_TIME);
+        }
+    }    
 }
 
 /**********************************************************************************************************

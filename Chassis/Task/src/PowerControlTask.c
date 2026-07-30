@@ -10,6 +10,7 @@
 #include "bsp_can.h"
 #include "can_config.h"
 #include "debug.h"
+#include "remote_control.h"
 
 #define REFEREE_POWER_LIMIT_MAX 125.0f      /* 接受的裁判底盘功率上限最大值，单位 W */
 #define REFEREE_POWER_LIMIT_MIN 35.0f       /* 接受的裁判底盘功率上限最小值，单位 W */
@@ -22,7 +23,7 @@
 #define REFEREE_OFFLINE_POWER_COEF 0.85f    /* 裁判掉线后使用最近有效上限的保守比例 */
 #define BUFFER_ADJUST_RISE_ALPHA 0.01f      /* 功率上调滤波系数：小值使功率缓慢恢复 */
 #define BUFFER_ADJUST_FALL_ALPHA 0.20f      /* 功率下调滤波系数：大值使功率快速收紧 */
-#define SUPER_CAP_POWER_BONUS 100.0f         /* 超电正常且启用时允许增加的功率，单位 W */
+#define SUPER_CAP_POWER_BONUS 100.0f        /* 超电正常且启用时允许增加的功率，单位 W */
 
 ChassisPowerStatus chassis_power_status;
 
@@ -156,7 +157,17 @@ void PowerControlTask(void const *argument)
         if (send_divider == 0U)
         {
             /* 超电始终只接收裁判系统的基础功率上限。 */
-            SendCapPack(&cap_send_data, chassis_power_status.referee_power_limit);
+            uint8_t not_use_cap = 0U;//是否关闭超电
+            if (remote_controller.super_power_state == POWER_TO_WIRELESS)
+            {
+                not_use_cap = 1U;
+                SendCapPack(&cap_send_data, chassis_power_status.referee_power_limit, not_use_cap);
+            }
+            else
+            {
+                not_use_cap = 0U;
+                SendCapPack(&cap_send_data, chassis_power_status.referee_power_limit, not_use_cap);
+            }
             CanSend(SUPER_POWER_CAN, (uint8_t *)&cap_send_data, SEND_TO_SUPER_POWER_CAN_ID, sizeof(cap_send_data));
         }
 

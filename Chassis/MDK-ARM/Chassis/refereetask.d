@@ -77,5 +77,6 @@ chassis\refereetask.o: ../application/inc/GimbalReceive.h
 chassis\refereetask.o: ../application/inc/NingCap.h
 chassis\refereetask.o: ../application/inc/remote_control.h
 chassis\refereetask.o: ../Components/tools/inc/debug.h
+chassis\refereetask.o: ../application/inc/HeatControl.h
 chassis\refereetask.o: ../Judge/Inc/Referee.h
 chassis\refereetask.o: ../boards/inc/bsp_referee.h

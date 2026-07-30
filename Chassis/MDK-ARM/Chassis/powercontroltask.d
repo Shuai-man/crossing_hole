@@ -58,3 +58,4 @@ chassis\powercontroltask.o: ../Core/Inc/main.h
 chassis\powercontroltask.o: ../config/can_config.h
 chassis\powercontroltask.o: ../config/robot_config.h
 chassis\powercontroltask.o: ../Components/tools/inc/debug.h
+chassis\powercontroltask.o: ../application/inc/remote_control.h

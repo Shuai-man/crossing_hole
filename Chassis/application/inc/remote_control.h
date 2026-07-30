@@ -32,6 +32,7 @@ enum PowerControlState // 功率控制状态
 {
     POWER_TO_BATTERY,    // 接电源
     POWER_TO_SuperPower, // 接电容
+    POWER_TO_WIRELESS,   // 接无线充电（会关闭超电）
 };
 
 enum GIMBAL_ACTION

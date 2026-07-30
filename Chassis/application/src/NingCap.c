@@ -34,8 +34,7 @@ void CapControllerInit(void)
 }
 
 
-uint8_t not_use_cap = 0;
-void SendCapPack(SuperCapSendData *send_data, float referee_power_limit)
+void SendCapPack(SuperCapSendData *send_data, float referee_power_limit,uint8_t not_use_cap)
 {
     float encoded_power;
 

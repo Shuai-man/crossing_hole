@@ -11,7 +11,7 @@ ToggleController toggle_controller;
  * @brief 过滤裁判系统数据
  * @param[in] bullets 原始数据
  */
-void Toggle_FilterBulletData(uint8_t bullets , uint8_t heat_cooling)
+void Toggle_FilterBulletData(uint8_t bullets , float heat_cooling)
 {
     // 裁判系统超热量会回传255，需要过滤
     if (bullets > BULLET_MAX_VALID)
@@ -154,8 +154,14 @@ void Toggle_Calculate(enum TOGGLE_CONTROL_MODE control_mode, float set_point)
     }
     else if (control_mode == TOGGLE_POS)
     {
-        toggle_controller.set_speed = PID_Calculate(&toggle_controller.toggle_pos_pid, toggle_controller.toggle_info.angle, set_point);
-        toggle_controller.send_current = PID_Calculate(&toggle_controller.toggle_speed_pid, toggle_controller.toggle_info.speed, toggle_controller.set_speed);
+
+			toggle_controller.set_speed = PID_Calculate(&toggle_controller.toggle_pos_pid, toggle_controller.toggle_info.angle, set_point);
+			toggle_controller.send_current = PID_Calculate(&toggle_controller.toggle_speed_pid, toggle_controller.toggle_info.speed, toggle_controller.set_speed);
+			if(fabs(toggle_controller.toggle_pos_pid.Err) < 0.01f)
+			{ 	
+        toggle_controller.send_current = 0;							
+			}
+
     }
     else
     {
@@ -257,7 +263,7 @@ void Toggle_Control(uint8_t is_run)
  * @brief 拨弹主函数
  * @param[in] receive_bullets 接收发弹量
  */
-void Toggle_Fire(uint8_t receive_bullets, uint8_t heat_cooling)
+void Toggle_Fire(uint8_t receive_bullets, float heat_cooling)
 {
     Toggle_FilterBulletData(receive_bullets, heat_cooling); // 过滤数据
     Toggle_BulletPrediction();                // 计算剩余弹量
