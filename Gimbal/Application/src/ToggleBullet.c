@@ -11,7 +11,7 @@ ToggleController toggle_controller;
  * @brief 过滤裁判系统数据
  * @param[in] bullets 原始数据
  */
-void Toggle_FilterBulletData(uint8_t bullets , float heat_cooling)
+void Toggle_FilterBulletData(uint8_t bullets, float heat_cooling)
 {
     // 裁判系统超热量会回传255，需要过滤
     if (bullets > BULLET_MAX_VALID)
@@ -26,13 +26,13 @@ void Toggle_FilterBulletData(uint8_t bullets , float heat_cooling)
     {
         toggle_controller.receive_bullets = bullets;
     }
-    if(heat_cooling!=0)
+    if (heat_cooling != 0)
     {
         toggle_controller.heat_cooling = heat_cooling;
     }
     else
     {
-        toggle_controller.heat_cooling = 2.0f;//最慢2s恢复1发
+        toggle_controller.heat_cooling = 2.0f; // 最慢2s恢复1发
     }
 }
 
@@ -53,7 +53,7 @@ void Toggle_UpdatePendingTimeout(float dt)
     }
 
     while (timeout_bullets < toggle_controller.pending_bullets &&
-           toggle_controller.pending_bullet_time[timeout_bullets] >= toggle_controller.heat_cooling)
+           toggle_controller.pending_bullet_time[timeout_bullets] >= toggle_controller.heat_cooling + FIRE_TIME_DIFF)
     {
         timeout_bullets++;
     }
@@ -155,13 +155,12 @@ void Toggle_Calculate(enum TOGGLE_CONTROL_MODE control_mode, float set_point)
     else if (control_mode == TOGGLE_POS)
     {
 
-			toggle_controller.set_speed = PID_Calculate(&toggle_controller.toggle_pos_pid, toggle_controller.toggle_info.angle, set_point);
-			toggle_controller.send_current = PID_Calculate(&toggle_controller.toggle_speed_pid, toggle_controller.toggle_info.speed, toggle_controller.set_speed);
-			if(fabs(toggle_controller.toggle_pos_pid.Err) < 0.01f)
-			{ 	
-        toggle_controller.send_current = 0;							
-			}
-
+        toggle_controller.set_speed = PID_Calculate(&toggle_controller.toggle_pos_pid, toggle_controller.toggle_info.angle, set_point);
+        toggle_controller.send_current = PID_Calculate(&toggle_controller.toggle_speed_pid, toggle_controller.toggle_info.speed, toggle_controller.set_speed);
+        if (fabs(toggle_controller.toggle_pos_pid.Err) < 0.01f)
+        {
+            toggle_controller.send_current = 0;
+        }
     }
     else
     {
@@ -222,8 +221,9 @@ void Toggle_SelectShootFreq(void)
  */
 bool Toggle_Scheduler(void)
 {
-    //松手和剩余弹量不够时停止控制，防止抖动
-    if (toggle_controller.is_shoot == 0 || toggle_controller.remaining_bullets<1.0f)
+    // 松手和剩余弹量不够时停止控制，防止抖动
+    // 如果是空打，由于没有触发弹丸减少更新，当预测弹丸为0后，无法触发后续的超时更新，只能松手重置剩余发弹量
+    if (toggle_controller.is_shoot == 0 || toggle_controller.remaining_bullets < 1.0f)
     {
         // 清空时间累计
         toggle_controller.dt_accumulated = 0;
@@ -266,9 +266,9 @@ void Toggle_Control(uint8_t is_run)
 void Toggle_Fire(uint8_t receive_bullets, float heat_cooling)
 {
     Toggle_FilterBulletData(receive_bullets, heat_cooling); // 过滤数据
-    Toggle_BulletPrediction();                // 计算剩余弹量
-    bool is_run = Toggle_Scheduler();         // 拨弹间隔计算
-    Toggle_Control(is_run);                   // 控制拨弹电机
+    Toggle_BulletPrediction();                              // 计算剩余弹量
+    bool is_run = Toggle_Scheduler();                       // 拨弹间隔计算
+    Toggle_Control(is_run);                                 // 控制拨弹电机
 
     toggle_controller.last_receive_bullets = toggle_controller.receive_bullets;
 }

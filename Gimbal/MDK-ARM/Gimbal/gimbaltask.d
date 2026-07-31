@@ -79,6 +79,7 @@ gimbal\gimbaltask.o: ../Components/motor/inc/M3508.h
 gimbal\gimbaltask.o: ../Application/inc/pc_serial.h
 gimbal\gimbaltask.o: ../Lift/Inc/lifting_control.h
 gimbal\gimbaltask.o: ../Lift/Inc/lifting_types.h
+gimbal\gimbaltask.o: ../Lift/Inc/encoder.h
 gimbal\gimbaltask.o: ../Application/inc/KeyMouse.h
 gimbal\gimbaltask.o: ../Components/tools/inc/debug.h
 gimbal\gimbaltask.o: ../Task/inc/Offline_Task.h
@@ -90,4 +91,3 @@ gimbal\gimbaltask.o: ../Components/boards/inc/bsp_can.h
 gimbal\gimbaltask.o: ../Config/Motor_Typdef.h
 gimbal\gimbaltask.o: ../Application/inc/ToggleBullet.h
 gimbal\gimbaltask.o: ../Application/inc/ChassisGet.h
-gimbal\gimbaltask.o: ../Lift/Inc/encoder.h

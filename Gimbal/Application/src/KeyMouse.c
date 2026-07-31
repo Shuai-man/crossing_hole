@@ -192,13 +192,13 @@ void KeyMouseUpdate(ChassisSolver *infantry)
         case KEY_CTRL:
 
             break;
-        case KEY_Q:
+        case KEY_E:
             if (remote_controller.game_mode == GAME_MODE)
             {
                 setGimbalPosition(UP);
             }
             break;
-        case KEY_E:
+        case KEY_Q:
             if (remote_controller.game_mode == GAME_MODE)
             {
                 setGimbalPosition(DOWN);

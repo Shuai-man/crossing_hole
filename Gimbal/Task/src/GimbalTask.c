@@ -6,6 +6,7 @@
 #include "FrictionWheel.h"
 #include "pc_serial.h"
 #include "lifting_control.h"
+#include "encoder.h"
 #include "KeyMouse.h"
 
 #include "debug.h"
@@ -170,8 +171,9 @@ void Shoot_Fire_Cal(void)
     Toggle_SelectShootFreq();
     if (remote_controller.gimbal_action == GIMBAL_SMALL_BUFF_MODE || remote_controller.gimbal_action == GIMBAL_BIG_BUFF_MODE)
     {
-        // 打符模式，采用单发模式
-        if (remote_controller.single_shoot_flag) // 触发单发射击标志
+      // 打符模式，采用单发模式
+			//虽然是单击触发，但是后续打出弹还需要按住左键，否则拨盘不会继续动，导致打不出弹
+			if (remote_controller.single_shoot_flag) 
         {
             Toggle_AddGrid(&toggle_controller, 1);
             remote_controller.single_shoot_flag = FALSE;
@@ -307,6 +309,10 @@ void execute_func(void)
     CanSend(TOGGLE_MOTOR_CAN, dji_motors_send_data_can1, C610_STD_ID_5_8);
     M2006_SendPack(dji_motors_send_data_can1, C610_STD_ID_5_8, LIFT_MOTOR_CAN_ID - 0x200, lifting_controller.send_current);
     CanSend(LIFT_MOTOR_CAN, dji_motors_send_data_can1, C610_STD_ID_5_8);
+    if(encoder.set_zero ==1)
+    {
+        SetEncoderZero();
+    }
 }
 
 /**

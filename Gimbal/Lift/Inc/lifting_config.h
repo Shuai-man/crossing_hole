@@ -14,8 +14,8 @@
 #define LIFT_TOF_LOW_POINT_MM               30.0f // 老云台最低点TOF距离
 #define LIFT_TOF_SENSOR_TO_MOTOR_DIR        -1.0f // TOF位置环输出到电机速度的方向
 
-#define LIFT_ENCODER_HIGH_POINT_COUNT      500.0f // 新云台最高点绝对编码器值
-#define LIFT_ENCODER_LOW_POINT_COUNT     10817.0f // 新云台最低点绝对编码器实车标定值
+#define LIFT_ENCODER_HIGH_POINT_COUNT      700.0f // 新云台最高点绝对编码器值
+#define LIFT_ENCODER_LOW_POINT_COUNT     11728.0f // 新云台最低点绝对编码器实车标定值
 #define LIFT_ENCODER_SENSOR_TO_MOTOR_DIR     1.0f // 若实车朝目标反向运动则改为-1.0f
 
 #define LIFT_SPEED_REF_MAX_DEG_S          2700.0f // 位置环允许输出的最大速度目标
